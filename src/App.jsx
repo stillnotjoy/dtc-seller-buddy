@@ -10,12 +10,15 @@ import UtangPage from './pages/UtangPage';
 import DashboardPage from './pages/DashboardPage';
 import ProductsPage from './pages/ProductsPage';
 import { User, Package, Wallet, Megaphone, Tags, ShoppingBag, BarChart3 } from 'lucide-react';
+import { Trash2 } from "lucide-react";
+
 
 
 function App() {
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
-  const [tab, setTab] = useState('customers');
+  const [tab, setTab] = useState('dashboard');
+
 
 
   const tabLabels = {
@@ -150,6 +153,13 @@ function App() {
 
          <nav id="bottomNav" className="bottom-nav-scroll">
   <NavButton
+    label="Dashboard"
+    tab="dashboard"
+    current={tab}
+    setTab={setTab}
+    icon={<BarChart3 size={18} />}
+  />
+  <NavButton
     label="Customers"
     tab="customers"
     current={tab}
@@ -171,13 +181,6 @@ function App() {
     icon={<Wallet size={18} />}
   />
   <NavButton
-    label="Campaigns"
-    tab="campaigns"
-    current={tab}
-    setTab={setTab}
-    icon={<Megaphone size={18} />}
-  />
-  <NavButton
     label="Brands"
     tab="brands"
     current={tab}
@@ -185,11 +188,11 @@ function App() {
     icon={<Tags size={18} />}
   />
   <NavButton
-    label="Dashboard"
-    tab="dashboard"
+    label="Campaigns"
+    tab="campaigns"
     current={tab}
     setTab={setTab}
-    icon={<BarChart3 size={18} />}
+    icon={<Megaphone size={18} />}
   />
   <NavButton
     label="Products"

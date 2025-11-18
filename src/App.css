@@ -40,3 +40,20 @@
 .read-the-docs {
   color: #888;
 }
+/* Tiny animation for the delete icon on customers list */
+.customer-delete-btn {
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease,
+    color 0.15s ease;
+}
+
+.customer-delete-btn:hover {
+  background: rgba(248, 113, 113, 0.16); /* soft red halo */
+  transform: translateY(-1px) scale(1.05);
+}
+
+.customer-delete-btn:active {
+  background: rgba(248, 113, 113, 0.24);
+  transform: translateY(0) scale(0.96);
+}
