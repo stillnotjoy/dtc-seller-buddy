@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { supabase } from '../supabaseClient';
 
-// Show products under each order
+// ----------------- Helper sub-component: show products under each order -----------------
 function OrderItemsList({ order, orderItems, getProductById, formatProductLabel }) {
   const itemsForOrder = orderItems.filter(oi => oi.order_id === order.id);
 
@@ -17,6 +17,11 @@ function OrderItemsList({ order, orderItems, getProductById, formatProductLabel 
           <div key={item.id} className="order-item-line">
             <span className="order-item-qty">{item.quantity}×</span>
             <span className="order-item-name">{label}</span>
+            {item.srp_each != null && (
+              <span className="order-item-money">
+                ₱{item.srp_each} / ₱{item.cost_each ?? '—'}
+              </span>
+            )}
           </div>
         );
       })}
@@ -24,34 +29,7 @@ function OrderItemsList({ order, orderItems, getProductById, formatProductLabel 
   );
 }
 
-// Helper: compute totals + profit from the current line items
-function computeTotalsFromLineItems(lineItems) {
-  let totalSrp = 0;
-  let totalCost = 0;
-  let hasData = false;
-
-  lineItems.forEach(item => {
-    if (!item.productId || !item.quantity) return;
-
-    const qty = Number(item.quantity);
-    const srpEach = item.srp !== '' ? Number(item.srp) : NaN;
-    const costEach = item.cost !== '' ? Number(item.cost) : NaN;
-
-    if (!qty || isNaN(qty)) return;
-    if (isNaN(srpEach) || isNaN(costEach)) return;
-
-    hasData = true;
-
-    totalSrp += srpEach * qty;
-    totalCost += costEach * qty;
-  });
-
-  const profit = totalSrp - totalCost;
-  return { totalSrp, totalCost, profit, hasData };
-}
-
 export default function OrdersPage({ user }) {
-
   const [customers, setCustomers] = useState([]);
   const [brands, setBrands] = useState([]);
   const [campaigns, setCampaigns] = useState([]);
@@ -66,19 +44,26 @@ export default function OrdersPage({ user }) {
   const [brandId, setBrandId] = useState('');
   const [campaignId, setCampaignId] = useState('');
   const [orderDate, setOrderDate] = useState('');
-  const [paymentType, setPaymentType] = useState('cash');
+  const [paymentType, setPaymentType] = useState('cash'); // cash | utang (labelled Credit)
   const [dueDate, setDueDate] = useState('');
   const [saving, setSaving] = useState(false);
-  // Line items for this order (form)
+
+  // Line items for this order
   const [lineItems, setLineItems] = useState([
     { id: 1, productId: '', quantity: '', srp: '', cost: '' },
   ]);
   const [nextItemId, setNextItemId] = useState(2);
 
-  // Global collapse/expand for Recent orders
-  const [ordersExpanded, setOrdersExpanded] = useState(true);
+  // Recent orders collapse
+  const [showRecent, setShowRecent] = useState(true);
 
-  // Wait for user, then load data
+  // Product search bottom sheet
+  const [modalOpen, setModalOpen] = useState(false);
+  const [searchText, setSearchText] = useState('');
+  const [activeLineIndex, setActiveLineIndex] = useState(null);
+  const searchInputRef = useRef(null);
+
+  // ----------------- Effects -----------------
   useEffect(() => {
     if (!user) return;
     loadLookups();
@@ -96,6 +81,16 @@ export default function OrdersPage({ user }) {
     }
   }, [brandId, user]);
 
+  // Focus search field when modal opens
+  useEffect(() => {
+    if (modalOpen && searchInputRef.current) {
+      setTimeout(() => {
+        searchInputRef.current?.focus();
+      }, 50);
+    }
+  }, [modalOpen]);
+
+  // ----------------- Helpers -----------------
   function formatProductLabel(p) {
     const bits = [p.name];
     const extras = [];
@@ -111,6 +106,30 @@ export default function OrdersPage({ user }) {
     return products.find(p => p.id === id) || null;
   }
 
+  // Compute totals from current line items
+  function computeTotals(items) {
+    let total_srp = 0;
+    let total_cost = 0;
+
+    items.forEach(item => {
+      const qty = Number(item.quantity) || 0;
+      const srp = Number(item.srp) || 0;
+      const cost = Number(item.cost) || 0;
+
+      total_srp += srp * qty;
+      total_cost += cost * qty;
+    });
+
+    return {
+      total_srp,
+      total_cost,
+      profit: total_srp - total_cost,
+    };
+  }
+
+  const totals = computeTotals(lineItems);
+
+  // ----------------- Data loading -----------------
   async function loadLookups() {
     if (!user) return;
     setLoadingLookups(true);
@@ -218,9 +237,7 @@ export default function OrdersPage({ user }) {
 
       const { data: itemsData, error: itemsError } = await supabase
         .from('order_items')
-        .select(
-          'id, order_id, product_id, quantity, srp_each, cost_each, line_total_srp, line_total_cost'
-        )
+        .select('id, order_id, product_id, quantity, srp_each, cost_each')
         .in('order_id', orderIds);
 
       if (itemsError) {
@@ -236,6 +253,7 @@ export default function OrdersPage({ user }) {
     setLoadingOrders(false);
   }
 
+  // ----------------- Line items handlers -----------------
   function handleAddLineItem() {
     setLineItems(items => [
       ...items,
@@ -256,6 +274,25 @@ export default function OrdersPage({ user }) {
     setLineItems(items => items.filter((_, i) => i !== index));
   }
 
+  // Open product search modal for a specific line
+  function openProductSearch(index) {
+    setActiveLineIndex(index);
+    setSearchText('');
+    setModalOpen(true);
+  }
+
+  // When clicking a product in modal
+  function selectProductForCurrentLine(product) {
+    if (activeLineIndex == null) return;
+    setLineItems(items =>
+      items.map((item, i) =>
+        i === activeLineIndex ? { ...item, productId: product.id } : item
+      )
+    );
+    setModalOpen(false);
+  }
+
+  // ----------------- Submit -----------------
   async function handleAddOrder(e) {
     e.preventDefault();
 
@@ -269,19 +306,19 @@ export default function OrdersPage({ user }) {
       return;
     }
 
-    // Compute totals & profit from line items
-    const { totalSrp, totalCost, hasData } =
-      computeTotalsFromLineItems(lineItems);
-
-    if (!hasData) {
-      alert(
-        'Please add at least one product with quantity, SRP each, and cost each.'
-      );
+    const hasValidLine = lineItems.some(
+      li => li.productId && Number(li.quantity) > 0
+    );
+    if (!hasValidLine) {
+      alert('Please add at least one product with quantity.');
       return;
     }
 
+    const { total_srp, total_cost } = computeTotals(lineItems);
+
     setSaving(true);
 
+    // Insert order WITHOUT profit (DB computes it)
     const { data: newOrder, error } = await supabase
       .from('orders')
       .insert({
@@ -290,10 +327,9 @@ export default function OrdersPage({ user }) {
         brand_id: brandId,
         campaign_id: campaignId || null,
         order_date: orderDate,
-        total_srp: totalSrp,
-        total_cost: totalCost,
-        // profit is generated by DB, don't send it
-        payment_type: paymentType,
+        total_srp,
+        total_cost,
+        payment_type: paymentType, // 'cash' or 'utang'
         due_date: paymentType === 'utang' ? dueDate || null : null,
         status: paymentType === 'cash' ? 'paid' : 'pending',
       })
@@ -309,20 +345,11 @@ export default function OrdersPage({ user }) {
 
     // Save line items
     const itemsToSave = lineItems
-      .filter(item => item.productId && item.quantity)
+      .filter(item => item.productId && Number(item.quantity) > 0)
       .map(item => {
         const qty = Number(item.quantity) || 0;
-        const srpEach = item.srp !== '' ? Number(item.srp) : null;
-        const costEach = item.cost !== '' ? Number(item.cost) : null;
-
-        const line_total_srp =
-          srpEach != null && !isNaN(srpEach) && qty
-            ? srpEach * qty
-            : null;
-        const line_total_cost =
-          costEach != null && !isNaN(costEach) && qty
-            ? costEach * qty
-            : null;
+        const srpEach = item.srp ? Number(item.srp) : 0;
+        const costEach = item.cost ? Number(item.cost) : 0;
 
         return {
           seller_id: user.id,
@@ -331,8 +358,8 @@ export default function OrdersPage({ user }) {
           quantity: qty,
           srp_each: srpEach,
           cost_each: costEach,
-          line_total_srp,
-          line_total_cost,
+          line_total_srp: srpEach * qty,
+          line_total_cost: costEach * qty,
         };
       });
 
@@ -364,12 +391,6 @@ export default function OrdersPage({ user }) {
 
     loadOrders();
   }
-
-  // Profit for the *current form* (from line items only)
-  const {
-    profit: computedProfit,
-    hasData: hasProfitData,
-  } = computeTotalsFromLineItems(lineItems);
 
   if (!user) {
     return <p className="text-muted">Loading account…</p>;
@@ -458,10 +479,24 @@ export default function OrdersPage({ user }) {
                   onChange={e => setPaymentType(e.target.value)}
                 >
                   <option value="cash">Cash</option>
-                  <option value="utang">Utang</option>
+                  <option value="utang">Credit</option>
                 </select>
               </div>
             </div>
+
+            {paymentType === 'utang' && (
+              <div className="form-row">
+                <div className="form-col">
+                  <label className="label-small">Due date (credit)</label>
+                  <input
+                    type="date"
+                    className="field"
+                    value={dueDate}
+                    onChange={e => setDueDate(e.target.value)}
+                  />
+                </div>
+              </div>
+            )}
 
             {/* Line items */}
             <div className="line-items-block">
@@ -474,77 +509,73 @@ export default function OrdersPage({ user }) {
                 )}
               </div>
 
-              {lineItems.map((item, index) => (
-                <div key={item.id} className="line-item-group">
-                  <div className="form-row">
-                    <div className="form-col">
-                      <select
-                        className="field"
-                        value={item.productId}
-                        onChange={e =>
-                          handleChangeLineItem(index, 'productId', e.target.value)
-                        }
-                      >
-                        <option value="">
-                          {products.length === 0
-                            ? 'No products available'
-                            : 'Select product'}
-                        </option>
-                        {products.map(p => (
-                          <option key={p.id} value={p.id}>
-                            {formatProductLabel(p)}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="form-col line-item-qty">
-                      <input
-                        className="field"
-                        placeholder="Qty"
-                        value={item.quantity}
-                        onChange={e =>
-                          handleChangeLineItem(index, 'quantity', e.target.value)
-                        }
-                      />
-                    </div>
-                  </div>
+              {lineItems.map((item, index) => {
+                const selectedProduct = getProductById(item.productId);
+                const label = selectedProduct
+                  ? formatProductLabel(selectedProduct)
+                  : 'Tap to select product';
 
-                  <div className="form-row">
-                    <div className="form-col">
-                      <input
-                        className="field"
-                        placeholder="SRP each"
-                        value={item.srp}
-                        onChange={e =>
-                          handleChangeLineItem(index, 'srp', e.target.value)
-                        }
-                      />
+                return (
+                  <div key={item.id} className="line-item-group">
+                    <div className="form-row">
+                      <div className="form-col">
+                        <button
+                          type="button"
+                          className="field line-item-product-btn"
+                          onClick={() => openProductSearch(index)}
+                        >
+                          {label}
+                        </button>
+                      </div>
+                      <div className="form-col line-item-qty">
+                        <input
+                          className="field"
+                          placeholder="Qty"
+                          value={item.quantity}
+                          onChange={e =>
+                            handleChangeLineItem(index, 'quantity', e.target.value)
+                          }
+                        />
+                      </div>
                     </div>
-                    <div className="form-col">
-                      <input
-                        className="field"
-                        placeholder="Cost each"
-                        value={item.cost}
-                        onChange={e =>
-                          handleChangeLineItem(index, 'cost', e.target.value)
-                        }
-                      />
-                    </div>
-                  </div>
 
-                  {lineItems.length > 1 && (
-                    <div className="line-item-remove-row">
-                      <button
-                        type="button"
-                        className="btn-secondary"
-                        onClick={() => handleRemoveLineItem(index)}
-                      >
-                        Remove item
-                      </button>
+                    <div className="form-row">
+                      <div className="form-col">
+                        <input
+                          className="field"
+                          placeholder="SRP each"
+                          value={item.srp}
+                          onChange={e =>
+                            handleChangeLineItem(index, 'srp', e.target.value)
+                          }
+                        />
+                      </div>
+                      <div className="form-col">
+                        <input
+                          className="field"
+                          placeholder="Cost each"
+                          value={item.cost}
+                          onChange={e =>
+                            handleChangeLineItem(index, 'cost', e.target.value)
+                          }
+                        />
+                      </div>
                     </div>
-                  )}
-                </div>
-              ))}
+
+                    {lineItems.length > 1 && (
+                      <div className="line-item-remove-row">
+                        <button
+                          type="button"
+                          className="btn-secondary"
+                          onClick={() => handleRemoveLineItem(index)}
+                        >
+                          Remove item
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
 
               <div className="line-items-actions">
                 <button
@@ -557,25 +588,26 @@ export default function OrdersPage({ user }) {
               </div>
             </div>
 
-            {/* Profit & due date */}
+            {/* Totals & profit display */}
             <div className="form-row">
               <div className="form-col">
-                <label className="label-small">Profit (auto from items)</label>
+                <label className="label-small">Total SRP (auto)</label>
                 <div className="profit-pill">
-                  {!hasProfitData ? '—' : `₱ ${computedProfit}`}
+                  {totals.total_srp ? `₱ ${totals.total_srp}` : '—'}
                 </div>
               </div>
-              {paymentType === 'utang' && (
-                <div className="form-col">
-                  <label className="label-small">Due date (utang)</label>
-                  <input
-                    type="date"
-                    className="field"
-                    value={dueDate}
-                    onChange={e => setDueDate(e.target.value)}
-                  />
+              <div className="form-col">
+                <label className="label-small">Total cost (auto)</label>
+                <div className="profit-pill">
+                  {totals.total_cost ? `₱ ${totals.total_cost}` : '—'}
                 </div>
-              )}
+              </div>
+              <div className="form-col">
+                <label className="label-small">Profit (auto)</label>
+                <div className="profit-pill">
+                  {totals.profit ? `₱ ${totals.profit}` : '—'}
+                </div>
+              </div>
             </div>
 
             <div className="order-save-row">
@@ -587,70 +619,114 @@ export default function OrdersPage({ user }) {
         )}
       </section>
 
-      {/* Recent orders card */}
-<section className="card">
-  <div className="card-header-row">
-    <h2 className="card-title">Recent orders</h2>
-    <button
-      type="button"
-      className="card-toggle-btn"
-      onClick={() => setOrdersExpanded(prev => !prev)}
-    >
-      {ordersExpanded ? '− Hide' : '+ Show'}
-    </button>
-  </div>
+      {/* Recent orders card with hide/show */}
+      <section className="card">
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '10px',
+          }}
+        >
+          <h2 className="card-title">Recent orders</h2>
+          <button
+            type="button"
+            className="collapse-toggle"
+            onClick={() => setShowRecent(prev => !prev)}
+          >
+            <span className={`collapse-icon ${showRecent ? 'open' : ''}`}>+</span>
+          </button>
+        </div>
 
-  {loadingOrders ? (
-    <p className="text-muted">Loading orders…</p>
-  ) : orders.length === 0 ? (
-    <p className="text-muted">No orders yet.</p>
-  ) : !ordersExpanded ? (
-    // Collapsed state – just a small note
-    <p className="text-muted-small">
-      Recent orders hidden. Click “+ Show” to expand.
-    </p>
-  ) : (
-    // Expanded state – full list
-    <ul className="customer-list orders-list">  
-      {orders.map(o => (
-        <li key={o.id} className="customer-item order-item">
-          <div className="order-item-top">
-            <div className="order-left">
-              <div className="customer-name">
-                {o.customers?.name || 'Unknown customer'}
-              </div>
-              <div className="order-meta">
-                {o.brands?.name || 'No brand'}
-                {o.campaigns?.name ? ` • ${o.campaigns.name}` : ''}
-              </div>
-              <div className="order-meta">
-                {o.order_date} •{' '}
-                {o.payment_type === 'utang' ? 'Utang' : 'Cash'}
-                {o.payment_type === 'utang' && o.due_date
-                  ? ` • Due: ${o.due_date}`
-                  : ''}
-              </div>
+        <div className={`collapse-content ${showRecent ? '' : 'hidden'}`}>
+          {loadingOrders ? (
+            <p className="text-muted">Loading orders…</p>
+          ) : orders.length === 0 ? (
+            <p className="text-muted">No orders yet.</p>
+          ) : (
+            <ul className="customer-list">
+              {orders.map(o => (
+                <li key={o.id} className="customer-item order-item">
+                  <div className="order-item-top">
+                    <div className="order-left">
+                      <div className="customer-name">
+                        {o.customers?.name || 'Unknown customer'}
+                      </div>
+                      <div className="order-meta">
+                        {o.brands?.name || 'No brand'}
+                        {o.campaigns?.name ? ` • ${o.campaigns.name}` : ''}
+                      </div>
+                      <div className="order-meta">
+                        {o.order_date} •{' '}
+                        {o.payment_type === 'utang' ? 'Credit' : 'Cash'}
+                        {o.payment_type === 'utang' && o.due_date
+                          ? ` • Due: ${o.due_date}`
+                          : ''}
+                      </div>
+                    </div>
+                    <div className="order-money">
+                      <div>SRP: ₱{o.total_srp}</div>
+                      <div>Cost: ₱{o.total_cost}</div>
+                      <div className="order-profit">Profit: ₱{o.profit}</div>
+                      <div className="order-status">{o.status}</div>
+                    </div>
+                  </div>
+
+                  <OrderItemsList
+                    order={o}
+                    orderItems={orderItems}
+                    getProductById={getProductById}
+                    formatProductLabel={formatProductLabel}
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </section>
+
+      {/* Product search bottom sheet */}
+      {modalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-sheet">
+            <input
+              ref={searchInputRef}
+              className="field modal-search-input"
+              placeholder="Search product…"
+              value={searchText}
+              onChange={e => setSearchText(e.target.value)}
+            />
+
+            <div className="modal-list">
+              {products
+                .filter(p =>
+                  formatProductLabel(p)
+                    .toLowerCase()
+                    .includes(searchText.toLowerCase())
+                )
+                .map(p => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    className="modal-list-item"
+                    onClick={() => selectProductForCurrentLine(p)}
+                  >
+                    {formatProductLabel(p)}
+                  </button>
+                ))}
             </div>
-            <div className="order-money">
-              <div>SRP: ₱{o.total_srp}</div>
-              <div>Cost: ₱{o.total_cost}</div>
-              <div className="order-profit">Profit: ₱{o.profit}</div>
-              <div className="order-status">{o.status}</div>
-            </div>
+
+            <button
+              type="button"
+              className="btn-secondary modal-close"
+              onClick={() => setModalOpen(false)}
+            >
+              Close
+            </button>
           </div>
-
-          <OrderItemsList
-            order={o}
-            orderItems={orderItems}
-            getProductById={getProductById}
-            formatProductLabel={formatProductLabel}
-          />
-        </li>
-      ))}
-    </ul>
-  )}
-</section>
-
+        </div>
+      )}
     </div>
   );
 }

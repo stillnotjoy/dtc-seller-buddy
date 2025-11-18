@@ -2268,3 +2268,630 @@ body {
   margin-top: 0.85rem;
 }
 
+/* -------------------- PRODUCT SEARCH MODAL -------------------- */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;                          /* full screen */
+  background: rgba(0, 0, 0, 0.55);   /* dark dimmer */
+  backdrop-filter: blur(4px);
+  z-index: 999;                      /* above cards and nav */
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;             /* bottom sheet feel */
+}
+
+.modal-sheet {
+  width: 100%;
+  max-width: 480px;                  /* matches phone frame */
+  max-height: 75vh;
+  background: #020617;               /* dark navy, no white */
+  border-radius: 20px 20px 0 0;
+  padding: 16px 16px 18px;
+  box-shadow: 0 -18px 40px rgba(0, 0, 0, 0.65);
+  animation: modal-slide-up 0.22s ease-out;
+}
+
+@keyframes modal-slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0%);
+    opacity: 1;
+  }
+}
+
+.modal-search-input {
+  margin-bottom: 10px;
+}
+
+.modal-list {
+  max-height: 260px;
+  overflow-y: auto;
+  margin: 0 -4px;
+  padding-right: 4px;
+}
+
+.modal-list-item {
+  width: 100%;
+  padding: 10px 8px;
+  text-align: left;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #f8fafc;
+  font-size: 13px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.08s ease;
+}
+
+.modal-list-item:hover {
+  background: rgba(56, 189, 248, 0.08);   /* soft cyan highlight */
+  border-color: rgba(56, 189, 248, 0.5);
+  transform: translateY(-1px);
+}
+
+.modal-close {
+  margin-top: 10px;
+  width: 100%;
+}
+
+/* Product button styling (so it looks like a field) */
+.line-item-product-btn {
+  text-align: left;
+}
+/* Glassy toggle button */
+.collapse-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(6px);
+}
+
+.collapse-toggle:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Animated + / - icon */
+.collapse-icon {
+  font-size: 20px;
+  color: #fff;
+  transition: transform 0.25s ease;
+}
+
+.collapse-icon.open {
+  transform: rotate(45deg); /* + rotates to × */
+}
+
+/* Animate panel */
+.collapse-content {
+  overflow: hidden;
+  transition: max-height 0.35s ease, opacity 0.25s ease;
+  opacity: 1;
+}
+
+.collapse-content.hidden {
+  opacity: 0;
+  max-height: 0;
+}
+/* Glassy collapse toggle */
+.collapse-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(6px);
+}
+
+.collapse-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.collapse-icon {
+  font-size: 20px;
+  color: #ffffff;
+  transition: transform 0.2s ease;
+}
+
+.collapse-icon.open {
+  transform: rotate(45deg); /* + → × */
+}
+
+.collapse-content {
+  overflow: hidden;
+  transition: max-height 0.35s ease, opacity 0.25s ease;
+  max-height: 2000px;
+  opacity: 1;
+}
+
+.collapse-content.hidden {
+  max-height: 0;
+  opacity: 0;
+}
+
+/* Product search modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.modal-sheet {
+  width: 100%;
+  max-width: 480px;
+  max-height: 75vh;
+  background: #020617;
+  border-radius: 20px 20px 0 0;
+  padding: 16px 16px 18px;
+  box-shadow: 0 -18px 40px rgba(0, 0, 0, 0.65);
+  animation: modal-slide-up 0.22s ease-out;
+}
+
+@keyframes modal-slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0%);
+    opacity: 1;
+  }
+}
+
+.modal-search-input {
+  margin-bottom: 10px;
+}
+
+.modal-list {
+  max-height: 260px;
+  overflow-y: auto;
+  margin: 0 -4px;
+  padding-right: 4px;
+}
+
+.modal-list-item {
+  width: 100%;
+  padding: 10px 8px;
+  text-align: left;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #f8fafc;
+  font-size: 13px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.08s ease;
+}
+
+.modal-list-item:hover {
+  background: rgba(56, 189, 248, 0.08);
+  border-color: rgba(56, 189, 248, 0.5);
+  transform: translateY(-1px);
+}
+
+.modal-close {
+  margin-top: 10px;
+  width: 100%;
+}
+
+/* Product field that opens modal */
+.line-item-product-btn {
+  text-align: left;
+}
+
+/* Fix overlapping fields on small screens */
+.form-row {
+  display: flex;
+  gap: 10px;
+}
+
+.form-row .form-col {
+  flex: 1;
+}
+
+/* On very small screens (under ~380px), stack the fields vertically */
+@media (max-width: 390px) {
+  .form-row {
+    flex-direction: column;
+  }
+}
+/* Universal input shrink + padding fix */
+.field {
+  padding: 8px 10px;       /* slightly smaller, cleaner */
+  font-size: 15px;
+}
+
+/* Reduce label size slightly */
+.label-small {
+  font-size: 13px;
+}
+
+/* Make the date input naturally smaller */
+input[type="date"].field {
+  max-width: 160px;
+}
+
+/* ---------- Small-screen adjustments ---------- */
+@media (max-width: 430px) {
+  .field {
+    padding: 6px 8px;
+    font-size: 14px;
+  }
+
+  .label-small {
+    font-size: 12px;
+  }
+
+  /* Shrink date input further on tiny devices */
+  input[type="date"].field {
+    max-width: 130px;
+  }
+
+  /* Reduce gap between columns */
+  .form-row {
+    gap: 6px;
+  }
+
+  /* Adjust select dropdown height slightly */
+  select.field {
+    padding: 6px 8px;
+  }
+}
+
+@media (max-width: 360px) {
+  /* VERY small screens (iPhone SE / old Androids) */
+  input[type="date"].field {
+    max-width: 115px;
+    font-size: 13px;
+  }
+
+  .field {
+    font-size: 13px;
+  }
+}
+/* Subtle row separators (light translucent lines) */
+.form-row {
+  position: relative;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+}
+
+/* Line appears underneath each row */
+.form-row:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 1px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08); /* subtle white line */
+}
+
+/* Extra subtle line for dark cards */
+.card .form-row:not(:last-child)::after {
+  background: rgba(255, 255, 255, 0.06);
+}
+.form-row {
+  padding-top: 4px;
+}
+.form-row::after {
+  animation: fadeInLine 0.3s ease forwards;
+}
+
+@keyframes fadeInLine {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+/* CREDIT CARD LAYOUT TWEAKS  --------------------------------------- */
+
+.credit-card {
+  padding-bottom: 16px;
+}
+
+.credit-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.credit-money {
+  text-align: right;
+  font-size: 13px;
+}
+
+/* Actions row: partial + full payment */
+.credit-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.credit-partial {
+  flex: 1 1 0;
+}
+
+.credit-partial-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.credit-partial-input {
+  max-width: 90px;
+}
+
+.credit-channel-input {
+  flex: 1 1 auto;
+}
+
+/* Smaller, pill-like buttons */
+.btn-small {
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 999px;
+}
+
+/* Full payment: smaller + right-aligned */
+.full-pay-btn {
+  align-self: flex-end;
+  padding-inline: 16px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* VIEW / HIDE ITEMS ------------------------------------------------ */
+
+.view-items-btn {
+  margin-top: 4px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #7fb4ff;
+  font-size: 12px;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.view-items-btn:hover {
+  text-decoration: underline;
+}
+
+/* Items list styling */
+.credit-items-list {
+  margin-top: 6px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 13px;
+}
+
+.credit-item-line {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.credit-item-qty {
+  opacity: 0.7;
+  min-width: 20px;
+}
+
+.credit-item-name {
+  flex: 1;
+}
+
+/* Slight tweak on very small screens */
+@media (max-width: 420px) {
+  .credit-partial-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .credit-partial-input {
+    max-width: 100%;
+  }
+
+  .full-pay-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+/* CREDIT CARD LAYOUT ------------------------------------------ */
+
+.credit-card {
+  padding-bottom: 16px;
+}
+
+.credit-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.credit-money {
+  text-align: right;
+  font-size: 13px;
+}
+
+/* Actions row */
+.credit-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.credit-partial {
+  flex: 1 1 0;
+}
+
+.credit-partial-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.credit-partial-input {
+  max-width: 90px;
+}
+
+.credit-channel-input {
+  flex: 1 1 auto;
+}
+
+/* Small pills for both actions */
+.btn-small {
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 999px;
+}
+
+/* Make Add payment + Full payment same width so text change doesn't jump */
+.credit-add-btn,
+.full-pay-btn {
+  min-width: 110px;
+  text-align: center;
+}
+
+.full-pay-btn {
+    /* --- SIZING & SPACING --- */
+    /* Set a max-width to prevent it from stretching across the entire container */
+    max-width: 300px; 
+    /* Add internal padding for a better visual size, making it a comfortable click target */
+    padding: 10px 20px; 
+    /* Add a margin if you need space above/below or to center it */
+    margin: 10px auto; 
+    
+    /* --- ALIGNMENT --- */
+    /* If the button is a block element (default for div/p), this will center it */
+    display: block; 
+    /* If it's inline-block, you'd center its container, but 'margin: auto' works well here */
+    
+    /* --- TEXT & APPEARANCE --- */
+    /* Center the text inside the button */
+    text-align: center; 
+    /* Make the text readable, but not too big */
+    font-size: 16px; 
+    /* Ensure borders and shadows don't increase the size unexpectedly */
+    box-sizing: border-box; 
+    /* Make it look like a button */
+    background-color: #4CAF50; /* A nice green for payment */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s; /* Smooth hover effect */
+}
+
+.full-pay-btn:hover {
+    background-color: #45a049;
+}
+/* VIEW / HIDE ITEMS ------------------------------------------- */
+
+.view-items-btn {
+  margin-top: 4px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #7fb4ff;
+  font-size: 12px;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.view-items-btn:hover {
+  text-decoration: underline;
+}
+
+.credit-items-list {
+  margin-top: 6px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 13px;
+}
+
+.credit-item-line {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.credit-item-qty {
+  opacity: 0.7;
+  min-width: 20px;
+}
+
+.credit-item-name {
+  flex: 1;
+}
+
+/* Mobile tweaks */
+@media (max-width: 420px) {
+  .credit-partial-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .credit-partial-input {
+    max-width: 100%;
+  }
+
+  .credit-actions {
+    align-items: stretch;
+  }
+
+  .full-pay-btn {
+    align-self: stretch;
+  }
+}
+.btn-danger {
+  background: #ff4b5c;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+.btn-danger.btn-small {
+  padding: 4px 10px;
+  font-size: 11px;
+}
