@@ -93,38 +93,36 @@ function App() {
   return (
     <div className="app-root">
       <div className="app-shell">
+       
         {/* Header */}
-        <header className="app-header">
-          <div className="app-header-top">
-            <div>
-              <div className="app-title">DTC Seller Buddy</div>
-              <div className="app-subtitle">For PC, Avon, Natasha &amp; more</div>
-            </div>
 
-            <div className="app-header-right">
-              {user && (
-                <div className="app-user-chip">
-                  <span className="app-user-email">{user.email}</span>
-                  <button
-                    type="button"
-                    className="btn-chip"
-                    onClick={handleLogout}
-                  >
-                    Log out
-                  </button>
-                </div>
-              )}
+       <header className="app-header">
+  <div className="app-header-top">
+    <div className="app-header-left">
+      <h1 className="app-title">DTC Seller Buddy</h1>
+      <p className="app-subtitle">For PC, Avon, Natasha &amp; more</p>
+    </div>
 
-              <div className="app-badge">
-                {tabLabels[tab]?.toUpperCase() || 'DASHBOARD'}
-              </div>
-            </div>
-          </div>
+    <div className="app-header-right">
+      {user && (
+        <div className="app-user-chip">
+          <span className="app-user-email">{user.email}</span>
+          <button type="button" className="btn-chip" onClick={handleLogout}>
+            Log out
+          </button>
+        </div>
+      )}
 
-          <div className="app-desc">
-            Track customers, orders, profit &amp; credit in one place.
-          </div>
-        </header>
+      <div className="app-current-tab">{tabLabels[tab]?.toUpperCase()}</div>
+    </div>
+  </div>
+
+  <p className="app-subdesc">
+    Track customers, orders, profit &amp; credit in one place.
+  </p>
+</header>
+
+
 
         {/* Main content */}
         <main className="app-main">

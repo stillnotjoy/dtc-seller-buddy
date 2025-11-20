@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { supabase } from '../supabaseClient';
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function AuthPage() {
   const [mode, setMode] = useState('login'); // 'login' or 'signup'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -82,20 +84,35 @@ export default function AuthPage() {
         </div>
 
         <form onSubmit={handleSubmit}>
-          <input
-            className="field"
-            type="email"
-            placeholder="Email address"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-          />
-          <input
-            className="field"
-            type="password"
-            placeholder="Password (min 6 characters)"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-          />
+          {/* Email */}
+          <div className="auth-field">
+            <input
+              className="field auth-input"
+              type="email"
+              placeholder="Email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+
+          {/* Password + eye */}
+          <div className="auth-field auth-password-field">
+            <input
+              className="field auth-input"
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Password (min 6 characters)"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button
+              type="button"
+              className="auth-eye-btn"
+              onClick={() => setShowPassword((prev) => !prev)}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? <EyeOff /> : <Eye />}
+            </button>
+          </div>
 
           {error && <p className="text-error">{error}</p>}
           {message && <p className="text-success">{message}</p>}

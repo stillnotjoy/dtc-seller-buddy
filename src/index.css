@@ -13,18 +13,30 @@
   --accent-soft: #38bdf8;     /* sky-400 */
 }
 
+html, body {
+  background: #0f1625 !important;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.app-root {
+  background: #0f1625 !important;
+}
+
+.app-shell {
+  background: #0f1625 !important;
+}
+
+
+
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
-body {
-  margin: 0;
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: radial-gradient(circle at top, #0b1120 0, #020617 50%, #020617 100%);
-  color: var(--text-main);
-}
 
 /* ---- App layout ---- */
 
@@ -690,12 +702,7 @@ body {
   border-left: 1px solid #334155;
 }
 
-/* Hide arrows on very small devices (optional) */
-@media (max-width: 420px) {
-  .nav-arrow {
-    opacity: 0.4;
-  }
-}
+
 .order-items-list {
   margin-top: 6px;
   padding-top: 4px;
@@ -868,11 +875,7 @@ body {
 }
 
 /* Optional: tweak email width on very small screens */
-@media (max-width: 400px) {
-  .app-user-email {
-    max-width: 120px;
-  }
-}
+
 .brand-list {
   list-style: none;
   margin: 0;
@@ -2373,7 +2376,7 @@ body {
 }
 
 .collapse-icon.open {
-  transform: rotate(45deg); /* + rotates to × */
+  transform: none; /* + rotates to × */
 }
 
 /* Animate panel */
@@ -2517,11 +2520,7 @@ body {
 }
 
 /* On very small screens (under ~380px), stack the fields vertically */
-@media (max-width: 390px) {
-  .form-row {
-    flex-direction: column;
-  }
-}
+
 /* Universal input shrink + padding fix */
 .field {
   padding: 8px 10px;       /* slightly smaller, cleaner */
@@ -2539,11 +2538,7 @@ input[type="date"].field {
 }
 
 /* ---------- Small-screen adjustments ---------- */
-@media (max-width: 430px) {
-  .field {
-    padding: 6px 8px;
-    font-size: 14px;
-  }
+
 
   .label-small {
     font-size: 12px;
@@ -2563,19 +2558,14 @@ input[type="date"].field {
   select.field {
     padding: 6px 8px;
   }
-}
 
-@media (max-width: 360px) {
-  /* VERY small screens (iPhone SE / old Androids) */
-  input[type="date"].field {
-    max-width: 115px;
-    font-size: 13px;
-  }
+
+
 
   .field {
     font-size: 13px;
   }
-}
+
 /* Subtle row separators (light translucent lines) */
 .form-row {
   position: relative;
@@ -2714,11 +2704,7 @@ input[type="date"].field {
 }
 
 /* Slight tweak on very small screens */
-@media (max-width: 420px) {
-  .credit-partial-row {
-    flex-direction: column;
-    align-items: stretch;
-  }
+
 
   .credit-partial-input {
     max-width: 100%;
@@ -2728,7 +2714,7 @@ input[type="date"].field {
     width: 100%;
     text-align: center;
   }
-}
+
 /* CREDIT CARD LAYOUT ------------------------------------------ */
 
 .credit-card {
@@ -2865,11 +2851,7 @@ input[type="date"].field {
 }
 
 /* Mobile tweaks */
-@media (max-width: 420px) {
-  .credit-partial-row {
-    flex-direction: column;
-    align-items: stretch;
-  }
+
 
   .credit-partial-input {
     max-width: 100%;
@@ -2882,7 +2864,7 @@ input[type="date"].field {
   .full-pay-btn {
     align-self: stretch;
   }
-}
+
 .btn-danger {
   background: #ff4b5c;
   color: #fff;
@@ -2894,4 +2876,804 @@ input[type="date"].field {
 .btn-danger.btn-small {
   padding: 4px 10px;
   font-size: 11px;
+}
+
+
+
+
+/* ==================== */
+/* RECENT ORDERS TOGGLE */
+/* ==================== */
+
+.collapse-toggle {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.collapse-icon {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle, #384b6a);
+  font-size: 16px;
+  line-height: 20px;
+  text-align: center;
+  color: var(--accent, #4db4ff);
+  transition: transform 0.18s ease-out;
+}
+
+/* Use "+" in JSX; when open we rotate it 45deg to look like an "×" */
+.collapse-icon.open {
+  transform: rotate(45deg);
+}
+
+
+
+/* ================= */
+/* DASHBOARD HEADER  */
+/* ================= */
+
+.dashboard-header {
+  padding: 18px 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.dashboard-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #f1f5f9;      /* near-white */
+  letter-spacing: -0.3px;
+}
+
+.dashboard-subtitle {
+  font-size: 12px;
+  color: #94a3b8;      /* slate-400 */
+  margin-top: 2px;
+  letter-spacing: 0.2px;
+}
+
+.dashboard-tagline {
+  font-size: 12px;
+  color: #64748b;      /* slate-500 */
+  margin-top: 6px;
+}
+/* ===== Global typography reset ===== */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    sans-serif;
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  color: var(--text-main, #e5ecff);
+}
+
+/* Make all form controls inherit that font so nothing falls back to serif */
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+/* Top app header layout */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px 10px;
+}
+
+/* Left side: app name + tagline */
+.app-title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px; /* small, tidy spacing */
+}
+
+/* Main app name */
+.app-title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  line-height: 1.1;          /* <— this is what stops the big vertical gap */
+  margin: 0;
+}
+
+/* “For PC, Avon, Natasha & more” + small tagline */
+.app-subtitle {
+  font-size: 11px;
+  color: #9ca3af;
+  line-height: 1.3;
+  margin: 0;
+}
+/* ==================== */
+/* TOP HEADER STYLING   */
+/* ==================== */
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 18px 22px 6px;
+}
+
+/* Left side: Title block */
+.app-title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.app-title {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.1; /* Fixes spacing between DTC / Seller / Buddy */
+  margin: 0;
+  color: #ffffff;
+}
+
+.app-subtitle {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* Right side: email + logout + tab label */
+.app-header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.app-user-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 30px;
+  padding: 4px 12px;
+  font-size: 13px;
+  color: #e5e7eb;
+}
+
+.app-user-pill .email {
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logout-btn {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.app-current-page {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: #c9d1d9;
+  letter-spacing: 0.05em;
+}
+
+/* Description below header */
+.app-header-description {
+  margin: 2px 22px 12px;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* Mobile fixes */
+@media(max-width: 480px) {
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .app-header-right {
+    align-items: flex-start;
+  }
+}
+
+/* ========================= */
+/*     CLEAN APP HEADER      */
+/* ========================= */
+
+.app-header {
+  padding: 20px 22px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: transparent;
+}
+
+/* TOP ROW - LEFT + RIGHT */
+.app-header-left,
+.app-header-right {
+  display: flex;
+  align-items: flex-start;
+}
+
+/* Space them apart horizontally */
+.app-header-left {
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Title */
+.app-title {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+  color: #ffffff;
+  line-height: 1.15;   /* FIXES the stacked spacing */
+}
+
+/* Subtitle */
+.app-subtitle {
+  font-size: 13px;
+  color: #cbd5e1;
+  margin: 0;
+}
+
+/* Right side layout */
+.app-header-right {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+/* Email + Logout pill */
+.app-user-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.15);
+  padding: 6px 12px;
+  border-radius: 30px;
+  font-size: 13px;
+  color: #e2e8f0;
+}
+
+.app-user-email {
+  max-width: 130px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Logout button */
+.btn-chip {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* Tab badge */
+.app-current-tab {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: #d1d5db;
+  letter-spacing: 0.06em;
+}
+
+/* Bottom description */
+.app-subdesc {
+  margin: 0;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* RESPONSIVE FIXES */
+@media (max-width: 480px) {
+  .app-header {
+    padding: 16px 16px 4px;
+  }
+
+  .app-header-right {
+    align-items: flex-start;
+  }
+
+  .app-current-tab {
+    margin-top: 2px;
+  }
+}
+/* HEADER — FIXED LAYOUT */
+.app-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+
+/* Right side stays aligned */
+.app-header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+/* Keep badge aligned with email */
+.app-current-tab {
+  margin-right: 4px;
+}
+
+.btn-success {
+  background: #27ae60; /* deep green */
+  color: #ffffff;
+  border-radius: 10px;
+  padding: 12px;
+  font-weight: 600;
+  font-size: 15px;
+  border: none;
+  transition: 0.2s ease;
+}
+
+.btn-success:hover {
+  background: #1f8a4d;
+}
+/* Full payment button – blue, matches app accent */
+.full-payment-btn {
+  background: #0894ff;      /* primary cyan/blue */
+  color: #ffffff;
+  border-radius: 10px;
+  padding: 12px;
+  font-weight: 600;
+  font-size: 15px;
+  border: none;
+  width: 100%;              /* full width like before */
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.full-payment-btn:hover {
+  background: #0078d1;
+  transform: translateY(-1px);
+}
+
+.full-payment-btn:active {
+  transform: translateY(0);
+}
+.full-pay-btn {
+  background: #0894ff;
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  min-width: 180px;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.full-pay-btn:hover {
+  background: #0078d1;
+  transform: translateY(-1px);
+}
+
+.full-pay-btn:active {
+  transform: translateY(0);
+}
+
+
+/* Auth card inputs – dark background */
+.auth-card .auth-input {
+  background: #020617;
+  border: 1px solid #1f2937;
+  color: var(--text-main);
+}
+
+/* Space between fields */
+.auth-field {
+  margin-bottom: 10px;
+}
+
+/* Password wrapper so the eye can sit INSIDE the input */
+.auth-password-field {
+  position: relative;
+}
+
+/* Make room for the eye on the right */
+.auth-password-field .auth-input {
+  padding-right: 40px;
+}
+
+/* Eye button */
+.auth-eye-btn {
+  position: absolute;
+  top: 45%;
+  right: 12px;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #9ca3af;
+  padding: 0;
+}
+
+.auth-eye-btn:hover {
+  color: #e5e7eb;
+}
+
+.auth-eye-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+
+/* ===================== */
+/* INVOICE OVERLAY + PAGE */
+/* ===================== */
+
+.invoice-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(15, 23, 42, 0.75); /* dark backdrop */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+}
+
+/* The invoice card (also the print root) */
+.invoice-page {
+  background: #ffffff;
+  color: #111827;
+  width: 100%;
+  max-width: 720px;
+  border-radius: 24px;
+  box-shadow: 0 26px 80px rgba(15, 23, 42, 0.55);
+  padding: 28px 32px 80px;
+  max-height: 100%;
+  overflow: auto;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+/* Header */
+.invoice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.invoice-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.invoice-subtitle {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.invoice-tagline {
+  margin-top: 8px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #9ca3af;
+}
+
+.invoice-meta {
+  font-size: 11px;
+  text-align: right;
+  line-height: 1.4;
+}
+
+.invoice-meta-label {
+  color: #9ca3af;
+}
+
+/* Sections */
+.invoice-section {
+  margin-top: 18px;
+}
+
+.invoice-label {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #9ca3af;
+  margin-bottom: 6px;
+}
+
+.invoice-block {
+  border-radius: 10px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  padding: 10px 12px;
+}
+
+.invoice-customer-name {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Item table */
+.invoice-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  margin-top: 4px;
+}
+
+.invoice-table th,
+.invoice-table td {
+  padding: 6px 8px;
+  font-size: 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* product / qty / price / total alignment */
+.invoice-table th.col-product,
+.invoice-table td:nth-child(1) {
+  text-align: left;
+  width: 52%;
+}
+
+.invoice-table th.col-qty,
+.invoice-table td:nth-child(2) {
+  text-align: center;
+  width: 10%;
+}
+
+.invoice-table th.col-price,
+.invoice-table td:nth-child(3),
+.invoice-table th.col-total,
+.invoice-table td:nth-child(4) {
+  text-align: right;
+  width: 19%;
+}
+
+.invoice-empty {
+  text-align: center;
+  padding: 12px 8px;
+  color: #9ca3af;
+}
+
+/* Totals */
+.invoice-totals {
+  margin-top: 18px;
+}
+
+.invoice-totals-inner {
+  border-radius: 10px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  padding: 10px 12px;
+  font-size: 12px;
+}
+
+.invoice-total-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.invoice-total-row--strong {
+  font-weight: 600;
+}
+
+/* Notes */
+.invoice-notes {
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+/* Actions (screen only) */
+.invoice-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+/* ========= */
+/* MOBILE UI */
+/* ========= */
+
+
+@media (max-width: 640px) {
+  .invoice-overlay {
+    align-items: flex-start;
+    padding: 8px;
+  }
+
+  .invoice-page {
+    max-width: none;
+    width: 100%;
+    height: auto;
+    max-height: 100%;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 16px 14px 72px;
+  }
+
+  .invoice-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .invoice-meta {
+    text-align: left;
+  }
+
+  .invoice-table th,
+  .invoice-table td {
+    font-size: 11px;
+    padding: 4px 4px;
+  }
+
+  .invoice-totals-inner {
+    font-size: 11px;
+  }
+
+  .invoice-actions {
+    position: sticky;
+    bottom: 0;
+    padding-top: 12px;
+    background: #ffffff;
+  }
+}
+
+/* ============== */
+/* PRINT OVERRIDE */
+/* ============== */
+@page {
+  margin: 0 !important;
+}
+
+@media print {
+  body {
+    margin: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* hide everything AND collapse its height */
+  body * {
+    visibility: hidden !important;
+    overflow: hidden !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* only show the invoice card */
+  #invoice-print-root,
+  #invoice-print-root * {
+    visibility: visible !important;
+    overflow: visible !important;
+    height: auto !important;
+    margin: initial !important;
+    padding: initial !important;
+  }
+
+  /* make the invoice card fill the page cleanly */
+  #invoice-print-root {
+    position: absolute;
+    inset: 0;
+    margin: 0 auto;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    width: 100%;
+    max-width: 900px;           /* good width for A4 */
+    padding: 24px 32px 40px !important;
+
+    /* keep your 1-page layout */
+    max-height: 100vh !important;
+    overflow: hidden !important;
+  }
+
+  .invoice-overlay {
+    position: static;
+    padding: 0;
+    background: #ffffff !important;
+  }
+
+  .invoice-actions.no-print {
+    display: none !important;
+  }
+}
+
+/* ======================================= */
+/* FIX SPACING INSIDE PRINTED INVOICE ONLY */
+/* ======================================= */
+
+@media print {
+  #invoice-print-root {
+    padding-top: 40px !important;
+    padding-bottom: 50px !important;
+  }
+
+  #invoice-print-root h1,
+  #invoice-print-root h2,
+  #invoice-print-root h3,
+  #invoice-print-root h4 {
+    margin-top: 0 !important;
+    margin-bottom: 12px !important;
+  }
+
+  #invoice-print-root .invoice-section {
+    margin-top: 20px !important;
+    margin-bottom: 20px !important;
+  }
+
+  #invoice-print-root table {
+    margin-top: 12px !important;
+    margin-bottom: 16px !important;
+  }
+
+  #invoice-print-root table th,
+  #invoice-print-root table td {
+    padding: 8px 10px !important;
+  }
+
+  #invoice-print-root p {
+    margin: 6px 0 !important;
+    line-height: 1.35 !important;
+  }
+
+  #invoice-print-root .totals,
+  #invoice-print-root .notes,
+  #invoice-print-root .footer-text {
+    margin-top: 20px !important;
+  }
+}
+/* Make sure no dark background peeks through on print */
+@media print {
+  html,
+  body,
+  #root,
+  .app-root,
+  .app-shell {
+    background: #ffffff !important;
+  }
+
+  /* Let the invoice cover the whole printable height */
+  #invoice-print-root {
+    min-height: 100vh !important;
+  }
 }

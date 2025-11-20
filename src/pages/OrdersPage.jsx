@@ -1,15 +1,205 @@
 import { useEffect, useRef, useState } from 'react';
 import { supabase } from '../supabaseClient';
 
+// ----------------- Invoice overlay -----------------
+function InvoiceView({
+  order,
+  items,
+  customer,
+  getProductById,
+  formatProductLabel,
+  onClose,
+}) {
+  if (!order) return null;
+
+  const invoiceNumber = `INV-${order.id}`;
+  const orderDate = order.order_date;
+  const paymentLabel = order.payment_type === 'utang' ? 'Credit' : 'Cash';
+  const dueDate = order.due_date || null;
+
+  // Enrich items with product labels
+  const enrichedItems = items.map((it) => {
+    const product = getProductById(it.product_id);
+    return {
+      ...it,
+      product_label: product ? formatProductLabel(product) : 'Unknown product',
+    };
+  });
+
+  const totalSrp = enrichedItems.reduce((sum, it) => {
+    const line =
+      it.line_total_srp != null
+        ? it.line_total_srp
+        : (Number(it.srp_each) || 0) * (Number(it.quantity) || 0);
+    return sum + line;
+  }, 0);
+
+  const rawPaid =
+    order.payment_type === 'utang' ? order.paid_amount || 0 : totalSrp;
+
+  const paidAmount = rawPaid || 0;
+  const balance = Math.max(totalSrp - paidAmount, 0);
+
+  return (
+    <div
+      className="invoice-overlay"
+      onClick={onClose} // click backdrop to close
+    >
+      {/* This element is what we print */}
+      <div
+        className="invoice-page"
+        id="invoice-print-root"
+        onClick={(e) => e.stopPropagation()} // don't close when clicking inside the card
+      >
+        {/* HEADER */}
+        <header className="invoice-header">
+          <div>
+            <h1 className="invoice-title">DTC Seller Buddy</h1>
+            <div className="invoice-subtitle">
+              For PC, Avon, Natasha &amp; more
+            </div>
+            <div className="invoice-tagline">Sales invoice</div>
+          </div>
+
+          <div className="invoice-meta">
+            <div>
+              <span className="invoice-meta-label">Invoice:</span>{' '}
+              <strong>{invoiceNumber}</strong>
+            </div>
+            <div>
+              <span className="invoice-meta-label">Date:</span>{' '}
+              {orderDate || '—'}
+            </div>
+            <div>
+              <span className="invoice-meta-label">Payment:</span>{' '}
+              {paymentLabel}
+              {order.payment_type === 'utang' &&
+                ` (${order.status === 'paid' ? 'Paid' : 'Pending'})`}
+            </div>
+            {dueDate && (
+              <div>
+                <span className="invoice-meta-label">Due date:</span>{' '}
+                {dueDate}
+              </div>
+            )}
+          </div>
+        </header>
+
+        {/* CUSTOMER */}
+        <section className="invoice-section">
+          <div className="invoice-label">Bill to</div>
+          <div className="invoice-block">
+            <div className="invoice-customer-name">
+              {customer?.name || 'Unknown customer'}
+            </div>
+          </div>
+        </section>
+
+        {/* ITEMS */}
+        <section className="invoice-section">
+          <div className="invoice-label">Items</div>
+          <table className="invoice-table">
+            <thead>
+              <tr>
+                <th className="col-product">Product</th>
+                <th className="col-qty">Qty</th>
+                <th className="col-price">Price</th>
+                <th className="col-total">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {enrichedItems.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="invoice-empty">
+                    No items recorded for this order.
+                  </td>
+                </tr>
+              ) : (
+                enrichedItems.map((it) => {
+                  const lineTotal =
+                    it.line_total_srp != null
+                      ? it.line_total_srp
+                      : (Number(it.srp_each) || 0) *
+                        (Number(it.quantity) || 0);
+
+                  return (
+                    <tr key={it.id}>
+                      <td>{it.product_label}</td>
+                      <td>{it.quantity}</td>
+                      <td>{it.srp_each != null ? `₱${it.srp_each}` : '—'}</td>
+                      <td>{lineTotal != null ? `₱${lineTotal}` : '—'}</td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </section>
+
+        {/* TOTALS */}
+        <section className="invoice-section invoice-totals">
+          <div className="invoice-totals-inner">
+            <div className="invoice-total-row">
+              <span>Subtotal</span>
+              <span>₱{totalSrp}</span>
+            </div>
+            <div className="invoice-total-row">
+              <span>Amount paid</span>
+              <span>₱{paidAmount}</span>
+            </div>
+            <div className="invoice-total-row invoice-total-row--strong">
+              <span>Balance due</span>
+              <span>₱{balance}</span>
+            </div>
+          </div>
+        </section>
+
+        {/* NOTES */}
+        <section className="invoice-section">
+          <div className="invoice-label">Notes</div>
+          <p className="invoice-notes">
+            Thank you for your purchase! For questions about this invoice,
+            please contact your DTC seller.
+          </p>
+        </section>
+
+        {/* ACTIONS – hidden in print */}
+        <div className="invoice-actions no-print">
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={onClose}
+          >
+            Close
+          </button>
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={() => window.print()}
+          >
+            Print / Save as PDF
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
 // ----------------- Helper sub-component: show products under each order -----------------
-function OrderItemsList({ order, orderItems, getProductById, formatProductLabel }) {
-  const itemsForOrder = orderItems.filter(oi => oi.order_id === order.id);
+function OrderItemsList({
+  order,
+  orderItems,
+  getProductById,
+  formatProductLabel,
+}) {
+  const itemsForOrder = orderItems.filter((oi) => oi.order_id === order.id);
 
   if (itemsForOrder.length === 0) return null;
 
   return (
     <div className="order-items-list">
-      {itemsForOrder.map(item => {
+      {itemsForOrder.map((item) => {
         const product = getProductById(item.product_id);
         const label = product ? formatProductLabel(product) : 'Unknown product';
 
@@ -44,7 +234,7 @@ export default function OrdersPage({ user }) {
   const [brandId, setBrandId] = useState('');
   const [campaignId, setCampaignId] = useState('');
   const [orderDate, setOrderDate] = useState('');
-  const [paymentType, setPaymentType] = useState('cash'); // cash | utang (labelled Credit)
+  const [paymentType, setPaymentType] = useState('cash');
   const [dueDate, setDueDate] = useState('');
   const [saving, setSaving] = useState(false);
 
@@ -63,6 +253,9 @@ export default function OrdersPage({ user }) {
   const [activeLineIndex, setActiveLineIndex] = useState(null);
   const searchInputRef = useRef(null);
 
+  // Invoice overlay state
+  const [invoiceOrderId, setInvoiceOrderId] = useState(null);
+
   // ----------------- Effects -----------------
   useEffect(() => {
     if (!user) return;
@@ -70,7 +263,6 @@ export default function OrdersPage({ user }) {
     loadOrders();
   }, [user]);
 
-  // Reload campaigns when brand changes
   useEffect(() => {
     if (!user) return;
     if (brandId) {
@@ -81,7 +273,6 @@ export default function OrdersPage({ user }) {
     }
   }, [brandId, user]);
 
-  // Focus search field when modal opens
   useEffect(() => {
     if (modalOpen && searchInputRef.current) {
       setTimeout(() => {
@@ -103,15 +294,14 @@ export default function OrdersPage({ user }) {
 
   function getProductById(id) {
     if (!id) return null;
-    return products.find(p => p.id === id) || null;
+    return products.find((p) => p.id === id) || null;
   }
 
-  // Compute totals from current line items
   function computeTotals(items) {
     let total_srp = 0;
     let total_cost = 0;
 
-    items.forEach(item => {
+    items.forEach((item) => {
       const qty = Number(item.quantity) || 0;
       const srp = Number(item.srp) || 0;
       const cost = Number(item.cost) || 0;
@@ -212,6 +402,7 @@ export default function OrdersPage({ user }) {
         payment_type,
         due_date,
         status,
+        paid_amount,
         customers ( id, name ),
         brands ( id, name ),
         campaigns ( id, name )
@@ -231,13 +422,14 @@ export default function OrdersPage({ user }) {
     const ordersData = data || [];
     setOrders(ordersData);
 
-    // Load order_items for these orders
     if (ordersData.length > 0) {
-      const orderIds = ordersData.map(o => o.id);
+      const orderIds = ordersData.map((o) => o.id);
 
       const { data: itemsData, error: itemsError } = await supabase
         .from('order_items')
-        .select('id, order_id, product_id, quantity, srp_each, cost_each')
+        .select(
+          'id, order_id, product_id, quantity, srp_each, cost_each, line_total_srp'
+        )
         .in('order_id', orderIds);
 
       if (itemsError) {
@@ -255,36 +447,32 @@ export default function OrdersPage({ user }) {
 
   // ----------------- Line items handlers -----------------
   function handleAddLineItem() {
-    setLineItems(items => [
+    setLineItems((items) => [
       ...items,
       { id: nextItemId, productId: '', quantity: '', srp: '', cost: '' },
     ]);
-    setNextItemId(id => id + 1);
+    setNextItemId((id) => id + 1);
   }
 
   function handleChangeLineItem(index, field, value) {
-    setLineItems(items =>
-      items.map((item, i) =>
-        i === index ? { ...item, [field]: value } : item
-      )
+    setLineItems((items) =>
+      items.map((item, i) => (i === index ? { ...item, [field]: value } : item))
     );
   }
 
   function handleRemoveLineItem(index) {
-    setLineItems(items => items.filter((_, i) => i !== index));
+    setLineItems((items) => items.filter((_, i) => i !== index));
   }
 
-  // Open product search modal for a specific line
   function openProductSearch(index) {
     setActiveLineIndex(index);
     setSearchText('');
     setModalOpen(true);
   }
 
-  // When clicking a product in modal
   function selectProductForCurrentLine(product) {
     if (activeLineIndex == null) return;
-    setLineItems(items =>
+    setLineItems((items) =>
       items.map((item, i) =>
         i === activeLineIndex ? { ...item, productId: product.id } : item
       )
@@ -307,7 +495,7 @@ export default function OrdersPage({ user }) {
     }
 
     const hasValidLine = lineItems.some(
-      li => li.productId && Number(li.quantity) > 0
+      (li) => li.productId && Number(li.quantity) > 0
     );
     if (!hasValidLine) {
       alert('Please add at least one product with quantity.');
@@ -318,7 +506,6 @@ export default function OrdersPage({ user }) {
 
     setSaving(true);
 
-    // Insert order WITHOUT profit (DB computes it)
     const { data: newOrder, error } = await supabase
       .from('orders')
       .insert({
@@ -329,7 +516,7 @@ export default function OrdersPage({ user }) {
         order_date: orderDate,
         total_srp,
         total_cost,
-        payment_type: paymentType, // 'cash' or 'utang'
+        payment_type: paymentType,
         due_date: paymentType === 'utang' ? dueDate || null : null,
         status: paymentType === 'cash' ? 'paid' : 'pending',
       })
@@ -343,10 +530,9 @@ export default function OrdersPage({ user }) {
       return;
     }
 
-    // Save line items
     const itemsToSave = lineItems
-      .filter(item => item.productId && Number(item.quantity) > 0)
-      .map(item => {
+      .filter((item) => item.productId && Number(item.quantity) > 0)
+      .map((item) => {
         const qty = Number(item.quantity) || 0;
         const srpEach = item.srp ? Number(item.srp) : 0;
         const costEach = item.cost ? Number(item.cost) : 0;
@@ -379,7 +565,6 @@ export default function OrdersPage({ user }) {
 
     setSaving(false);
 
-    // reset form
     setCustomerId('');
     setBrandId('');
     setCampaignId('');
@@ -395,6 +580,16 @@ export default function OrdersPage({ user }) {
   if (!user) {
     return <p className="text-muted">Loading account…</p>;
   }
+
+  const invoiceOrder = invoiceOrderId
+    ? orders.find((o) => o.id === invoiceOrderId)
+    : null;
+
+  const invoiceCustomer = invoiceOrder?.customers || null;
+
+  const invoiceItems = invoiceOrder
+    ? orderItems.filter((it) => it.order_id === invoiceOrderId)
+    : [];
 
   return (
     <div>
@@ -415,10 +610,10 @@ export default function OrdersPage({ user }) {
             <select
               className="field"
               value={customerId}
-              onChange={e => setCustomerId(e.target.value)}
+              onChange={(e) => setCustomerId(e.target.value)}
             >
               <option value="">Select customer</option>
-              {customers.map(c => (
+              {customers.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
                 </option>
@@ -429,10 +624,10 @@ export default function OrdersPage({ user }) {
             <select
               className="field"
               value={brandId}
-              onChange={e => setBrandId(e.target.value)}
+              onChange={(e) => setBrandId(e.target.value)}
             >
               <option value="">Select brand</option>
-              {brands.map(b => (
+              {brands.map((b) => (
                 <option key={b.id} value={b.id}>
                   {b.name}
                 </option>
@@ -443,7 +638,7 @@ export default function OrdersPage({ user }) {
             <select
               className="field"
               value={campaignId}
-              onChange={e => setCampaignId(e.target.value)}
+              onChange={(e) => setCampaignId(e.target.value)}
               disabled={!brandId || campaigns.length === 0}
             >
               <option value="">
@@ -453,7 +648,7 @@ export default function OrdersPage({ user }) {
                     : 'Select campaign (optional)'
                   : 'Select brand first'}
               </option>
-              {campaigns.map(c => (
+              {campaigns.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
                 </option>
@@ -468,7 +663,7 @@ export default function OrdersPage({ user }) {
                   type="date"
                   className="field"
                   value={orderDate}
-                  onChange={e => setOrderDate(e.target.value)}
+                  onChange={(e) => setOrderDate(e.target.value)}
                 />
               </div>
               <div className="form-col">
@@ -476,7 +671,7 @@ export default function OrdersPage({ user }) {
                 <select
                   className="field"
                   value={paymentType}
-                  onChange={e => setPaymentType(e.target.value)}
+                  onChange={(e) => setPaymentType(e.target.value)}
                 >
                   <option value="cash">Cash</option>
                   <option value="utang">Credit</option>
@@ -492,7 +687,7 @@ export default function OrdersPage({ user }) {
                     type="date"
                     className="field"
                     value={dueDate}
-                    onChange={e => setDueDate(e.target.value)}
+                    onChange={(e) => setDueDate(e.target.value)}
                   />
                 </div>
               </div>
@@ -532,8 +727,12 @@ export default function OrdersPage({ user }) {
                           className="field"
                           placeholder="Qty"
                           value={item.quantity}
-                          onChange={e =>
-                            handleChangeLineItem(index, 'quantity', e.target.value)
+                          onChange={(e) =>
+                            handleChangeLineItem(
+                              index,
+                              'quantity',
+                              e.target.value
+                            )
                           }
                         />
                       </div>
@@ -545,7 +744,7 @@ export default function OrdersPage({ user }) {
                           className="field"
                           placeholder="SRP each"
                           value={item.srp}
-                          onChange={e =>
+                          onChange={(e) =>
                             handleChangeLineItem(index, 'srp', e.target.value)
                           }
                         />
@@ -555,7 +754,7 @@ export default function OrdersPage({ user }) {
                           className="field"
                           placeholder="Cost each"
                           value={item.cost}
-                          onChange={e =>
+                          onChange={(e) =>
                             handleChangeLineItem(index, 'cost', e.target.value)
                           }
                         />
@@ -633,9 +832,11 @@ export default function OrdersPage({ user }) {
           <button
             type="button"
             className="collapse-toggle"
-            onClick={() => setShowRecent(prev => !prev)}
+            onClick={() => setShowRecent((prev) => !prev)}
           >
-            <span className={`collapse-icon ${showRecent ? 'open' : ''}`}>+</span>
+            <span className={`collapse-icon ${showRecent ? 'open' : ''}`}>
+              +
+            </span>
           </button>
         </div>
 
@@ -646,7 +847,7 @@ export default function OrdersPage({ user }) {
             <p className="text-muted">No orders yet.</p>
           ) : (
             <ul className="customer-list">
-              {orders.map(o => (
+              {orders.map((o) => (
                 <li key={o.id} className="customer-item order-item">
                   <div className="order-item-top">
                     <div className="order-left">
@@ -670,6 +871,14 @@ export default function OrdersPage({ user }) {
                       <div>Cost: ₱{o.total_cost}</div>
                       <div className="order-profit">Profit: ₱{o.profit}</div>
                       <div className="order-status">{o.status}</div>
+                      <button
+                        type="button"
+                        className="btn-secondary btn-small"
+                        style={{ marginTop: '0.25rem' }}
+                        onClick={() => setInvoiceOrderId(o.id)}
+                      >
+                        Invoice
+                      </button>
                     </div>
                   </div>
 
@@ -695,17 +904,17 @@ export default function OrdersPage({ user }) {
               className="field modal-search-input"
               placeholder="Search product…"
               value={searchText}
-              onChange={e => setSearchText(e.target.value)}
+              onChange={(e) => setSearchText(e.target.value)}
             />
 
             <div className="modal-list">
               {products
-                .filter(p =>
+                .filter((p) =>
                   formatProductLabel(p)
                     .toLowerCase()
                     .includes(searchText.toLowerCase())
                 )
-                .map(p => (
+                .map((p) => (
                   <button
                     key={p.id}
                     type="button"
@@ -726,6 +935,18 @@ export default function OrdersPage({ user }) {
             </button>
           </div>
         </div>
+      )}
+
+      {/* Invoice overlay */}
+      {invoiceOrder && (
+        <InvoiceView
+          order={invoiceOrder}
+          items={invoiceItems}
+          customer={invoiceCustomer}
+          getProductById={getProductById}
+          formatProductLabel={formatProductLabel}
+          onClose={() => setInvoiceOrderId(null)}
+        />
       )}
     </div>
   );
