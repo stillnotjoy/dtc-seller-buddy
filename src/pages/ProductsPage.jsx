@@ -1,5 +1,14 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '../supabaseClient';
+import { useEffect, useState } from "react";
+import { supabase } from "../supabaseClient";
+
+const PC_CATEGORIES = [
+  "Home care",
+  "Personal care & Health care",
+  "Fragrances",
+  "Baby care & Men's care",
+  "Intimate apparel",
+  "Cosmetics",
+];
 
 export default function ProductsPage({ user }) {
   const [brands, setBrands] = useState([]);
@@ -8,12 +17,12 @@ export default function ProductsPage({ user }) {
   const [saving, setSaving] = useState(false);
 
   // Add-product form
-  const [brandId, setBrandId] = useState('');
-  const [name, setName] = useState('');
-  const [category, setCategory] = useState('');
-  const [type, setType] = useState('');
-  const [variantName, setVariantName] = useState('');
-  const [volume, setVolume] = useState('');
+  const [brandId, setBrandId] = useState("");
+  const [name, setName] = useState("");
+  const [category, setCategory] = useState("");
+  const [type, setType] = useState("");
+  const [variantName, setVariantName] = useState("");
+  const [volume, setVolume] = useState("");
 
   // Editing state
   const [editingProduct, setEditingProduct] = useState(null);
@@ -32,12 +41,12 @@ export default function ProductsPage({ user }) {
 
     const [brandRes, prodRes] = await Promise.all([
       supabase
-        .from('brands')
-        .select('id, name')
-        .eq('seller_id', sellerId)
-        .order('name', { ascending: true }),
+        .from("brands")
+        .select("id, name")
+        .eq("seller_id", sellerId)
+        .order("name", { ascending: true }),
       supabase
-        .from('products')
+        .from("products")
         .select(
           `
           id,
@@ -48,22 +57,23 @@ export default function ProductsPage({ user }) {
           type,
           variant_name,
           volume,
-brands!brand_id (id, name)        `
+          brands!brand_id (id, name)
+        `
         )
-        .eq('seller_id', sellerId)
-        .order('created_at', { ascending: false }),
+        .eq("seller_id", sellerId)
+        .order("created_at", { ascending: false }),
     ]);
 
     if (brandRes.error) {
       console.error(brandRes.error);
-      alert('Error loading brands: ' + brandRes.error.message);
+      alert("Error loading brands: " + brandRes.error.message);
     } else {
       setBrands(brandRes.data || []);
     }
 
     if (prodRes.error) {
       console.error(prodRes.error);
-      alert('Error loading products: ' + prodRes.error.message);
+      alert("Error loading products: " + prodRes.error.message);
     } else {
       setProducts(prodRes.data || []);
     }
@@ -71,18 +81,28 @@ brands!brand_id (id, name)        `
     setLoading(false);
   }
 
+  function getBrandById(id) {
+    if (!id) return null;
+    return brands.find((b) => b.id === id) || null;
+  }
+
+  const selectedBrand = getBrandById(brandId);
+  const isPCBrand =
+    selectedBrand &&
+    selectedBrand.name.toLowerCase().includes("personal collection");
+
   async function handleAddProduct(e) {
     e.preventDefault();
     if (!user) return;
 
     if (!name.trim()) {
-      alert('Please enter a product name.');
+      alert("Please enter a product name.");
       return;
     }
 
     setSaving(true);
 
-    const { error } = await supabase.from('products').insert({
+    const { error } = await supabase.from("products").insert({
       seller_id: user.id,
       brand_id: brandId || null,
       name: name.trim(),
@@ -96,34 +116,34 @@ brands!brand_id (id, name)        `
 
     if (error) {
       console.error(error);
-      alert('Error saving product: ' + error.message);
+      alert("Error saving product: " + error.message);
       return;
     }
 
     // reset form
-    setBrandId('');
-    setName('');
-    setCategory('');
-    setType('');
-    setVariantName('');
-    setVolume('');
+    setBrandId("");
+    setName("");
+    setCategory("");
+    setType("");
+    setVariantName("");
+    setVolume("");
 
     loadBrandsAndProducts();
   }
 
   async function handleDeleteProduct(id) {
     if (!user) return;
-    if (!window.confirm('Delete this product?')) return;
+    if (!window.confirm("Delete this product?")) return;
 
     const { error } = await supabase
-      .from('products')
+      .from("products")
       .delete()
-      .eq('id', id)
-      .eq('seller_id', user.id);
+      .eq("id", id)
+      .eq("seller_id", user.id);
 
     if (error) {
       console.error(error);
-      alert('Error deleting product: ' + error.message);
+      alert("Error deleting product: " + error.message);
       return;
     }
 
@@ -140,12 +160,12 @@ brands!brand_id (id, name)        `
   function startEditing(product) {
     setEditingProduct({
       id: product.id,
-      brand_id: product.brand_id || '',
-      name: product.name || '',
-      category: product.category || '',
-      type: product.type || '',
-      variant_name: product.variant_name || '',
-      volume: product.volume || '',
+      brand_id: product.brand_id || "",
+      name: product.name || "",
+      category: product.category || "",
+      type: product.type || "",
+      variant_name: product.variant_name || "",
+      volume: product.volume || "",
     });
   }
 
@@ -154,23 +174,21 @@ brands!brand_id (id, name)        `
   }
 
   function handleEditFieldChange(field, value) {
-    setEditingProduct(prev =>
-      prev ? { ...prev, [field]: value } : prev
-    );
+    setEditingProduct((prev) => (prev ? { ...prev, [field]: value } : prev));
   }
 
   async function saveEditedProduct() {
     if (!user || !editingProduct) return;
 
     if (!editingProduct.name.trim()) {
-      alert('Product name is required.');
+      alert("Product name is required.");
       return;
     }
 
     setEditSaving(true);
 
     const { error } = await supabase
-      .from('products')
+      .from("products")
       .update({
         brand_id: editingProduct.brand_id || null,
         name: editingProduct.name.trim(),
@@ -179,14 +197,14 @@ brands!brand_id (id, name)        `
         variant_name: editingProduct.variant_name.trim() || null,
         volume: editingProduct.volume.trim() || null,
       })
-      .eq('id', editingProduct.id)
-      .eq('seller_id', user.id);
+      .eq("id", editingProduct.id)
+      .eq("seller_id", user.id);
 
     setEditSaving(false);
 
     if (error) {
       console.error(error);
-      alert('Error updating product: ' + error.message);
+      alert("Error updating product: " + error.message);
       return;
     }
 
@@ -216,10 +234,14 @@ brands!brand_id (id, name)        `
           <select
             className="field"
             value={brandId}
-            onChange={e => setBrandId(e.target.value)}
+            onChange={(e) => {
+              setBrandId(e.target.value);
+              // reset category when switching brands
+              setCategory("");
+            }}
           >
             <option value="">No brand / generic</option>
-            {brands.map(b => (
+            {brands.map((b) => (
               <option key={b.id} value={b.id}>
                 {b.name}
               </option>
@@ -231,37 +253,52 @@ brands!brand_id (id, name)        `
             className="field"
             placeholder="Product name (required)"
             value={name}
-            onChange={e => setName(e.target.value)}
+            onChange={(e) => setName(e.target.value)}
           />
 
-          {/* Category */}
-          <input
-            className="field"
-            placeholder="Category (e.g. Personal care, Home care)"
-            value={category}
-            onChange={e => setCategory(e.target.value)}
-          />
+          {/* Category – dropdown for PC, text for others */}
+          {isPCBrand ? (
+            <select
+              className="field"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              <option value="">Select category</option>
+              {PC_CATEGORIES.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              className="field"
+              placeholder="Category (e.g. Personal care, Home care)"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            />
+          )}
 
           {/* Type / variant / volume */}
           <input
             className="field"
             placeholder="Type (e.g. shampoo, lotion) – optional"
             value={type}
-            onChange={e => setType(e.target.value)}
+            onChange={(e) => setType(e.target.value)}
           />
 
           <input
             className="field"
             placeholder="Variant (e.g. cherry blossom) – optional"
             value={variantName}
-            onChange={e => setVariantName(e.target.value)}
+            onChange={(e) => setVariantName(e.target.value)}
           />
 
           <input
             className="field"
             placeholder="Volume / size (e.g. 250ml) – optional"
             value={volume}
-            onChange={e => setVolume(e.target.value)}
+            onChange={(e) => setVolume(e.target.value)}
           />
 
           <div className="order-save-row">
@@ -270,7 +307,7 @@ brands!brand_id (id, name)        `
               className="btn-primary"
               disabled={saving || brands.length === 0}
             >
-              {saving ? 'Saving…' : 'Add product'}
+              {saving ? "Saving…" : "Add product"}
             </button>
           </div>
         </form>
@@ -285,12 +322,17 @@ brands!brand_id (id, name)        `
           <p className="text-muted">No products yet.</p>
         ) : (
           <ul className="customer-list">
-            {products.map(p => {
-              const isEditing =
-                editingProduct && editingProduct.id === p.id;
+            {products.map((p) => {
+              const isEditing = editingProduct && editingProduct.id === p.id;
 
               if (isEditing) {
-                // --- Edit mode row ---
+                const editingBrand = getBrandById(editingProduct.brand_id);
+                const isEditingPC =
+                  editingBrand &&
+                  editingBrand.name
+                    .toLowerCase()
+                    .includes("personal collection");
+
                 return (
                   <li key={p.id} className="customer-item">
                     <div className="order-item-top">
@@ -298,18 +340,13 @@ brands!brand_id (id, name)        `
                         {/* Brand select */}
                         <select
                           className="field"
-                          value={editingProduct.brand_id || ''}
-                          onChange={e =>
-                            handleEditFieldChange(
-                              'brand_id',
-                              e.target.value
-                            )
+                          value={editingProduct.brand_id || ""}
+                          onChange={(e) =>
+                            handleEditFieldChange("brand_id", e.target.value)
                           }
                         >
-                          <option value="">
-                            No brand / generic
-                          </option>
-                          {brands.map(b => (
+                          <option value="">No brand / generic</option>
+                          {brands.map((b) => (
                             <option key={b.id} value={b.id}>
                               {b.name}
                             </option>
@@ -320,45 +357,54 @@ brands!brand_id (id, name)        `
                           className="field"
                           placeholder="Product name"
                           value={editingProduct.name}
-                          onChange={e =>
-                            handleEditFieldChange(
-                              'name',
-                              e.target.value
-                            )
+                          onChange={(e) =>
+                            handleEditFieldChange("name", e.target.value)
                           }
                         />
 
-                        <input
-                          className="field"
-                          placeholder="Category"
-                          value={editingProduct.category || ''}
-                          onChange={e =>
-                            handleEditFieldChange(
-                              'category',
-                              e.target.value
-                            )
-                          }
-                        />
+                        {/* Category – dropdown for PC brand */}
+                        {isEditingPC ? (
+                          <select
+                            className="field"
+                            value={editingProduct.category || ""}
+                            onChange={(e) =>
+                              handleEditFieldChange("category", e.target.value)
+                            }
+                          >
+                            <option value="">Select category</option>
+                            {PC_CATEGORIES.map((c) => (
+                              <option key={c} value={c}>
+                                {c}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <input
+                            className="field"
+                            placeholder="Category"
+                            value={editingProduct.category || ""}
+                            onChange={(e) =>
+                              handleEditFieldChange("category", e.target.value)
+                            }
+                          />
+                        )}
 
                         <input
                           className="field"
                           placeholder="Type"
-                          value={editingProduct.type || ''}
-                          onChange={e =>
-                            handleEditFieldChange(
-                              'type',
-                              e.target.value
-                            )
+                          value={editingProduct.type || ""}
+                          onChange={(e) =>
+                            handleEditFieldChange("type", e.target.value)
                           }
                         />
 
                         <input
                           className="field"
                           placeholder="Variant"
-                          value={editingProduct.variant_name || ''}
-                          onChange={e =>
+                          value={editingProduct.variant_name || ""}
+                          onChange={(e) =>
                             handleEditFieldChange(
-                              'variant_name',
+                              "variant_name",
                               e.target.value
                             )
                           }
@@ -367,12 +413,9 @@ brands!brand_id (id, name)        `
                         <input
                           className="field"
                           placeholder="Volume / size"
-                          value={editingProduct.volume || ''}
-                          onChange={e =>
-                            handleEditFieldChange(
-                              'volume',
-                              e.target.value
-                            )
+                          value={editingProduct.volume || ""}
+                          onChange={(e) =>
+                            handleEditFieldChange("volume", e.target.value)
                           }
                         />
                       </div>
@@ -391,9 +434,9 @@ brands!brand_id (id, name)        `
                           className="btn-primary btn-small"
                           onClick={saveEditedProduct}
                           disabled={editSaving}
-                          style={{ marginLeft: '0.5rem' }}
+                          style={{ marginLeft: "0.5rem" }}
                         >
-                          {editSaving ? 'Saving…' : 'Save'}
+                          {editSaving ? "Saving…" : "Save"}
                         </button>
                       </div>
                     </div>
@@ -406,19 +449,15 @@ brands!brand_id (id, name)        `
                 <li key={p.id} className="customer-item">
                   <div className="order-item-top">
                     <div className="order-left">
-                      <div className="customer-name">
-                        {p.name}
-                      </div>
+                      <div className="customer-name">{p.name}</div>
                       <div className="order-meta">
-                        {p.brands?.name || 'No brand'}
-                        {p.category
-                          ? ` • ${p.category}`
-                          : ''}
+                        {p.brands?.name || "No brand"}
+                        {p.category ? ` • ${p.category}` : ""}
                       </div>
                       <div className="order-meta">
                         {[p.type, p.variant_name, p.volume]
                           .filter(Boolean)
-                          .join(' • ')}
+                          .join(" • ")}
                       </div>
                     </div>
 
@@ -434,7 +473,7 @@ brands!brand_id (id, name)        `
                         type="button"
                         className="btn-danger btn-small"
                         onClick={() => handleDeleteProduct(p.id)}
-                        style={{ marginLeft: '0.5rem' }}
+                        style={{ marginLeft: "0.5rem" }}
                       >
                         Delete
                       </button>
