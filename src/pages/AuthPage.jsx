@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { Eye, EyeOff } from 'lucide-react';
 
-export default function AuthPage() {
+export default function AuthPage({ onForgotPassword }) {   // ← NEW PROP
   const [mode, setMode] = useState('login'); // 'login' or 'signup'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -117,6 +117,7 @@ export default function AuthPage() {
           {error && <p className="text-error">{error}</p>}
           {message && <p className="text-success">{message}</p>}
 
+          {/* Login / Signup button */}
           <button type="submit" className="btn-primary" disabled={loading}>
             {loading
               ? mode === 'login'
@@ -127,6 +128,25 @@ export default function AuthPage() {
               : 'Sign up'}
           </button>
         </form>
+
+        {/* FORGOT PASSWORD BUTTON — NEW */}
+        {mode === 'login' && (
+          <button
+            type="button"
+            className="text-muted"
+            style={{
+              marginTop: '12px',
+              background: 'none',
+              border: 'none',
+              fontSize: '14px',
+              textDecoration: 'underline',
+              cursor: 'pointer',
+            }}
+            onClick={onForgotPassword}       // ← TRIGGER SWITCH
+          >
+            Forgot your password?
+          </button>
+        )}
       </section>
     </div>
   );

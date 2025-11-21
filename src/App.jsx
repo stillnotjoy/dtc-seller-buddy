@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
 
+import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx';
+import ResetPasswordPage from './pages/ResetPasswordPage.jsx';
+
 import AuthPage from './pages/AuthPage';
 import CustomersPage from './pages/CustomersPage';
 import BrandsPage from './pages/BrandsPage';
@@ -25,6 +28,11 @@ function App() {
   const [authLoading, setAuthLoading] = useState(true);
   const [tab, setTab] = useState('dashboard');
 
+  // authMode: "login" | "forgot"
+  const [authMode, setAuthMode] = useState('login');
+  // resetMode: true when coming from Supabase recovery link
+  const [resetMode, setResetMode] = useState(false);
+
   const tabLabels = {
     dashboard: 'Dashboard',
     customers: 'Customers',
@@ -47,16 +55,45 @@ function App() {
 
     getInitialUser();
 
-    const { data: subscription } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUser(session?.user || null);
-      }
-    );
+  const { data: subscription } = supabase.auth.onAuthStateChange(
+  (event, session) => {
+    setUser(session?.user || null);
+
+    // When user comes from a password recovery email,
+    // Supabase sends this event.
+    if (event === 'PASSWORD_RECOVERY') {
+      setResetMode(true);
+    }
+  }
+);
+
 
     return () => {
       subscription.subscription.unsubscribe();
     };
   }, []);
+
+  // Detect Supabase password recovery link (?type=recovery)
+  useEffect(() => {
+  try {
+    const url = new URL(window.location.href);
+
+    // ?type=recovery (query string)
+    const typeFromQuery = url.searchParams.get('type');
+
+    // #access_token=...&type=recovery (hash fragment)
+    const hash = url.hash.startsWith('#') ? url.hash.slice(1) : url.hash;
+    const hashParams = new URLSearchParams(hash);
+    const typeFromHash = hashParams.get('type');
+
+    if (typeFromQuery === 'recovery' || typeFromHash === 'recovery') {
+      setResetMode(true);
+    }
+  } catch (e) {
+    // ignore
+  }
+}, []);
+
 
   function scrollNav(amount) {
     const nav = document.getElementById('bottomNav');
@@ -80,49 +117,77 @@ function App() {
     );
   }
 
-  if (!user) {
+  // If Supabase sent the user to reset password
+  if (resetMode) {
     return (
       <div className="app-root">
         <div className="app-shell">
-          <AuthPage />
+          <ResetPasswordPage
+            onBackToLogin={async () => {
+              setResetMode(false);
+              await supabase.auth.signOut();
+              setUser(null);
+              setAuthMode('login');
+            }}
+          />
         </div>
       </div>
     );
   }
 
+  // If user NOT logged in → show Auth or Forgot screen
+  if (!user) {
+    return (
+      <div className="app-root">
+        <div className="app-shell">
+          {authMode === 'login' && (
+            <AuthPage onForgotPassword={() => setAuthMode('forgot')} />
+          )}
+
+          {authMode === 'forgot' && (
+            <ForgotPasswordPage onBackToLogin={() => setAuthMode('login')} />
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Logged in → main app
   return (
     <div className="app-root">
       <div className="app-shell">
-       
         {/* Header */}
+        <header className="app-header">
+          <div className="app-header-top">
+            <div className="app-header-left">
+              <h1 className="app-title">DTC Seller Buddy</h1>
+              <p className="app-subtitle">For PC, Avon, Natasha &amp; more</p>
+            </div>
 
-       <header className="app-header">
-  <div className="app-header-top">
-    <div className="app-header-left">
-      <h1 className="app-title">DTC Seller Buddy</h1>
-      <p className="app-subtitle">For PC, Avon, Natasha &amp; more</p>
-    </div>
+            <div className="app-header-right">
+              {user && (
+                <div className="app-user-chip">
+                  <span className="app-user-email">{user.email}</span>
+                  <button
+                    type="button"
+                    className="btn-chip"
+                    onClick={handleLogout}
+                  >
+                    Log out
+                  </button>
+                </div>
+              )}
 
-    <div className="app-header-right">
-      {user && (
-        <div className="app-user-chip">
-          <span className="app-user-email">{user.email}</span>
-          <button type="button" className="btn-chip" onClick={handleLogout}>
-            Log out
-          </button>
-        </div>
-      )}
+              <div className="app-current-tab">
+                {tabLabels[tab]?.toUpperCase()}
+              </div>
+            </div>
+          </div>
 
-      <div className="app-current-tab">{tabLabels[tab]?.toUpperCase()}</div>
-    </div>
-  </div>
-
-  <p className="app-subdesc">
-    Track customers, orders, profit &amp; credit in one place.
-  </p>
-</header>
-
-
+          <p className="app-subdesc">
+            Track customers, orders, profit &amp; credit in one place.
+          </p>
+        </header>
 
         {/* Main content */}
         <main className="app-main">
@@ -130,8 +195,8 @@ function App() {
           {tab === 'customers' && <CustomersPage user={user} />}
           {tab === 'orders' && <OrdersPage user={user} />}
           {tab === 'credit' && <UtangPage user={user} />}
-{tab === 'payments' && <PaymentsPage user={user} />}          
-{tab === 'brands' && <BrandsPage user={user} />}
+          {tab === 'payments' && <PaymentsPage user={user} />}
+          {tab === 'brands' && <BrandsPage user={user} />}
           {tab === 'products' && <ProductsPage user={user} />}
         </main>
 

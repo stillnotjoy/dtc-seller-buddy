@@ -3677,3 +3677,12 @@ textarea {
     min-height: 100vh !important;
   }
 }
+.auth-card {
+  max-width: 360px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.auth-card-inner {
+  padding: 20px;
+}
