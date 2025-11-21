@@ -1,126 +1,132 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '../supabaseClient';
+import { useEffect, useState } from "react";
+import { supabase } from "../supabaseClient";
 
-// Re-use the same label style we use elsewhere
-function formatProductLabel(p) {
-  if (!p) return 'Unknown product';
+function formatProductLabel(product) {
+  if (!product) return "Unknown product";
 
-  const bits = [p.name];
+  const bits = [product.name];
   const extras = [];
 
-  if (p.type) extras.push(p.type);
-  if (p.variant_name) extras.push(p.variant_name);
-  if (p.volume) extras.push(p.volume);
+  if (product.type) extras.push(product.type);
+  if (product.variant_name) extras.push(product.variant_name);
+  if (product.volume) extras.push(product.volume);
 
   if (extras.length > 0) {
-    bits.push('— ' + extras.join(' • '));
+    bits.push("— " + extras.join(" • "));
   }
 
-  return bits.join(' ');
+  return bits.join(" ");
 }
 
 export default function PaymentsPage({ user }) {
-  const [payments, setPayments] = useState([]);
-  const [itemsByOrderId, setItemsByOrderId] = useState({});
+  const [orders, setOrders] = useState([]);
+  const [orderItems, setOrderItems] = useState([]);
+  const [paymentsByOrder, setPaymentsByOrder] = useState({});
+  const [expandedOrderId, setExpandedOrderId] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [expandedPaymentId, setExpandedPaymentId] = useState(null);
 
   useEffect(() => {
     if (!user) return;
-    loadPayments();
+    loadPaymentsData();
   }, [user]);
 
-  async function loadPayments() {
+  async function loadPaymentsData() {
     if (!user) return;
     setLoading(true);
 
-    // 1) Load ALL payments for this seller (partial + full)
-    const { data, error } = await supabase
-      .from('payments')
-      .select(
-        `
+    // 1) Orders that have payments or are marked paid
+    const { data: ordersData, error: ordersError } = await supabase
+      .from("orders")
+      .select(`
         id,
-        amount,
-        channel,
-        paid_date,
-        order_id,
-        orders (
-          id,
-          order_date,
-          customers (
-            id,
-            name
-          )
-        )
-      `
-      )
-      .eq('seller_id', user.id)
-      .order('paid_date', { ascending: false });
+        order_date,
+        total_srp,
+        total_cost,
+        profit,
+        paid_amount,
+        due_date,
+        status,
+        payment_type,
+        customers ( id, name ),
+        brands ( id, name )
+      `)
+      .eq("seller_id", user.id)
+      .or("paid_amount.gt.0,status.eq.paid") // any order with payments / paid
+      .order("order_date", { ascending: false });
 
-    if (error) {
-      console.error(error);
-      alert('Error loading payments: ' + error.message);
+    if (ordersError) {
+      console.error(ordersError);
+      alert("Error loading payment history: " + ordersError.message);
       setLoading(false);
       return;
     }
 
-    const paymentsData = data || [];
-    setPayments(paymentsData);
+    const ordersList = ordersData || [];
+    if (ordersList.length === 0) {
+      setOrders([]);
+      setOrderItems([]);
+      setPaymentsByOrder({});
+      setLoading(false);
+      return;
+    }
 
-    // 2) For all related orders, load items + products
-    const orderIds = Array.from(
-      new Set(paymentsData.map(p => p.order_id).filter(Boolean))
-    );
+    setOrders(ordersList);
 
-    if (orderIds.length > 0) {
-      const { data: itemsData, error: itemsError } = await supabase
-        .from('order_items')
-        .select(
-          `
-          id,
-          order_id,
-          quantity,
-          products (
-            id,
-            name,
-            type,
-            variant_name,
-            volume
-          )
-        `
-        )
-        .in('order_id', orderIds)
-        .eq('seller_id', user.id);
+    const orderIds = ordersList.map((o) => o.id);
 
-      if (itemsError) {
-        console.error(itemsError);
-        setItemsByOrderId({});
-      } else {
-        const map = {};
-        (itemsData || []).forEach(item => {
-          if (!map[item.order_id]) map[item.order_id] = [];
-          map[item.order_id].push(item);
-        });
-        setItemsByOrderId(map);
-      }
+    // 2) Items for these orders
+    const { data: itemsData, error: itemsError } = await supabase
+      .from("order_items")
+      .select(`
+        id,
+        order_id,
+        product_id,
+        quantity,
+        srp_each,
+        cost_each,
+        line_total_srp,
+        line_total_cost,
+        products ( id, name, type, variant_name, volume )
+      `)
+      .in("order_id", orderIds)
+      .eq("seller_id", user.id);
+
+    if (itemsError) {
+      console.error(itemsError);
+      setOrderItems([]);
     } else {
-      setItemsByOrderId({});
+      setOrderItems(itemsData || []);
+    }
+
+    // 3) Payments for these orders
+    const { data: paymentsData, error: paymentsError } = await supabase
+      .from("payments")
+      .select("id, order_id, amount, channel, created_at")
+      .in("order_id", orderIds)
+      .eq("seller_id", user.id)
+      .order("created_at", { ascending: true });
+
+    if (paymentsError) {
+      console.error(paymentsError);
+      setPaymentsByOrder({});
+    } else {
+      const map = {};
+      (paymentsData || []).forEach((p) => {
+        if (!map[p.order_id]) map[p.order_id] = [];
+        map[p.order_id].push(p);
+      });
+      setPaymentsByOrder(map);
     }
 
     setLoading(false);
   }
 
-  function toggleExpanded(id) {
-    setExpandedPaymentId(current => (current === id ? null : id));
+  function getItemsForOrder(orderId) {
+    return orderItems.filter((i) => i.order_id === orderId);
   }
 
-  function formatDateTime(str) {
-    if (!str) return '';
-    try {
-      return new Date(str).toLocaleString();
-    } catch {
-      return str;
-    }
+  function toggleDetails(orderId) {
+    setExpandedOrderId((current) => (current === orderId ? null : orderId));
   }
 
   if (!user) {
@@ -132,80 +138,126 @@ export default function PaymentsPage({ user }) {
       <section className="card">
         <h2 className="card-title">Payment history</h2>
         <p className="text-muted">
-          All recorded payments (partial and full) from your credit orders, with
-          payment channels.
+          All orders that have payments recorded. Tap a card to see items and
+          payment details.
         </p>
       </section>
 
       <section className="card">
         {loading ? (
-          <p className="text-muted">Loading payments…</p>
-        ) : payments.length === 0 ? (
+          <p className="text-muted">Loading payment history…</p>
+        ) : orders.length === 0 ? (
           <p className="text-muted">No payments recorded yet.</p>
         ) : (
           <ul className="customer-list">
-            {payments.map(p => {
-              const order = p.orders;
-              const customerName = order?.customers?.name || 'Unknown customer';
-              const items = itemsByOrderId[p.order_id] || [];
-              const isExpanded = expandedPaymentId === p.id;
+            {orders.map((o) => {
+              const items = getItemsForOrder(o.id);
+              const payments = paymentsByOrder[o.id] || [];
+
+              const paid = o.paid_amount || 0;
+              const remaining = Math.max(0, (o.total_srp || 0) - paid);
+
+              let statusLabel = o.status;
+              if (remaining <= 0 && paid > 0) statusLabel = "paid";
+              else if (paid > 0 && remaining > 0) statusLabel = "partial";
+
+              const isExpanded = expandedOrderId === o.id;
 
               return (
-                <li key={p.id} className="customer-item payment-card">
-                  <div className="payment-top-row">
-                    <div className="payment-amount-channel">
-                      <div className="payment-amount">
-                        ₱{p.amount}{' '}
-                        {p.channel ? (
-                          <span className="payment-channel">• {p.channel}</span>
-                        ) : null}
+                <li key={o.id} className="customer-item order-item credit-card">
+                  {/* Top summary row */}
+                  <div className="order-item-top">
+                    <div className="credit-left">
+                      <div className="customer-name">
+                        {o.customers?.name || "Unknown customer"}
                       </div>
-                      <div className="payment-customer">
-                        {customerName}
+                      <div className="order-meta">
+                        {o.brands?.name || "No brand"}
                       </div>
+                      <div className="order-meta">
+                        Order: {o.order_date}
+                        {o.due_date ? ` • Due: ${o.due_date}` : ""}
+                      </div>
+                    </div>
+
+                    <div className="order-money credit-money">
+                      <div>SRP: ₱{o.total_srp}</div>
+                      <div>Paid: ₱{paid}</div>
+                      <div>Balance: ₱{remaining}</div>
+                      <div className="order-status">{statusLabel}</div>
                     </div>
                   </div>
 
-                  <div className="payment-meta">
-                    {order ? (
-                      <div className="payment-meta-line">
-                        Order ID: {order.id}
-                        {order.order_date ? ` • Order: ${order.order_date}` : ''}
-                      </div>
-                    ) : (
-                      <div className="payment-meta-line">
-                        Order ID: {p.order_id}
-                      </div>
-                    )}
-                    <div className="payment-meta-line">
-                      {formatDateTime(p.paid_date)}
-                    </div>
-                  </div>
+                  {/* View / Hide details */}
+                  <button
+                    type="button"
+                    className="btn-link view-items-btn"
+                    onClick={() => toggleDetails(o.id)}
+                  >
+                    {isExpanded ? "Hide details" : "View details"}
+                  </button>
 
-                  {items.length > 0 && (
-                    <div className="payment-items-block">
-                      <button
-                        type="button"
-                        className="btn-link view-items-btn"
-                        onClick={() => toggleExpanded(p.id)}
-                      >
-                        {isExpanded ? 'Hide items' : 'View items'}
-                      </button>
+                  {/* Expanded details */}
+                  {isExpanded && (
+                    <div className="credit-details-wrapper">
+                      {/* Items */}
+                      <div className="credit-details-section">
+                        <div className="label-small">Items in this order</div>
+                        {items.length === 0 ? (
+                          <p className="text-muted-small">
+                            No items found for this order.
+                          </p>
+                        ) : (
+                          <div className="credit-items-list">
+                            {items.map((it) => (
+                              <div key={it.id} className="credit-item-line">
+                                <span className="credit-item-qty">
+                                  {it.quantity}×
+                                </span>
+                                <span className="credit-item-name">
+                                  {formatProductLabel(it.products)}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
 
-                      {isExpanded && (
-                        <div className="credit-items-list">
-                          {items.map(item => (
-                            <div key={item.id} className="credit-item-line">
-                              <span className="credit-item-qty">
-                                {item.quantity}×
-                              </span>
-                              <span className="credit-item-name">
-                                {formatProductLabel(item.products)}
-                              </span>
-                            </div>
-                          ))}
+                      {/* Payments */}
+                      <div className="credit-details-section">
+                        <div className="label-small">
+                          Payments for this order
                         </div>
-                      )}
+                        {payments.length === 0 ? (
+                          <p className="text-muted-small">
+                            No payments recorded yet.
+                          </p>
+                        ) : (
+                          <ul className="payments-list">
+                            {payments.map((p) => {
+                              const date = p.created_at
+                                ? new Date(p.created_at).toLocaleDateString()
+                                : "";
+                              return (
+                                <li
+                                  key={p.id}
+                                  className="payments-list-item"
+                                >
+                                  <span className="payment-amount">
+                                    ₱{p.amount}
+                                  </span>
+                                  <span className="payment-separator">•</span>
+                                  <span className="payment-channel">
+                                    {p.channel || "—"}
+                                  </span>
+                                  <span className="payment-separator">•</span>
+                                  <span className="payment-date">{date}</span>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        )}
+                      </div>
                     </div>
                   )}
                 </li>

@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { supabase } from '../supabaseClient';
+import { useEffect, useRef, useState } from "react";
+import { supabase } from "../supabaseClient";
 
 // ----------------- Invoice overlay -----------------
 function InvoiceView({
@@ -14,7 +14,7 @@ function InvoiceView({
 
   const invoiceNumber = `INV-${order.id}`;
   const orderDate = order.order_date;
-  const paymentLabel = order.payment_type === 'utang' ? 'Credit' : 'Cash';
+  const paymentLabel = order.payment_type === "utang" ? "Credit" : "Cash";
   const dueDate = order.due_date || null;
 
   // Enrich items with product labels
@@ -22,7 +22,7 @@ function InvoiceView({
     const product = getProductById(it.product_id);
     return {
       ...it,
-      product_label: product ? formatProductLabel(product) : 'Unknown product',
+      product_label: product ? formatProductLabel(product) : "Unknown product",
     };
   });
 
@@ -35,51 +35,47 @@ function InvoiceView({
   }, 0);
 
   const rawPaid =
-    order.payment_type === 'utang' ? order.paid_amount || 0 : totalSrp;
+    order.payment_type === "utang" || order.payment_type === "credit"
+      ? order.paid_amount || 0
+      : totalSrp;
 
   const paidAmount = rawPaid || 0;
   const balance = Math.max(totalSrp - paidAmount, 0);
 
   return (
-    <div
-      className="invoice-overlay"
-      onClick={onClose} // click backdrop to close
-    >
-      {/* This element is what we print */}
+    <div className="invoice-overlay" onClick={onClose}>
       <div
         className="invoice-page"
         id="invoice-print-root"
-        onClick={(e) => e.stopPropagation()} // don't close when clicking inside the card
+        onClick={(e) => e.stopPropagation()}
       >
         {/* HEADER */}
         <header className="invoice-header">
           <div>
             <h1 className="invoice-title">DTC Seller Buddy</h1>
-            <div className="invoice-subtitle">
-              For PC, Avon, Natasha &amp; more
-            </div>
+            <div className="invoice-subtitle">For PC, Avon, Natasha &amp; more</div>
             <div className="invoice-tagline">Sales invoice</div>
           </div>
 
           <div className="invoice-meta">
             <div>
-              <span className="invoice-meta-label">Invoice:</span>{' '}
+              <span className="invoice-meta-label">Invoice:</span>{" "}
               <strong>{invoiceNumber}</strong>
             </div>
             <div>
-              <span className="invoice-meta-label">Date:</span>{' '}
-              {orderDate || '—'}
+              <span className="invoice-meta-label">Date:</span>{" "}
+              {orderDate || "—"}
             </div>
             <div>
-              <span className="invoice-meta-label">Payment:</span>{' '}
+              <span className="invoice-meta-label">Payment:</span>{" "}
               {paymentLabel}
-              {order.payment_type === 'utang' &&
-                ` (${order.status === 'paid' ? 'Paid' : 'Pending'})`}
+              {(order.payment_type === "utang" ||
+                order.payment_type === "credit") &&
+                ` (${order.status === "paid" ? "Paid" : "Pending"})`}
             </div>
             {dueDate && (
               <div>
-                <span className="invoice-meta-label">Due date:</span>{' '}
-                {dueDate}
+                <span className="invoice-meta-label">Due date:</span> {dueDate}
               </div>
             )}
           </div>
@@ -90,7 +86,7 @@ function InvoiceView({
           <div className="invoice-label">Bill to</div>
           <div className="invoice-block">
             <div className="invoice-customer-name">
-              {customer?.name || 'Unknown customer'}
+              {customer?.name || "Unknown customer"}
             </div>
           </div>
         </section>
@@ -126,8 +122,10 @@ function InvoiceView({
                     <tr key={it.id}>
                       <td>{it.product_label}</td>
                       <td>{it.quantity}</td>
-                      <td>{it.srp_each != null ? `₱${it.srp_each}` : '—'}</td>
-                      <td>{lineTotal != null ? `₱${lineTotal}` : '—'}</td>
+                      <td>
+                        {it.srp_each != null ? `₱${it.srp_each}` : "—"}
+                      </td>
+                      <td>{lineTotal != null ? `₱${lineTotal}` : "—"}</td>
                     </tr>
                   );
                 })
@@ -165,11 +163,7 @@ function InvoiceView({
 
         {/* ACTIONS – hidden in print */}
         <div className="invoice-actions no-print">
-          <button
-            type="button"
-            className="btn-secondary"
-            onClick={onClose}
-          >
+          <button type="button" className="btn-secondary" onClick={onClose}>
             Close
           </button>
           <button
@@ -185,14 +179,8 @@ function InvoiceView({
   );
 }
 
-
 // ----------------- Helper sub-component: show products under each order -----------------
-function OrderItemsList({
-  order,
-  orderItems,
-  getProductById,
-  formatProductLabel,
-}) {
+function OrderItemsList({ order, orderItems, getProductById, formatProductLabel }) {
   const itemsForOrder = orderItems.filter((oi) => oi.order_id === order.id);
 
   if (itemsForOrder.length === 0) return null;
@@ -201,7 +189,7 @@ function OrderItemsList({
     <div className="order-items-list">
       {itemsForOrder.map((item) => {
         const product = getProductById(item.product_id);
-        const label = product ? formatProductLabel(product) : 'Unknown product';
+        const label = product ? formatProductLabel(product) : "Unknown product";
 
         return (
           <div key={item.id} className="order-item-line">
@@ -209,7 +197,7 @@ function OrderItemsList({
             <span className="order-item-name">{label}</span>
             {item.srp_each != null && (
               <span className="order-item-money">
-                ₱{item.srp_each} / ₱{item.cost_each ?? '—'}
+                ₱{item.srp_each} / ₱{item.cost_each ?? "—"}
               </span>
             )}
           </div>
@@ -219,6 +207,7 @@ function OrderItemsList({
   );
 }
 
+// ----------------- Main page -----------------
 export default function OrdersPage({ user }) {
   const [customers, setCustomers] = useState([]);
   const [brands, setBrands] = useState([]);
@@ -230,26 +219,30 @@ export default function OrdersPage({ user }) {
   const [loadingLookups, setLoadingLookups] = useState(true);
   const [loadingOrders, setLoadingOrders] = useState(false);
 
-  const [customerId, setCustomerId] = useState('');
-  const [brandId, setBrandId] = useState('');
-  const [campaignId, setCampaignId] = useState('');
-  const [orderDate, setOrderDate] = useState('');
-  const [paymentType, setPaymentType] = useState('cash');
-  const [dueDate, setDueDate] = useState('');
+  // form state
+  const [customerId, setCustomerId] = useState("");
+  const [brandId, setBrandId] = useState("");
+  const [campaignId, setCampaignId] = useState("");
+  const [orderDate, setOrderDate] = useState("");
+  const [paymentType, setPaymentType] = useState("cash");
+  const [dueDate, setDueDate] = useState("");
   const [saving, setSaving] = useState(false);
 
-  // Line items for this order
+  // Line items for this order (add + edit share this)
   const [lineItems, setLineItems] = useState([
-    { id: 1, productId: '', quantity: '', srp: '', cost: '' },
+    { id: 1, productId: "", quantity: "", srp: "", cost: "" },
   ]);
   const [nextItemId, setNextItemId] = useState(2);
+
+  // editing
+  const [editingOrder, setEditingOrder] = useState(null);
 
   // Recent orders collapse
   const [showRecent, setShowRecent] = useState(true);
 
   // Product search bottom sheet
   const [modalOpen, setModalOpen] = useState(false);
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState("");
   const [activeLineIndex, setActiveLineIndex] = useState(null);
   const searchInputRef = useRef(null);
 
@@ -269,7 +262,7 @@ export default function OrdersPage({ user }) {
       loadCampaigns(brandId);
     } else {
       setCampaigns([]);
-      setCampaignId('');
+      setCampaignId("");
     }
   }, [brandId, user]);
 
@@ -288,8 +281,8 @@ export default function OrdersPage({ user }) {
     if (p.type) extras.push(p.type);
     if (p.variant_name) extras.push(p.variant_name);
     if (p.volume) extras.push(p.volume);
-    if (extras.length > 0) bits.push('— ' + extras.join(' • '));
-    return bits.join(' ');
+    if (extras.length > 0) bits.push("— " + extras.join(" • "));
+    return bits.join(" ");
   }
 
   function getProductById(id) {
@@ -319,6 +312,14 @@ export default function OrdersPage({ user }) {
 
   const totals = computeTotals(lineItems);
 
+  function getBrandMargin() {
+    if (!brandId) return null;
+    const b = brands.find((b) => b.id === brandId);
+    if (!b || b.default_margin_percent == null) return null;
+    const m = Number(b.default_margin_percent);
+    return isNaN(m) ? null : m;
+  }
+
   // ----------------- Data loading -----------------
   async function loadLookups() {
     if (!user) return;
@@ -328,39 +329,39 @@ export default function OrdersPage({ user }) {
 
     const [custRes, brandRes, prodRes] = await Promise.all([
       supabase
-        .from('customers')
-        .select('id, name')
-        .eq('seller_id', sellerId)
-        .order('name', { ascending: true }),
+        .from("customers")
+        .select("id, name")
+        .eq("seller_id", sellerId)
+        .order("name", { ascending: true }),
       supabase
-        .from('brands')
-        .select('id, name, default_margin_percent')
-        .eq('seller_id', sellerId)
-        .order('name', { ascending: true }),
+        .from("brands")
+        .select("id, name, default_margin_percent")
+        .eq("seller_id", sellerId)
+        .order("name", { ascending: true }),
       supabase
-        .from('products')
-        .select('id, name, type, variant_name, volume')
-        .eq('seller_id', sellerId)
-        .order('name', { ascending: true }),
+        .from("products")
+        .select("id, name, type, variant_name, volume")
+        .eq("seller_id", sellerId)
+        .order("name", { ascending: true }),
     ]);
 
     if (custRes.error) {
       console.error(custRes.error);
-      alert('Error loading customers: ' + custRes.error.message);
+      alert("Error loading customers: " + custRes.error.message);
     } else {
       setCustomers(custRes.data || []);
     }
 
     if (brandRes.error) {
       console.error(brandRes.error);
-      alert('Error loading brands: ' + brandRes.error.message);
+      alert("Error loading brands: " + brandRes.error.message);
     } else {
       setBrands(brandRes.data || []);
     }
 
     if (prodRes.error) {
       console.error(prodRes.error);
-      alert('Error loading products: ' + prodRes.error.message);
+      alert("Error loading products: " + prodRes.error.message);
     } else {
       setProducts(prodRes.data || []);
     }
@@ -372,15 +373,15 @@ export default function OrdersPage({ user }) {
     if (!user) return;
 
     const { data, error } = await supabase
-      .from('campaigns')
-      .select('id, name')
-      .eq('seller_id', user.id)
-      .eq('brand_id', brandIdValue)
-      .order('created_at', { ascending: false });
+      .from("campaigns")
+      .select("id, name")
+      .eq("seller_id", user.id)
+      .eq("brand_id", brandIdValue)
+      .order("created_at", { ascending: false });
 
     if (error) {
       console.error(error);
-      alert('Error loading campaigns: ' + error.message);
+      alert("Error loading campaigns: " + error.message);
     } else {
       setCampaigns(data || []);
     }
@@ -391,7 +392,7 @@ export default function OrdersPage({ user }) {
     setLoadingOrders(true);
 
     const { data, error } = await supabase
-      .from('orders')
+      .from("orders")
       .select(
         `
         id,
@@ -408,13 +409,14 @@ export default function OrdersPage({ user }) {
         campaigns ( id, name )
       `
       )
-      .eq('seller_id', user.id)
-      .order('order_date', { ascending: false })
+      .eq("seller_id", user.id)
+      .eq("status", "pending") // hide paid orders
+      .order("order_date", { ascending: false })
       .limit(20);
 
     if (error) {
       console.error(error);
-      alert('Error loading orders: ' + error.message);
+      alert("Error loading orders: " + error.message);
       setLoadingOrders(false);
       return;
     }
@@ -426,11 +428,11 @@ export default function OrdersPage({ user }) {
       const orderIds = ordersData.map((o) => o.id);
 
       const { data: itemsData, error: itemsError } = await supabase
-        .from('order_items')
+        .from("order_items")
         .select(
-          'id, order_id, product_id, quantity, srp_each, cost_each, line_total_srp'
+          "id, order_id, product_id, quantity, srp_each, cost_each, line_total_srp"
         )
-        .in('order_id', orderIds);
+        .in("order_id", orderIds);
 
       if (itemsError) {
         console.error(itemsError);
@@ -449,15 +451,37 @@ export default function OrdersPage({ user }) {
   function handleAddLineItem() {
     setLineItems((items) => [
       ...items,
-      { id: nextItemId, productId: '', quantity: '', srp: '', cost: '' },
+      { id: nextItemId, productId: "", quantity: "", srp: "", cost: "" },
     ]);
     setNextItemId((id) => id + 1);
   }
 
   function handleChangeLineItem(index, field, value) {
-    setLineItems((items) =>
-      items.map((item, i) => (i === index ? { ...item, [field]: value } : item))
-    );
+    setLineItems((items) => {
+      const updated = items.map((item, i) =>
+        i === index ? { ...item, [field]: value } : item
+      );
+
+      if (field === "srp") {
+        const margin = getBrandMargin();
+        const srpNum = Number(value);
+        if (
+          margin != null &&
+          !isNaN(srpNum) &&
+          margin >= 0 &&
+          margin < 100
+        ) {
+          const costEach =
+            Math.round((srpNum * (100 - margin)) / 100 * 100) / 100;
+          updated[index] = {
+            ...updated[index],
+            cost: costEach.toString(),
+          };
+        }
+      }
+
+      return updated;
+    });
   }
 
   function handleRemoveLineItem(index) {
@@ -466,7 +490,7 @@ export default function OrdersPage({ user }) {
 
   function openProductSearch(index) {
     setActiveLineIndex(index);
-    setSearchText('');
+    setSearchText("");
     setModalOpen(true);
   }
 
@@ -480,17 +504,17 @@ export default function OrdersPage({ user }) {
     setModalOpen(false);
   }
 
-  // ----------------- Submit -----------------
-  async function handleAddOrder(e) {
+  // ----------------- Add / Update order -----------------
+  async function handleSubmitOrder(e) {
     e.preventDefault();
 
     if (!user) {
-      alert('Please log in again.');
+      alert("Please log in again.");
       return;
     }
 
     if (!customerId || !brandId || !orderDate) {
-      alert('Please select customer, brand and order date.');
+      alert("Please select customer, brand and order date.");
       return;
     }
 
@@ -498,83 +522,198 @@ export default function OrdersPage({ user }) {
       (li) => li.productId && Number(li.quantity) > 0
     );
     if (!hasValidLine) {
-      alert('Please add at least one product with quantity.');
+      alert("Please add at least one product with quantity.");
       return;
     }
 
-    const { total_srp, total_cost } = computeTotals(lineItems);
+    const { total_srp, total_cost, profit } = computeTotals(lineItems);
+
+    const isCredit = paymentType === "utang" || paymentType === "credit";
 
     setSaving(true);
 
-    const { data: newOrder, error } = await supabase
-      .from('orders')
-      .insert({
-        seller_id: user.id,
-        customer_id: customerId,
-        brand_id: brandId,
-        campaign_id: campaignId || null,
-        order_date: orderDate,
-        total_srp,
-        total_cost,
-        payment_type: paymentType,
-        due_date: paymentType === 'utang' ? dueDate || null : null,
-        status: paymentType === 'cash' ? 'paid' : 'pending',
-      })
-      .select('id')
-      .single();
+    try {
+      if (editingOrder) {
+        // ---- UPDATE existing order ----
+        const { error: orderError } = await supabase
+          .from("orders")
+          .update({
+            customer_id: customerId,
+            brand_id: brandId,
+            campaign_id: campaignId || null,
+            order_date: orderDate,
+            total_srp,
+            total_cost,
+            profit,
+            payment_type: paymentType,
+            due_date: isCredit ? dueDate || null : null,
+          })
+          .eq("id", editingOrder.id)
+          .eq("seller_id", user.id);
 
-    if (error) {
-      setSaving(false);
-      console.error(error);
-      alert('Error saving order: ' + error.message);
-      return;
-    }
+        if (orderError) {
+          console.error(orderError);
+          alert("Error updating order: " + orderError.message);
+          setSaving(false);
+          return;
+        }
 
-    const itemsToSave = lineItems
-      .filter((item) => item.productId && Number(item.quantity) > 0)
-      .map((item) => {
-        const qty = Number(item.quantity) || 0;
-        const srpEach = item.srp ? Number(item.srp) : 0;
-        const costEach = item.cost ? Number(item.cost) : 0;
+        // Replace order_items
+        const { error: delError } = await supabase
+          .from("order_items")
+          .delete()
+          .eq("order_id", editingOrder.id)
+          .eq("seller_id", user.id);
 
-        return {
-          seller_id: user.id,
-          order_id: newOrder.id,
-          product_id: item.productId,
-          quantity: qty,
-          srp_each: srpEach,
-          cost_each: costEach,
-          line_total_srp: srpEach * qty,
-          line_total_cost: costEach * qty,
-        };
-      });
+        if (delError) {
+          console.error(delError);
+          alert(
+            "Order updated, but error clearing old items: " + delError.message
+          );
+          setSaving(false);
+          return;
+        }
 
-    if (itemsToSave.length > 0) {
-      const { error: itemsError } = await supabase
-        .from('order_items')
-        .insert(itemsToSave);
+        const itemsToSave = lineItems
+          .filter((item) => item.productId && Number(item.quantity) > 0)
+          .map((item) => {
+            const qty = Number(item.quantity) || 0;
+            const srpEach = item.srp ? Number(item.srp) : 0;
+            const costEach = item.cost ? Number(item.cost) : 0;
 
-      if (itemsError) {
-        console.error(itemsError);
-        alert(
-          'Order was saved, but there was an error saving the products: ' +
-            itemsError.message
-        );
+            return {
+              seller_id: user.id,
+              order_id: editingOrder.id,
+              product_id: item.productId,
+              quantity: qty,
+              srp_each: srpEach,
+              cost_each: costEach,
+              line_total_srp: srpEach * qty,
+              line_total_cost: costEach * qty,
+            };
+          });
+
+        if (itemsToSave.length > 0) {
+          const { error: itemsError } = await supabase
+            .from("order_items")
+            .insert(itemsToSave);
+
+          if (itemsError) {
+            console.error(itemsError);
+            alert(
+              "Order updated, but there was an error saving items: " +
+                itemsError.message
+            );
+          }
+        }
+      } else {
+        // ---- INSERT new order ----
+        const { data: newOrder, error } = await supabase
+          .from("orders")
+          .insert({
+            seller_id: user.id,
+            customer_id: customerId,
+            brand_id: brandId,
+            campaign_id: campaignId || null,
+            order_date: orderDate,
+            total_srp,
+            total_cost,
+            profit,
+            payment_type: paymentType,
+            due_date: isCredit ? dueDate || null : null,
+            status: isCredit ? "pending" : "paid",
+            paid_amount: isCredit ? 0 : total_srp,
+          })
+          .select("id")
+          .single();
+
+        if (error) {
+          console.error(error);
+          alert("Error saving order: " + error.message);
+          setSaving(false);
+          return;
+        }
+
+        const itemsToSave = lineItems
+          .filter((item) => item.productId && Number(item.quantity) > 0)
+          .map((item) => {
+            const qty = Number(item.quantity) || 0;
+            const srpEach = item.srp ? Number(item.srp) : 0;
+            const costEach = item.cost ? Number(item.cost) : 0;
+
+            return {
+              seller_id: user.id,
+              order_id: newOrder.id,
+              product_id: item.productId,
+              quantity: qty,
+              srp_each: srpEach,
+              cost_each: costEach,
+              line_total_srp: srpEach * qty,
+              line_total_cost: costEach * qty,
+            };
+          });
+
+        if (itemsToSave.length > 0) {
+          const { error: itemsError } = await supabase
+            .from("order_items")
+            .insert(itemsToSave);
+
+          if (itemsError) {
+            console.error(itemsError);
+            alert(
+              "Order was saved, but there was an error saving the products: " +
+                itemsError.message
+            );
+          }
+        }
       }
+    } finally {
+      setSaving(false);
     }
 
-    setSaving(false);
+    // reset form
+    cancelEditAndResetForm();
+    await loadOrders();
+  }
 
-    setCustomerId('');
-    setBrandId('');
-    setCampaignId('');
-    setOrderDate('');
-    setPaymentType('cash');
-    setDueDate('');
-    setLineItems([{ id: 1, productId: '', quantity: '', srp: '', cost: '' }]);
+  function cancelEditAndResetForm() {
+    setEditingOrder(null);
+    setCustomerId("");
+    setBrandId("");
+    setCampaignId("");
+    setOrderDate("");
+    setPaymentType("cash");
+    setDueDate("");
+    setLineItems([{ id: 1, productId: "", quantity: "", srp: "", cost: "" }]);
     setNextItemId(2);
+  }
 
-    loadOrders();
+  function startEditingOrder(order) {
+    setEditingOrder(order);
+    setCustomerId(order.customers?.id || "");
+    setBrandId(order.brands?.id || "");
+    setCampaignId(order.campaigns?.id || "");
+    setOrderDate(order.order_date || "");
+    setPaymentType(order.payment_type || "cash");
+    setDueDate(order.due_date || "");
+
+    const itemsForOrder = orderItems.filter((it) => it.order_id === order.id);
+    if (itemsForOrder.length === 0) {
+      setLineItems([{ id: 1, productId: "", quantity: "", srp: "", cost: "" }]);
+      setNextItemId(2);
+    } else {
+      const mapped = itemsForOrder.map((it, idx) => ({
+        id: idx + 1,
+        productId: it.product_id,
+        quantity: it.quantity != null ? String(it.quantity) : "",
+        srp: it.srp_each != null ? String(it.srp_each) : "",
+        cost: it.cost_each != null ? String(it.cost_each) : "",
+      }));
+      setLineItems(mapped);
+      setNextItemId(mapped.length + 1);
+    }
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   if (!user) {
@@ -591,11 +730,24 @@ export default function OrdersPage({ user }) {
     ? orderItems.filter((it) => it.order_id === invoiceOrderId)
     : [];
 
+  const brandMargin = getBrandMargin();
+  const firstLine = lineItems[0];
+  let firstProfitPerItem = null;
+  if (firstLine) {
+    const sNum = Number(firstLine.srp) || 0;
+    const cNum = Number(firstLine.cost) || 0;
+    if (sNum && cNum) {
+      firstProfitPerItem = sNum - cNum;
+    }
+  }
+
   return (
     <div>
-      {/* Add order card */}
+      {/* Add / Edit order card */}
       <section className="card">
-        <h2 className="card-title">Add order</h2>
+        <h2 className="card-title">
+          {editingOrder ? "Edit order" : "Add order"}
+        </h2>
 
         {loadingLookups ? (
           <p className="text-muted">Loading customers &amp; brands…</p>
@@ -605,7 +757,7 @@ export default function OrdersPage({ user }) {
             Add them in the Customers and Brands tabs.
           </p>
         ) : (
-          <form onSubmit={handleAddOrder}>
+          <form onSubmit={handleSubmitOrder}>
             {/* Customer */}
             <select
               className="field"
@@ -644,9 +796,9 @@ export default function OrdersPage({ user }) {
               <option value="">
                 {brandId
                   ? campaigns.length === 0
-                    ? 'No campaigns for this brand'
-                    : 'Select campaign (optional)'
-                  : 'Select brand first'}
+                    ? "No campaigns for this brand"
+                    : "Select campaign (optional)"
+                  : "Select brand first"}
               </option>
               {campaigns.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -679,7 +831,7 @@ export default function OrdersPage({ user }) {
               </div>
             </div>
 
-            {paymentType === 'utang' && (
+            {paymentType === "utang" && (
               <div className="form-row">
                 <div className="form-col">
                   <label className="label-small">Due date (credit)</label>
@@ -708,7 +860,12 @@ export default function OrdersPage({ user }) {
                 const selectedProduct = getProductById(item.productId);
                 const label = selectedProduct
                   ? formatProductLabel(selectedProduct)
-                  : 'Tap to select product';
+                  : "Tap to select product";
+
+                const srpNum = Number(item.srp) || 0;
+                const costNum = Number(item.cost) || 0;
+                const profitPerItem =
+                  srpNum && costNum ? srpNum - costNum : null;
 
                 return (
                   <div key={item.id} className="line-item-group">
@@ -730,7 +887,7 @@ export default function OrdersPage({ user }) {
                           onChange={(e) =>
                             handleChangeLineItem(
                               index,
-                              'quantity',
+                              "quantity",
                               e.target.value
                             )
                           }
@@ -745,7 +902,7 @@ export default function OrdersPage({ user }) {
                           placeholder="SRP each"
                           value={item.srp}
                           onChange={(e) =>
-                            handleChangeLineItem(index, 'srp', e.target.value)
+                            handleChangeLineItem(index, "srp", e.target.value)
                           }
                         />
                       </div>
@@ -755,11 +912,19 @@ export default function OrdersPage({ user }) {
                           placeholder="Cost each"
                           value={item.cost}
                           onChange={(e) =>
-                            handleChangeLineItem(index, 'cost', e.target.value)
+                            handleChangeLineItem(index, "cost", e.target.value)
                           }
                         />
                       </div>
                     </div>
+
+                    {brandMargin != null && srpNum > 0 && (
+                      <p className="text-muted-small">
+                        Using {brandMargin}% margin – cost &amp; profit auto.
+                        {profitPerItem != null &&
+                          ` Profit per item: ₱${profitPerItem} auto.`}
+                      </p>
+                    )}
 
                     {lineItems.length > 1 && (
                       <div className="line-item-remove-row">
@@ -792,26 +957,45 @@ export default function OrdersPage({ user }) {
               <div className="form-col">
                 <label className="label-small">Total SRP (auto)</label>
                 <div className="profit-pill">
-                  {totals.total_srp ? `₱ ${totals.total_srp}` : '—'}
+                  {totals.total_srp ? `₱ ${totals.total_srp}` : "—"}
                 </div>
               </div>
               <div className="form-col">
                 <label className="label-small">Total cost (auto)</label>
                 <div className="profit-pill">
-                  {totals.total_cost ? `₱ ${totals.total_cost}` : '—'}
+                  {totals.total_cost ? `₱ ${totals.total_cost}` : "—"}
                 </div>
               </div>
               <div className="form-col">
                 <label className="label-small">Profit (auto)</label>
                 <div className="profit-pill">
-                  {totals.profit ? `₱ ${totals.profit}` : '—'}
+                  {totals.profit ? `₱ ${totals.profit}` : "—"}
                 </div>
               </div>
             </div>
 
-            <div className="order-save-row">
-              <button type="submit" disabled={saving} className="btn-primary">
-                {saving ? 'Saving…' : 'Save order'}
+            <div className="order-save-row order-save-row--edit">
+              {editingOrder && (
+                <button
+                  type="button"
+                  className="btn-secondary pill-button"
+                  onClick={cancelEditAndResetForm}
+                >
+                  Cancel Edit
+                </button>
+              )}
+              <button
+                type="submit"
+                disabled={saving}
+                className="btn-primary pill-button"
+              >
+                {saving
+                  ? editingOrder
+                    ? "Updating…"
+                    : "Saving…"
+                  : editingOrder
+                  ? "Update order"
+                  : "Save order"}
               </button>
             </div>
           </form>
@@ -822,10 +1006,10 @@ export default function OrdersPage({ user }) {
       <section className="card">
         <div
           style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '10px',
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "10px",
           }}
         >
           <h2 className="card-title">Recent orders</h2>
@@ -834,13 +1018,13 @@ export default function OrdersPage({ user }) {
             className="collapse-toggle"
             onClick={() => setShowRecent((prev) => !prev)}
           >
-            <span className={`collapse-icon ${showRecent ? 'open' : ''}`}>
+            <span className={`collapse-icon ${showRecent ? "open" : ""}`}>
               +
             </span>
           </button>
         </div>
 
-        <div className={`collapse-content ${showRecent ? '' : 'hidden'}`}>
+        <div className={`collapse-content ${showRecent ? "" : "hidden"}`}>
           {loadingOrders ? (
             <p className="text-muted">Loading orders…</p>
           ) : orders.length === 0 ? (
@@ -852,18 +1036,18 @@ export default function OrdersPage({ user }) {
                   <div className="order-item-top">
                     <div className="order-left">
                       <div className="customer-name">
-                        {o.customers?.name || 'Unknown customer'}
+                        {o.customers?.name || "Unknown customer"}
                       </div>
                       <div className="order-meta">
-                        {o.brands?.name || 'No brand'}
-                        {o.campaigns?.name ? ` • ${o.campaigns.name}` : ''}
+                        {o.brands?.name || "No brand"}
+                        {o.campaigns?.name ? ` • ${o.campaigns.name}` : ""}
                       </div>
                       <div className="order-meta">
-                        {o.order_date} •{' '}
-                        {o.payment_type === 'utang' ? 'Credit' : 'Cash'}
-                        {o.payment_type === 'utang' && o.due_date
+                        {o.order_date} •{" "}
+                        {o.payment_type === "utang" ? "Credit" : "Cash"}
+                        {o.payment_type === "utang" && o.due_date
                           ? ` • Due: ${o.due_date}`
-                          : ''}
+                          : ""}
                       </div>
                     </div>
                     <div className="order-money">
@@ -871,10 +1055,19 @@ export default function OrdersPage({ user }) {
                       <div>Cost: ₱{o.total_cost}</div>
                       <div className="order-profit">Profit: ₱{o.profit}</div>
                       <div className="order-status">{o.status}</div>
+
                       <button
                         type="button"
                         className="btn-secondary btn-small"
-                        style={{ marginTop: '0.25rem' }}
+                        onClick={() => startEditingOrder(o)}
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        type="button"
+                        className="btn-secondary btn-small"
+                        style={{ marginTop: "0.25rem" }}
                         onClick={() => setInvoiceOrderId(o.id)}
                       >
                         Invoice

@@ -1,140 +1,485 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '../supabaseClient';
+import { useEffect, useState } from "react";
+import { supabase } from "../supabaseClient";
 
-export default function BrandsPage({ user }) {
+const PC_CATEGORIES = [
+  "Home care",
+  "Personal care and health care",
+  "Fragrances",
+  "Baby care and men's care",
+  "Intimate apparel",
+  "Cosmetics",
+];
+
+export default function ProductsPage({ user }) {
   const [brands, setBrands] = useState([]);
-  const [name, setName] = useState('');
-  const [defaultMargin, setDefaultMargin] = useState('');
-  const [saving, setSaving] = useState(false);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
-  // Load brands once we have a user
+  // Add-product form
+  const [brandId, setBrandId] = useState("");
+  const [name, setName] = useState("");
+  const [category, setCategory] = useState("");
+  const [type, setType] = useState("");
+  const [variantName, setVariantName] = useState("");
+  const [volume, setVolume] = useState("");
+
+  // Editing state
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [editSaving, setEditSaving] = useState(false);
+
   useEffect(() => {
     if (!user) return;
-    loadBrands();
+    loadBrandsAndProducts();
   }, [user]);
 
-  async function loadBrands() {
+  async function loadBrandsAndProducts() {
     if (!user) return;
     setLoading(true);
 
-    const { data, error } = await supabase
-      .from('brands')
-      .select('id, name, default_margin_percent')
-      .eq('seller_id', user.id)
-      .order('name', { ascending: true });
+    const sellerId = user.id;
 
-    if (error) {
-      console.error(error);
-      alert('Error loading brands: ' + error.message);
+    const [brandRes, prodRes] = await Promise.all([
+      supabase
+        .from("brands")
+        .select("id, name")
+        .eq("seller_id", sellerId)
+        .order("name", { ascending: true }),
+      supabase
+        .from("products")
+        .select(
+          `
+          id,
+          seller_id,
+          brand_id,
+          name,
+          category,
+          type,
+          variant_name,
+          volume,
+          brands!brand_id (id, name)
+        `
+        )
+        .eq("seller_id", sellerId)
+        .order("created_at", { ascending: false }),
+    ]);
+
+    if (brandRes.error) {
+      console.error(brandRes.error);
+      alert("Error loading brands: " + brandRes.error.message);
     } else {
-      setBrands(data || []);
+      setBrands(brandRes.data || []);
+    }
+
+    if (prodRes.error) {
+      console.error(prodRes.error);
+      alert("Error loading products: " + prodRes.error.message);
+    } else {
+      setProducts(prodRes.data || []);
     }
 
     setLoading(false);
   }
 
-  async function handleAddBrand(e) {
-    e.preventDefault();
+  // Helper: is selected brand Personal Collection?
+  function isSelectedBrandPC(selectedBrandId) {
+    if (!selectedBrandId) return false;
+    const b = brands.find((br) => br.id === selectedBrandId);
+    if (!b) return false;
+    return b.name.toLowerCase() === "personal collection";
+  }
 
-    if (!user) {
-      alert('Please log in again.');
-      return;
-    }
+  async function handleAddProduct(e) {
+    e.preventDefault();
+    if (!user) return;
 
     if (!name.trim()) {
-      alert('Please enter a brand name.');
-      return;
-    }
-
-    const marginValue = defaultMargin
-      ? Number(defaultMargin)
-      : null;
-
-    if (defaultMargin && isNaN(marginValue)) {
-      alert('Default margin must be a number (or leave it blank).');
+      alert("Please enter a product name.");
       return;
     }
 
     setSaving(true);
 
-    const { error } = await supabase
-      .from('brands')
-      .insert({
-        seller_id: user.id,                // 👈 key part
-        name: name.trim(),
-        default_margin_percent: marginValue,
-      });
+    const { error } = await supabase.from("products").insert({
+      seller_id: user.id,
+      brand_id: brandId || null,
+      name: name.trim(),
+      category: category.trim() || null,
+      type: type.trim() || null,
+      variant_name: variantName.trim() || null,
+      volume: volume.trim() || null,
+    });
 
     setSaving(false);
 
     if (error) {
       console.error(error);
-      alert('Error saving brand: ' + error.message);
+      alert("Error saving product: " + error.message);
       return;
     }
 
-    // reset inputs + refresh list
-    setName('');
-    setDefaultMargin('');
-    loadBrands();
+    // reset form
+    setBrandId("");
+    setName("");
+    setCategory("");
+    setType("");
+    setVariantName("");
+    setVolume("");
+
+    loadBrandsAndProducts();
+  }
+
+  async function handleDeleteProduct(id) {
+    if (!user) return;
+    if (!window.confirm("Delete this product?")) return;
+
+    const { error } = await supabase
+      .from("products")
+      .delete()
+      .eq("id", id)
+      .eq("seller_id", user.id);
+
+    if (error) {
+      console.error(error);
+      alert("Error deleting product: " + error.message);
+      return;
+    }
+
+    if (editingProduct && editingProduct.id === id) {
+      setEditingProduct(null);
+    }
+
+    loadBrandsAndProducts();
+  }
+
+  // --- Editing helpers ---
+
+  function startEditing(product) {
+    setEditingProduct({
+      id: product.id,
+      brand_id: product.brand_id || "",
+      name: product.name || "",
+      category: product.category || "",
+      type: product.type || "",
+      variant_name: product.variant_name || "",
+      volume: product.volume || "",
+    });
+  }
+
+  function cancelEditing() {
+    setEditingProduct(null);
+  }
+
+  function handleEditFieldChange(field, value) {
+    setEditingProduct((prev) => (prev ? { ...prev, [field]: value } : prev));
+  }
+
+  async function saveEditedProduct() {
+    if (!user || !editingProduct) return;
+
+    if (!editingProduct.name.trim()) {
+      alert("Product name is required.");
+      return;
+    }
+
+    setEditSaving(true);
+
+    const { error } = await supabase
+      .from("products")
+      .update({
+        brand_id: editingProduct.brand_id || null,
+        name: editingProduct.name.trim(),
+        category: editingProduct.category.trim() || null,
+        type: editingProduct.type.trim() || null,
+        variant_name: editingProduct.variant_name.trim() || null,
+        volume: editingProduct.volume.trim() || null,
+      })
+      .eq("id", editingProduct.id)
+      .eq("seller_id", user.id);
+
+    setEditSaving(false);
+
+    if (error) {
+      console.error(error);
+      alert("Error updating product: " + error.message);
+      return;
+    }
+
+    setEditingProduct(null);
+    loadBrandsAndProducts();
   }
 
   if (!user) {
     return <p className="text-muted">Loading account…</p>;
   }
 
+  // For the add-product form
+  const addFormIsPC = isSelectedBrandPC(brandId);
+
   return (
     <div>
-      {/* Add brand card */}
+      {/* Add product card */}
       <section className="card">
-        <h2 className="card-title">Add brand</h2>
+        <h2 className="card-title">Add product</h2>
 
-        <form onSubmit={handleAddBrand}>
-          <input
+        {brands.length === 0 && (
+          <p className="text-muted">
+            You need at least one brand to attach products to. Add a brand in
+            the Brands tab first.
+          </p>
+        )}
+
+        <form onSubmit={handleAddProduct}>
+          {/* Brand (optional) */}
+          <select
             className="field"
-            placeholder="Brand name (e.g. Avon)"
-            value={name}
-            onChange={e => setName(e.target.value)}
-          />
-
-          <input
-            className="field"
-            placeholder="Default margin % (optional)"
-            value={defaultMargin}
-            onChange={e => setDefaultMargin(e.target.value)}
-          />
-
-          <button
-            type="submit"
-            disabled={saving}
-            className="btn-primary"
+            value={brandId}
+            onChange={(e) => {
+              setBrandId(e.target.value);
+              // Clear category when switching brands
+              setCategory("");
+            }}
           >
-            {saving ? 'Saving…' : 'Save brand'}
-          </button>
+            <option value="">No brand / generic</option>
+            {brands.map((b) => (
+              <option key={b.id} value={b.id}>
+                {b.name}
+              </option>
+            ))}
+          </select>
+
+          {/* Name */}
+          <input
+            className="field"
+            placeholder="Product name (required)"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+
+          {/* Category – dropdown only for Personal Collection */}
+          {addFormIsPC ? (
+            <select
+              className="field"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              <option value="">Select PC category</option>
+              {PC_CATEGORIES.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              className="field"
+              placeholder="Category (e.g. Personal care, Home care)"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            />
+          )}
+
+          {/* Type / variant / volume */}
+          <input
+            className="field"
+            placeholder="Type (e.g. shampoo, lotion) – optional"
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+          />
+
+          <input
+            className="field"
+            placeholder="Variant (e.g. cherry blossom) – optional"
+            value={variantName}
+            onChange={(e) => setVariantName(e.target.value)}
+          />
+
+          <input
+            className="field"
+            placeholder="Volume / size (e.g. 250ml) – optional"
+            value={volume}
+            onChange={(e) => setVolume(e.target.value)}
+          />
+
+          <div className="order-save-row">
+            <button
+              type="submit"
+              className="btn-primary"
+              disabled={saving || brands.length === 0}
+            >
+              {saving ? "Saving…" : "Add product"}
+            </button>
+          </div>
         </form>
       </section>
 
-      {/* Existing brands */}
+      {/* Products list */}
       <section className="card">
-        <h2 className="card-title">Brands</h2>
-
+        <h2 className="card-title">Products</h2>
         {loading ? (
-          <p className="text-muted">Loading brands…</p>
-        ) : brands.length === 0 ? (
-          <p className="text-muted">No brands yet.</p>
+          <p className="text-muted">Loading products…</p>
+        ) : products.length === 0 ? (
+          <p className="text-muted">No products yet.</p>
         ) : (
           <ul className="customer-list">
-            {brands.map(b => (
-              <li key={b.id} className="customer-item">
-                <div className="customer-name">{b.name}</div>
-                <div className="order-meta">
-                  {b.default_margin_percent != null
-                    ? `Default margin: ${b.default_margin_percent}%`
-                    : 'No default margin set'}
-                </div>
-              </li>
-            ))}
+            {products.map((p) => {
+              const isEditing =
+                editingProduct && editingProduct.id === p.id;
+
+              if (isEditing) {
+                const editingIsPC = isSelectedBrandPC(
+                  editingProduct.brand_id
+                );
+
+                return (
+                  <li key={p.id} className="customer-item">
+                    <div className="order-item-top">
+                      <div className="order-left">
+                        {/* Brand select */}
+                        <select
+                          className="field"
+                          value={editingProduct.brand_id || ""}
+                          onChange={(e) =>
+                            handleEditFieldChange("brand_id", e.target.value)
+                          }
+                        >
+                          <option value="">No brand / generic</option>
+                          {brands.map((b) => (
+                            <option key={b.id} value={b.id}>
+                              {b.name}
+                            </option>
+                          ))}
+                        </select>
+
+                        <input
+                          className="field"
+                          placeholder="Product name"
+                          value={editingProduct.name}
+                          onChange={(e) =>
+                            handleEditFieldChange("name", e.target.value)
+                          }
+                        />
+
+                        {/* Category – dropdown only for PC in edit mode */}
+                        {editingIsPC ? (
+                          <select
+                            className="field"
+                            value={editingProduct.category || ""}
+                            onChange={(e) =>
+                              handleEditFieldChange("category", e.target.value)
+                            }
+                          >
+                            <option value="">Select PC category</option>
+                            {PC_CATEGORIES.map((cat) => (
+                              <option key={cat} value={cat}>
+                                {cat}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <input
+                            className="field"
+                            placeholder="Category"
+                            value={editingProduct.category || ""}
+                            onChange={(e) =>
+                              handleEditFieldChange("category", e.target.value)
+                            }
+                          />
+                        )}
+
+                        <input
+                          className="field"
+                          placeholder="Type"
+                          value={editingProduct.type || ""}
+                          onChange={(e) =>
+                            handleEditFieldChange("type", e.target.value)
+                          }
+                        />
+
+                        <input
+                          className="field"
+                          placeholder="Variant"
+                          value={editingProduct.variant_name || ""}
+                          onChange={(e) =>
+                            handleEditFieldChange(
+                              "variant_name",
+                              e.target.value
+                            )
+                          }
+                        />
+
+                        <input
+                          className="field"
+                          placeholder="Volume / size"
+                          value={editingProduct.volume || ""}
+                          onChange={(e) =>
+                            handleEditFieldChange("volume", e.target.value)
+                          }
+                        />
+                      </div>
+
+                      <div className="order-money">
+                        <button
+                          type="button"
+                          className="btn-secondary btn-small"
+                          onClick={cancelEditing}
+                          disabled={editSaving}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          className="btn-primary btn-small"
+                          onClick={saveEditedProduct}
+                          disabled={editSaving}
+                          style={{ marginLeft: "0.5rem" }}
+                        >
+                          {editSaving ? "Saving…" : "Save"}
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                );
+              }
+
+              // --- Normal view row ---
+              return (
+                <li key={p.id} className="customer-item">
+                  <div className="order-item-top">
+                    <div className="order-left">
+                      <div className="customer-name">{p.name}</div>
+                      <div className="order-meta">
+                        {p.brands?.name || "No brand"}
+                        {p.category ? ` • ${p.category}` : ""}
+                      </div>
+                      <div className="order-meta">
+                        {[p.type, p.variant_name, p.volume]
+                          .filter(Boolean)
+                          .join(" • ")}
+                      </div>
+                    </div>
+
+                    <div className="order-money">
+                      <button
+                        type="button"
+                        className="btn-secondary btn-small"
+                        onClick={() => startEditing(p)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-danger btn-small"
+                        onClick={() => handleDeleteProduct(p.id)}
+                        style={{ marginLeft: "0.5rem" }}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         )}
       </section>

@@ -3686,3 +3686,265 @@ textarea {
 .auth-card-inner {
   padding: 20px;
 }
+/*for the side by side edit and update*/
+.order-actions-row {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap; /* so on tiny screens they can wrap nicely */
+}
+
+/*new edit for side by side*/
+.order-save-row {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+/* Make the buttons in the order footer sit nicely side by side */
+.order-save-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+/* Stop the primary button from being 100% width here */
+.order-save-row .btn-primary,
+.order-save-row .btn-secondary {
+  width: auto;
+  min-width: 130px;          /* tweak this if you want them wider/narrower */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+/* Slightly smaller cancel button if you like */
+.order-save-row .btn-secondary {
+  min-width: 110px;
+}
+.order-save-row {
+  display: flex;
+  justify-content: center;   /* <— was flex-end */
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.order-save-row .btn-primary,
+.order-save-row .btn-secondary {
+  width: auto;
+  min-width: 130px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.order-save-row .btn-secondary {
+  min-width: 110px;
+}
+
+
+.line-items-divider {
+  border: 0;
+  border-top: 1px solid #1f2937; /* subtle line */
+  margin: 16px 0 12px;           /* space above/below */
+}
+
+/* Make Update Order a pill-shaped primary button */
+.btn-primary {
+  border-radius: 999px;              /* <-- pill shape */
+  padding: 10px 24px;
+  font-weight: 600;
+}
+
+/* Keep the existing blue color */
+.btn-primary {
+  background: #0ea5e9;               /* your current bright blue */
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover {
+  background: #0284c7;               /* slightly darker blue on hover */
+}
+
+/* Make Cancel Edit perfectly rounded as well for consistency */
+.btn-secondary {
+  border-radius: 999px;              /* pill shape */
+  padding: 10px 22px;
+}
+
+.order-extra {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #1f2937;
+}
+
+.order-extra-block + .order-extra-block {
+  margin-top: 10px;
+}
+
+.payments-list {
+  margin-top: 6px;
+}
+
+.payment-line {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
+  border-bottom: 1px dashed #1f2937;
+}
+
+.payment-line:last-child {
+  border-bottom: none;
+}
+
+.payment-main {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.payment-date {
+  color: #9ca3af;
+}
+
+.payment-notes {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.order-status--paid {
+  background: #16a34a22;
+  color: #22c55e;
+}
+/* Generic small button style (for Edit, Delete, Invoice, Hide details) */
+.btn-small {
+  font-size: 13px;
+  padding: 4px 12px;
+  min-width: 0;
+  border-radius: 999px; /* still pill, just smaller */
+}
+
+/* In list tiles, keep them compact */
+.customer-item .btn-small {
+  font-size: 13px;
+  padding: 4px 12px;
+}
+
+/* --- Credit / Utang layout fixes --- */
+
+/* Row that holds amount, channel, Add payment */
+.credit-partial-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+/* Small amount box */
+.credit-partial-input {
+  max-width: 100px;
+}
+
+/* Channel input stretches */
+.credit-channel-input {
+  flex: 1;
+}
+
+/* Add payment button – compact and not overflowing */
+.credit-add-btn {
+  white-space: nowrap;
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+/* Full payment button – centred, nice pill */
+.full-pay-btn {
+  margin-top: 14px;
+  align-self: center;
+  padding: 10px 24px;
+  border-radius: 999px;
+}
+
+/* Parent area for partial + full payment */
+.credit-actions {
+  margin-top: 12px;
+  border-top: 1px solid rgba(148, 163, 184, 0.3);
+  padding-top: 10px;
+}
+/* --- Credit / Utang layout fixes --- */
+
+/* Row that holds amount, channel, Add payment */
+.credit-partial-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+/* Amount input */
+.credit-partial-input {
+  max-width: 110px;
+}
+
+/* Channel input stretches */
+.credit-channel-input {
+  flex: 1;
+}
+
+/* Add payment – slightly wider pill */
+.credit-add-btn {
+  white-space: nowrap;
+  padding: 8px 18px;      /* ⬅️ wider */
+  font-size: 13px;
+  min-width: 110px;       /* ⬅️ guarantees a nice pill width */
+}
+
+/* Parent area for partial + full payment */
+.credit-actions {
+  margin-top: 12px;
+  border-top: 1px solid rgba(148, 163, 184, 0.3);
+  padding-top: 10px;
+}
+
+/* Full payment – big centred pill */
+.full-pay-btn {
+  margin-top: 14px;
+  align-self: center;
+  padding: 10px 32px;     /* ⬅️ a bit wider */
+  min-width: 190px;       /* ⬅️ nice full-width look */
+  border-radius: 999px;
+}
+
+/* Payments list styling on Payments page */
+.payments-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 6px 0 0;
+}
+
+.payments-list-item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--text-main);
+}
+
+.payment-amount {
+  font-weight: 600;
+}
+
+.payment-channel,
+.payment-date {
+  color: #9ca3af; /* soft grey */
+}
+
+.payment-separator {
+  color: #4b5563; /* slightly darker dot */
+}
