@@ -544,7 +544,6 @@ export default function OrdersPage({ user }) {
             order_date: orderDate,
             total_srp,
             total_cost,
-            profit,
             payment_type: paymentType,
             due_date: isCredit ? dueDate || null : null,
           })
@@ -618,7 +617,7 @@ export default function OrdersPage({ user }) {
             order_date: orderDate,
             total_srp,
             total_cost,
-            profit,
+        
             payment_type: paymentType,
             due_date: isCredit ? dueDate || null : null,
             status: isCredit ? "pending" : "paid",
