@@ -152,14 +152,14 @@ export default function DashboardPage({ user }) {
             </div>
 
             <div className="dashboard-card">
-              <div className="label-small">Pending Utang Orders</div>
+              <div className="label-small">Pending Credit Orders</div>
               <div className="stat-value stat-value--utang">
                 {stats.pendingUtang}
               </div>
             </div>
 
             <div className="dashboard-card">
-              <div className="label-small">Pending Utang Amount</div>
+              <div className="label-small">Pending Credit Amount</div>
               <div className="stat-value stat-value--utang-amount">
                 ₱ {stats.pendingAmount}
               </div>

@@ -135,13 +135,7 @@ export default function PaymentsPage({ user }) {
 
   return (
     <div>
-      <section className="card">
-        <h2 className="card-title">Payment history</h2>
-        <p className="text-muted">
-          All orders that have payments recorded. Tap a card to see items and
-          payment details.
-        </p>
-      </section>
+     
 
       <section className="card">
         {loading ? (

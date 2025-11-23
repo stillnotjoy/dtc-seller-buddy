@@ -2960,9 +2960,6 @@ textarea {
   font: inherit;
 }
 
-
-.
-
 /* Mobile fixes */
 @media(max-width: 480px) {
   .app-header {

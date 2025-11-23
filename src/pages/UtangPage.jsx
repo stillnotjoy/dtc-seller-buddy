@@ -252,13 +252,7 @@ export default function UtangPage({ user }) {
 
   return (
     <div>
-      <section className="card">
-        <h2 className="card-title">Credit tracker</h2>
-        <p className="text-muted">
-          All pending credit (utang) orders. Record partial or full payments and see
-          where the money came from.
-        </p>
-      </section>
+      
 
       <section className="card">
         {loading ? (
