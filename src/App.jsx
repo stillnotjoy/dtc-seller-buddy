@@ -1,17 +1,19 @@
-import { useState, useEffect } from 'react';
-import { supabase } from './supabaseClient';
+import dimerrLogo from "/dimerr-logo.png";
 
-import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx';
-import ResetPasswordPage from './pages/ResetPasswordPage.jsx';
+import { useState, useEffect } from "react";
+import { supabase } from "./supabaseClient";
 
-import AuthPage from './pages/AuthPage';
-import CustomersPage from './pages/CustomersPage';
-import BrandsPage from './pages/BrandsPage';
-import OrdersPage from './pages/OrdersPage';
-import UtangPage from './pages/UtangPage';
-import DashboardPage from './pages/DashboardPage';
-import ProductsPage from './pages/ProductsPage';
-import PaymentsPage from './pages/PaymentsPage';
+import ForgotPasswordPage from "./pages/ForgotPasswordPage.jsx";
+import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
+
+import AuthPage from "./pages/AuthPage";
+import CustomersPage from "./pages/CustomersPage";
+import BrandsPage from "./pages/BrandsPage";
+import OrdersPage from "./pages/OrdersPage";
+import UtangPage from "./pages/UtangPage";
+import DashboardPage from "./pages/DashboardPage";
+import ProductsPage from "./pages/ProductsPage";
+import PaymentsPage from "./pages/PaymentsPage";
 
 import {
   LayoutDashboard,
@@ -21,29 +23,30 @@ import {
   Wallet,
   Tag,
   Package,
-} from 'lucide-react';
+  Bell,
+  Info,
+} from "lucide-react";
 
 function App() {
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
-  const [tab, setTab] = useState('dashboard');
+  const [tab, setTab] = useState("dashboard");
 
-  // authMode: "login" | "forgot"
-  const [authMode, setAuthMode] = useState('login');
-  // resetMode: true when coming from Supabase recovery link
-  const [resetMode, setResetMode] = useState(false);
+  const [authMode, setAuthMode] = useState("login"); // login | forgot
+  const [resetMode, setResetMode] = useState(false); // true when resetting password
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   const tabLabels = {
-    dashboard: 'Dashboard',
-    customers: 'Customers',
-    orders: 'Orders',
-    credit: 'Credit',
-    payments: 'Payments',
-    brands: 'Brands',
-    products: 'Products',
+    dashboard: "Dashboard",
+    customers: "Customers",
+    orders: "Orders",
+    credit: "Credit",
+    payments: "Payments",
+    brands: "Brands",
+    products: "Products",
   };
 
-  // Supabase auth listener
+  // ---------- Supabase auth ----------
   useEffect(() => {
     async function getInitialUser() {
       const { data, error } = await supabase.auth.getUser();
@@ -55,58 +58,48 @@ function App() {
 
     getInitialUser();
 
-  const { data: subscription } = supabase.auth.onAuthStateChange(
-  (event, session) => {
-    setUser(session?.user || null);
-
-    // When user comes from a password recovery email,
-    // Supabase sends this event.
-    if (event === 'PASSWORD_RECOVERY') {
-      setResetMode(true);
-    }
-  }
-);
-
+    const { data: subscription } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user || null);
+      }
+    );
 
     return () => {
       subscription.subscription.unsubscribe();
     };
   }, []);
 
-  // Detect Supabase password recovery link (?type=recovery)
+  // Detect reset link (?type=recovery)
   useEffect(() => {
-  try {
-    const url = new URL(window.location.href);
-
-    // ?type=recovery (query string)
-    const typeFromQuery = url.searchParams.get('type');
-
-    // #access_token=...&type=recovery (hash fragment)
-    const hash = url.hash.startsWith('#') ? url.hash.slice(1) : url.hash;
-    const hashParams = new URLSearchParams(hash);
-    const typeFromHash = hashParams.get('type');
-
-    if (typeFromQuery === 'recovery' || typeFromHash === 'recovery') {
-      setResetMode(true);
+    try {
+      const url = new URL(window.location.href);
+      const type = url.searchParams.get("type");
+      if (type === "recovery") {
+        setResetMode(true);
+      }
+    } catch {
+      // ignore
     }
-  } catch (e) {
-    // ignore
-  }
-}, []);
-
+  }, []);
 
   function scrollNav(amount) {
-    const nav = document.getElementById('bottomNav');
+    const nav = document.getElementById("bottomNav");
     if (nav) {
-      nav.scrollBy({ left: amount, behavior: 'smooth' });
+      nav.scrollBy({ left: amount, behavior: "smooth" });
     }
   }
 
   async function handleLogout() {
     await supabase.auth.signOut();
-    setTab('dashboard');
+    setTab("dashboard");
+    setUserMenuOpen(false);
+    setUser(null);
+    setAuthMode("login");
   }
 
+  const userInitial = user?.email?.[0]?.toUpperCase() || "U";
+
+  // ---------- Loading state ----------
   if (authLoading) {
     return (
       <div className="app-root">
@@ -117,7 +110,7 @@ function App() {
     );
   }
 
-  // If Supabase sent the user to reset password
+  // ---------- Reset password flow ----------
   if (resetMode) {
     return (
       <div className="app-root">
@@ -127,7 +120,7 @@ function App() {
               setResetMode(false);
               await supabase.auth.signOut();
               setUser(null);
-              setAuthMode('login');
+              setAuthMode("login");
             }}
           />
         </div>
@@ -135,69 +128,101 @@ function App() {
     );
   }
 
-  // If user NOT logged in → show Auth or Forgot screen
+  // ---------- Not logged in: auth / forgot ----------
   if (!user) {
     return (
       <div className="app-root">
         <div className="app-shell">
-          {authMode === 'login' && (
-            <AuthPage onForgotPassword={() => setAuthMode('forgot')} />
+          {authMode === "login" && (
+            <AuthPage onForgotPassword={() => setAuthMode("forgot")} />
           )}
 
-          {authMode === 'forgot' && (
-            <ForgotPasswordPage onBackToLogin={() => setAuthMode('login')} />
+          {authMode === "forgot" && (
+            <ForgotPasswordPage onBackToLogin={() => setAuthMode("login")} />
           )}
         </div>
       </div>
     );
   }
 
-  // Logged in → main app
+  // ---------- Logged in ----------
   return (
     <div className="app-root">
-      <div className="app-shell">
-        {/* Header */}
-        <header className="app-header">
-          <div className="app-header-top">
-            <div className="app-header-left">
-              <h1 className="app-title">DTC Seller Buddy</h1>
-              <p className="app-subtitle">For PC, Avon, Natasha &amp; more</p>
-            </div>
+  <div className="app-shell">
+    
+   <header className="app-header">
+  <div className="header-left">
+    <img src={dimerrLogo} alt="Dimerr" className="header-logo" />
 
-            <div className="app-header-right">
-              {user && (
-                <div className="app-user-chip">
-                  <span className="app-user-email">{user.email}</span>
-                  <button
-                    type="button"
-                    className="btn-chip"
-                    onClick={handleLogout}
-                  >
-                    Log out
-                  </button>
-                </div>
-              )}
+    <div className="header-titles">
+      <h1 className="header-title">Dimerr</h1>
+      <p className="header-tagline">Seller tools. simplified.</p>
+    </div>
+  </div>
 
-              <div className="app-current-tab">
-                {tabLabels[tab]?.toUpperCase()}
-              </div>
-            </div>
-          </div>
+  <div className="header-right">
+    {/* Bell */}
+    <button className="header-icon-btn">
+      <Bell size={18} className="icon-gray" />
+    </button>
 
-          <p className="app-subdesc">
-            Track customers, orders, profit &amp; credit in one place.
-          </p>
-        </header>
+    {/* Avatar */}
+    <div className="user-menu-wrapper">
+      <button
+        className="header-avatar"
+        onClick={() => setUserMenuOpen(prev => !prev)}
+      >
+        {userInitial}
+      </button>
+
+      {userMenuOpen && (
+        <div className="user-menu-dropdown">
+          <div className="user-menu-email">{user.email}</div>
+          <button
+            className="btn-secondary btn-small user-menu-logout"
+            onClick={handleLogout}
+          >
+            Log out
+          </button>
+        </div>
+      )}
+    </div>
+  </div>
+</header>
+
+
+
+    {/* everything else in App stays exactly as you have it now */}
+    {/* e.g. Dashboard title row, cards, bottom nav, etc. */}
+
+        {/* Page header (changes with tab) */}
+        <div className="page-header">
+          <h2 className="page-title">
+            {tabLabels[tab]}
+            <button
+              type="button"
+              className="info-icon"
+              aria-label="About this page"
+              title={
+                tab === "dashboard"
+                  ? "Overview of your sales, cost, profit and credit."
+                  : tabLabels[tab]
+              }
+            >
+              <Info size={14} />
+            </button>
+          </h2>
+        </div>
 
         {/* Main content */}
         <main className="app-main">
-          {tab === 'dashboard' && <DashboardPage user={user} />}
-          {tab === 'customers' && <CustomersPage user={user} />}
-          {tab === 'orders' && <OrdersPage user={user} />}
-          {tab === 'credit' && <UtangPage user={user} />}
-          {tab === 'payments' && <PaymentsPage user={user} />}
-          {tab === 'brands' && <BrandsPage user={user} />}
-          {tab === 'products' && <ProductsPage user={user} />}
+          {tab === "dashboard" && <DashboardPage user={user} />}
+          {tab === "customers" && <CustomersPage user={user} />}
+          {tab === "orders" && <OrdersPage user={user} />}
+          {tab === "credit" && <UtangPage user={user} />}
+          {tab === "payments" && <PaymentsPage user={user} />}
+          {tab === "brands" && <BrandsPage user={user} />}
+          {tab === "products" && <ProductsPage user={user} />}
         </main>
 
         {/* Bottom nav with icons */}
@@ -280,7 +305,7 @@ function NavButton({ label, tab, current, setTab, Icon }) {
   return (
     <button
       type="button"
-      className={`nav-button ${active ? 'nav-button--active' : ''}`}
+      className={`nav-button ${active ? "nav-button--active" : ""}`}
       onClick={() => setTab(tab)}
     >
       <span className="nav-button-icon">

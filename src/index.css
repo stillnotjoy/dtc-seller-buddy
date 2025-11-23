@@ -2959,122 +2959,9 @@ select,
 textarea {
   font: inherit;
 }
-/* Top app header layout */
-.app-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px 10px;
-}
 
-/* Left side: app name + tagline */
-.app-title-block {
-  display: flex;
-  flex-direction: column;
-  gap: 2px; /* small, tidy spacing */
-}
 
-/* Main app name */
-.app-title {
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  line-height: 1.1;          /* <— this is what stops the big vertical gap */
-  margin: 0;
-}
-
-/* “For PC, Avon, Natasha & more” + small tagline */
-.app-subtitle {
-  font-size: 11px;
-  color: #9ca3af;
-  line-height: 1.3;
-  margin: 0;
-}
-/* ==================== */
-/* TOP HEADER STYLING   */
-/* ==================== */
-
-.app-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 18px 22px 6px;
-}
-
-/* Left side: Title block */
-.app-title-block {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.app-title {
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 1.1; /* Fixes spacing between DTC / Seller / Buddy */
-  margin: 0;
-  color: #ffffff;
-}
-
-.app-subtitle {
-  font-size: 12px;
-  color: #9ca3af;
-  margin: 0;
-  line-height: 1.3;
-}
-
-/* Right side: email + logout + tab label */
-.app-header-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
-}
-
-.app-user-pill {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 30px;
-  padding: 4px 12px;
-  font-size: 13px;
-  color: #e5e7eb;
-}
-
-.app-user-pill .email {
-  max-width: 130px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.logout-btn {
-  background: none;
-  border: none;
-  color: #9ca3af;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.app-current-page {
-  font-size: 11px;
-  padding: 3px 10px;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.12);
-  color: #c9d1d9;
-  letter-spacing: 0.05em;
-}
-
-/* Description below header */
-.app-header-description {
-  margin: 2px 22px 12px;
-  font-size: 12px;
-  color: #9ca3af;
-}
+.
 
 /* Mobile fixes */
 @media(max-width: 480px) {
@@ -3089,104 +2976,7 @@ textarea {
   }
 }
 
-/* ========================= */
-/*     CLEAN APP HEADER      */
-/* ========================= */
 
-.app-header {
-  padding: 20px 22px 6px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  background: transparent;
-}
-
-/* TOP ROW - LEFT + RIGHT */
-.app-header-left,
-.app-header-right {
-  display: flex;
-  align-items: flex-start;
-}
-
-/* Space them apart horizontally */
-.app-header-left {
-  flex: 1;
-  flex-direction: column;
-  gap: 2px;
-}
-
-/* Title */
-.app-title {
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 22px;
-  font-weight: 700;
-  margin: 0;
-  color: #ffffff;
-  line-height: 1.15;   /* FIXES the stacked spacing */
-}
-
-/* Subtitle */
-.app-subtitle {
-  font-size: 13px;
-  color: #cbd5e1;
-  margin: 0;
-}
-
-/* Right side layout */
-.app-header-right {
-  margin-left: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
-}
-
-/* Email + Logout pill */
-.app-user-chip {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.15);
-  padding: 6px 12px;
-  border-radius: 30px;
-  font-size: 13px;
-  color: #e2e8f0;
-}
-
-.app-user-email {
-  max-width: 130px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Logout button */
-.btn-chip {
-  background: none;
-  border: none;
-  color: #94a3b8;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-/* Tab badge */
-.app-current-tab {
-  font-size: 11px;
-  padding: 3px 10px;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.12);
-  color: #d1d5db;
-  letter-spacing: 0.06em;
-}
-
-/* Bottom description */
-.app-subdesc {
-  margin: 0;
-  font-size: 12px;
-  color: #9ca3af;
-}
 
 /* RESPONSIVE FIXES */
 @media (max-width: 480px) {
@@ -3947,4 +3737,273 @@ textarea {
 
 .payment-separator {
   color: #4b5563; /* slightly darker dot */
+}
+
+.app-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-brand-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 6px; /* optional – for softer look */
+}
+
+
+/* ---------- App header (Dimerr) ---------- */
+
+.app-header {
+  /* make it a slim bar, not a huge hero card */
+  margin-bottom: 16px;
+  padding: 14px 20px;
+  border-radius: 24px;
+  background: #020617;
+  border: 1px solid #111827;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* left side: logo + name + tagline */
+.app-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.app-title-block {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.app-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #f9fafb;
+  line-height: 1.2;
+}
+
+.app-subtitle {
+  font-size: 12px;
+  color: #9ca3af;
+  line-height: 1.3;
+}
+
+/* right side: bell + avatar side-by-side */
+.app-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* circular icon buttons */
+.icon-circle,
+.user-avatar-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #1f2937;
+  background: transparent;
+  color: #9ca3af;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.icon-circle:hover,
+.user-avatar-circle:hover {
+  background: #0b1120;
+  border-color: #374151;
+  color: #e5e7eb;
+}
+
+/* make the bell grayscale, matching nav icons */
+.icon-circle .icon-gray {
+  stroke: #9ca3af;
+}
+
+/* avatar letter */
+.user-avatar-circle {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* dropdown under avatar */
+.user-menu-wrapper {
+  position: relative;
+}
+
+.user-menu-dropdown {
+  position: absolute;
+  right: 0;
+  top: 38px;
+  min-width: 180px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #020617;
+  border: 1px solid #111827;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+  z-index: 20;
+}
+
+.user-menu-email {
+  font-size: 12px;
+  color: #e5e7eb;
+  margin-bottom: 8px;
+  word-break: break-all;
+}
+
+.user-menu-logout {
+  width: 100%;
+}
+/* ---------- HEADER RESET ---------- */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 22px;
+  background: #0b1628;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-radius: 0;     /* remove rounded card look */
+  margin-bottom: 10px;  /* small spacing above page title */
+}
+
+/* Left section */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+}
+
+.header-titles {
+  display: flex;
+  flex-direction: column;
+}
+
+.header-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.header-tagline {
+  font-size: 0.78rem;
+  opacity: 0.7;
+  margin: 0;
+}
+
+/* Right section */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.header-icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-gray {
+  color: #c7c7c7;
+}
+
+/* Avatar */
+.header-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #fff;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Dropdown */
+.user-menu-wrapper {
+  position: relative;
+}
+
+.user-menu-dropdown {
+  position: absolute;
+  top: 44px;
+  right: 0;
+  background: #101d33;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 12px;
+  min-width: 180px;
+  z-index: 50;
+}
+
+.user-menu-email {
+  font-size: 0.8rem;
+  margin-bottom: 8px;
+  opacity: 0.85;
+}
+
+/* Page header row (Dashboard, Customers, etc.) */
+.page-header {
+  padding: 12px 24px 0;    /* same side padding as your cards */
+}
+
+/* The text + info icon */
+.page-title {
+  font-size: 1rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;                /* small space between text and icon */
+  margin: 0;
+}
+/* The little (i) icon beside Dashboard */
+.info-icon {
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: help;          /* shows “help” cursor on hover */
+  color: #9ca3af;        /* soft grey */
+}
+
+.info-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Optional: slight brighten on hover */
+.info-icon:hover {
+  color: #e5e7eb;
 }
