@@ -180,6 +180,60 @@ function App() {
       </div>
     );
   }
+  // Check / request notification permission
+  async function ensureNotificationPermission() {
+    if (typeof window === "undefined" || !("Notification" in window)) {
+      console.log("Browser notifications not supported.");
+      return "unsupported";
+    }
+
+    if (Notification.permission === "granted") return "granted";
+    if (Notification.permission === "denied") return "denied";
+
+    const result = await Notification.requestPermission();
+    return result; // "granted" | "denied" | "default"
+  }
+
+  // Simple test notification (not tied to orders yet)
+  function showTestNotification() {
+    if (
+      typeof window === "undefined" ||
+      !("Notification" in window) ||
+      Notification.permission !== "granted"
+    ) {
+      console.log("Notification not shown: permission not granted.");
+      return;
+    }
+
+    new Notification("Dimerr notifications are on", {
+      body: "We’ll remind you about important seller activity here.",
+      icon: "/dimerr-logo.png",
+      requireInteraction: true,
+      vibrate: [200, 100, 200],
+    });
+  }
+
+  async function handleBellClick() {
+    console.log("Bell clicked – running notification function");
+
+    const perm = await ensureNotificationPermission();
+
+    if (perm === "denied") {
+      alert(
+        "Notifications are blocked for this site. Please enable them in your browser settings if you want browser alerts."
+      );
+      return;
+    }
+
+    if (perm === "granted") {
+      showTestNotification();
+      return;
+    }
+
+    // If "default" (user closed prompt), just log it for now
+    console.log("Notification permission:", perm);
+  }
+
 
   // ---------- Logged in ----------
   return (
@@ -200,14 +254,15 @@ function App() {
 
             <div className="app-header-right">
               {/* Bell icon */}
-              <button
-                type="button"
-                className="icon-circle"
-                aria-label="Notifications"
-                onClick={handleBellClick}
-              >
-                <Bell size={18} className="icon-gray" />
-              </button>
+             <button
+  type="button"
+  className="icon-circle"
+  aria-label="Notifications"
+  onClick={handleBellClick}
+>
+  <Bell size={18} className="icon-gray" />
+</button>
+
 
               {/* User avatar + dropdown */}
               <div className="user-menu-wrapper">
