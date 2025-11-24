@@ -99,9 +99,8 @@ function App() {
 
   const userInitial = user?.email?.[0]?.toUpperCase() || "U";
 
-  // ---------- Browser notifications helpers ----------
+  // ---------- Notification helpers ----------
 
-  // Check / request notification permission
   async function ensureNotificationPermission() {
     if (typeof window === "undefined" || !("Notification" in window)) {
       console.log("Browser notifications not supported.");
@@ -115,24 +114,50 @@ function App() {
     return result; // "granted" | "denied" | "default"
   }
 
-  // Simple demo notification (you can upgrade this later to show real due-credit data)
-  async function handleBellClick() {
-    const perm = await ensureNotificationPermission();
+  function showTestNotification() {
+    if (
+      typeof window === "undefined" ||
+      !("Notification" in window) ||
+      Notification.permission !== "granted"
+    ) {
+      return;
+    }
 
-    console.log("Bell clicked – running notification function");
-
-    if (perm === "granted") {
-      new Notification("Dimerr notifications enabled", {
-        body: "We’ll remind you about important seller activity here.",
+    try {
+      new Notification("Dimerr test reminder", {
+        body: "This is a sample reminder from Dimerr.",
         icon: "/dimerr-logo.png",
       });
-    } else if (perm === "denied") {
-      alert(
-        "Browser notifications are blocked. You can enable them in your browser settings if you change your mind."
-      );
-    } else if (perm === "unsupported") {
-      alert("This browser does not support notifications.");
+    } catch (err) {
+      console.error("Error creating notification:", err);
     }
+  }
+
+  async function handleBellClick() {
+    console.log("Bell clicked – running notification function");
+
+    const perm = await ensureNotificationPermission();
+
+    if (perm === "denied") {
+      alert(
+        "Notifications are blocked for this site in your browser settings. Please allow them in Chrome → Site settings → Notifications."
+      );
+      return;
+    }
+
+    if (perm === "unsupported") {
+      alert("This browser does not support notifications.");
+      return;
+    }
+
+    if (perm === "default") {
+      // user closed the prompt without choosing
+      alert("Notification permission not granted. Please try again and click 'Allow'.");
+      return;
+    }
+
+    // If we reach here → "granted"
+    showTestNotification();
   }
 
   // ---------- Loading state ----------
@@ -180,60 +205,6 @@ function App() {
       </div>
     );
   }
-  // Check / request notification permission
-  async function ensureNotificationPermission() {
-    if (typeof window === "undefined" || !("Notification" in window)) {
-      console.log("Browser notifications not supported.");
-      return "unsupported";
-    }
-
-    if (Notification.permission === "granted") return "granted";
-    if (Notification.permission === "denied") return "denied";
-
-    const result = await Notification.requestPermission();
-    return result; // "granted" | "denied" | "default"
-  }
-
-  // Simple test notification (not tied to orders yet)
-  function showTestNotification() {
-    if (
-      typeof window === "undefined" ||
-      !("Notification" in window) ||
-      Notification.permission !== "granted"
-    ) {
-      console.log("Notification not shown: permission not granted.");
-      return;
-    }
-
-    new Notification("Dimerr notifications are on", {
-      body: "We’ll remind you about important seller activity here.",
-      icon: "/dimerr-logo.png",
-      requireInteraction: true,
-      vibrate: [200, 100, 200],
-    });
-  }
-
-  async function handleBellClick() {
-    console.log("Bell clicked – running notification function");
-
-    const perm = await ensureNotificationPermission();
-
-    if (perm === "denied") {
-      alert(
-        "Notifications are blocked for this site. Please enable them in your browser settings if you want browser alerts."
-      );
-      return;
-    }
-
-    if (perm === "granted") {
-      showTestNotification();
-      return;
-    }
-
-    // If "default" (user closed prompt), just log it for now
-    console.log("Notification permission:", perm);
-  }
-
 
   // ---------- Logged in ----------
   return (
@@ -254,15 +225,14 @@ function App() {
 
             <div className="app-header-right">
               {/* Bell icon */}
-             <button
-  type="button"
-  className="icon-circle"
-  aria-label="Notifications"
-  onClick={handleBellClick}
->
-  <Bell size={18} className="icon-gray" />
-</button>
-
+              <button
+                type="button"
+                className="icon-circle"
+                aria-label="Notifications"
+                onClick={handleBellClick}
+              >
+                <Bell size={18} className="icon-gray" />
+              </button>
 
               {/* User avatar + dropdown */}
               <div className="user-menu-wrapper">
