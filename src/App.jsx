@@ -99,6 +99,40 @@ function App() {
 
   const userInitial = user?.email?.[0]?.toUpperCase() || "U";
 
+  // ---------- Browser notifications helpers ----------
+
+  // Check / request notification permission
+  async function ensureNotificationPermission() {
+    if (typeof window === "undefined" || !("Notification" in window)) {
+      console.log("Browser notifications not supported.");
+      return "unsupported";
+    }
+
+    if (Notification.permission === "granted") return "granted";
+    if (Notification.permission === "denied") return "denied";
+
+    const result = await Notification.requestPermission();
+    return result; // "granted" | "denied" | "default"
+  }
+
+  // Simple demo notification (you can upgrade this later to show real due-credit data)
+  async function handleBellClick() {
+    const perm = await ensureNotificationPermission();
+
+    if (perm === "granted") {
+      new Notification("Dimerr notifications enabled", {
+        body: "We’ll remind you about important seller activity here.",
+        icon: "/dimerr-logo.png",
+      });
+    } else if (perm === "denied") {
+      alert(
+        "Browser notifications are blocked. You can enable them in your browser settings if you change your mind."
+      );
+    } else if (perm === "unsupported") {
+      alert("This browser does not support notifications.");
+    }
+  }
+
   // ---------- Loading state ----------
   if (authLoading) {
     return (
@@ -168,6 +202,7 @@ function App() {
                 type="button"
                 className="icon-circle"
                 aria-label="Notifications"
+                onClick={handleBellClick}
               >
                 <Bell size={18} className="icon-gray" />
               </button>
