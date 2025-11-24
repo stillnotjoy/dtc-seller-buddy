@@ -36,6 +36,9 @@ function App() {
   const [resetMode, setResetMode] = useState(false); // true when resetting password
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
+  // 🔔 notification state (for future dropdown if you want)
+  const [notifications, setNotifications] = useState([]);
+
   const tabLabels = {
     dashboard: "Dashboard",
     customers: "Customers",
@@ -101,53 +104,102 @@ function App() {
 
   // ---------- Notification helpers ----------
 
+  // Ask browser for permission if needed
   async function ensureNotificationPermission() {
     if (typeof window === "undefined" || !("Notification" in window)) {
       console.log("Browser notifications not supported.");
       return "unsupported";
     }
 
-    console.log("Notification.permission before:", Notification.permission);
-
     if (Notification.permission === "granted") return "granted";
     if (Notification.permission === "denied") return "denied";
 
     const result = await Notification.requestPermission();
-    console.log("Notification.requestPermission() →", result);
     return result; // "granted" | "denied" | "default"
   }
 
-  function showTestNotification() {
+  // Load pending utang/credit orders as "notifications"
+  async function loadNotifications() {
+    if (!user) return [];
+
+    const todayStr = new Date().toISOString().slice(0, 10);
+
+    const { data, error } = await supabase
+      .from("orders")
+      .select(
+        `
+        id,
+        order_date,
+        due_date,
+        total_srp,
+        paid_amount,
+        status,
+        payment_type,
+        customers ( name )
+      `
+      )
+      .eq("seller_id", user.id)
+      .in("payment_type", ["utang", "credit"])
+      .eq("status", "pending")
+      // only future / today, you can remove this if you want all pending
+      .gte("due_date", todayStr)
+      .order("due_date", { ascending: true })
+      .limit(10);
+
+    if (error) {
+      console.error("Error loading notifications:", error);
+      setNotifications([]);
+      return [];
+    }
+
+    const list = data || [];
+    setNotifications(list);
+    return list;
+  }
+
+  // Build and show a real system notification for a single order
+  function showOrderNotification(order) {
     if (
       typeof window === "undefined" ||
       !("Notification" in window) ||
       Notification.permission !== "granted"
     ) {
-      console.log("Cannot show notification – permission:", Notification.permission);
       return;
     }
 
-    // This alert guarantees you SEE that the code path ran
-    alert(
-      "Test notification fired – if you don't see a system popup, check OS / browser notification settings."
-    );
+    const total = order.total_srp || 0;
+    const paid = order.paid_amount || 0;
+    const remaining = Math.max(0, total - paid);
+    const customerName = order.customers?.name || "Customer";
+    const dueDate = order.due_date || "";
+
+    const title = `Credit due: ${customerName}`;
+    const body = `Balance ₱${remaining} • Due on ${dueDate}`;
 
     try {
-      const n = new Notification("Dimerr test reminder", {
-        body: "This is a sample reminder from Dimerr.",
+      new Notification(title, {
+        body,
         icon: "/dimerr-logo.png",
       });
-      console.log("Notification object created:", n);
     } catch (err) {
       console.error("Error creating notification:", err);
+      alert(
+        `Reminder for ${customerName} (₱${remaining} due on ${dueDate}).\nYour system blocked the visual notification.`
+      );
     }
   }
 
+  // Click handler for the bell
   async function handleBellClick() {
     console.log("Bell clicked – running notification function");
 
     const perm = await ensureNotificationPermission();
-    console.log("Final permission:", perm);
+    console.log("Notification permission:", perm);
+
+    if (perm === "unsupported") {
+      alert("This browser does not support notifications.");
+      return;
+    }
 
     if (perm === "denied") {
       alert(
@@ -156,20 +208,41 @@ function App() {
       return;
     }
 
-    if (perm === "unsupported") {
-      alert("This browser does not support notifications.");
-      return;
-    }
-
     if (perm === "default") {
+      // user closed the prompt without choosing
       alert(
-        "Notification permission not granted. Please try again and click 'Allow'."
+        "Notification permission wasn’t granted. Please click the bell again and choose 'Allow'."
       );
       return;
     }
 
-    // If we reach here → "granted"
-    showTestNotification();
+    // At this point, permission is "granted"
+    const list = await loadNotifications();
+
+    if (!list || list.length === 0) {
+      // no pending credit orders
+      try {
+        new Notification("Dimerr", {
+          body: "You have no pending credit orders. 🎉",
+          icon: "/dimerr-logo.png",
+        });
+      } catch {
+        // fallback if system blocks the banner
+        alert("You have no pending credit orders. 🎉");
+      }
+      return;
+    }
+
+    // Use the soonest-due order
+    const soonest = [...list].sort(
+      (a, b) => new Date(a.due_date) - new Date(b.due_date)
+    )[0];
+
+    showOrderNotification(soonest);
+
+    // Also a little confirmation for you inside the app
+    const name = soonest.customers?.name || "customer";
+    alert(`Reminder sent for ${name}'s next credit payment.`);
   }
 
   // ---------- Loading state ----------
@@ -222,6 +295,7 @@ function App() {
   return (
     <div className="app-root">
       <div className="app-shell">
+        {/* This wrapper makes header, page title and cards share the SAME width */}
         <div className="app-inner">
           {/* Header */}
           <header className="app-header">
@@ -272,7 +346,7 @@ function App() {
             </div>
           </header>
 
-          {/* Page header */}
+          {/* Page header (Dashboard / Customers / etc) */}
           <div className="page-header">
             <h2 className="page-title">
               {tabLabels[tab]}
@@ -291,7 +365,7 @@ function App() {
             </h2>
           </div>
 
-          {/* Main content */}
+          {/* Main content cards */}
           <main className="app-main">
             {tab === "dashboard" && <DashboardPage user={user} />}
             {tab === "customers" && <CustomersPage user={user} />}
@@ -302,7 +376,7 @@ function App() {
             {tab === "products" && <ProductsPage user={user} />}
           </main>
 
-          {/* Bottom nav */}
+          {/* Bottom nav with icons */}
           <div className="nav-wrapper">
             <button
               className="nav-arrow left"
