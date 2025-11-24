@@ -4591,7 +4591,7 @@ textarea {
 .app-shell {
   display: flex;
   justify-content: center;
-  padding: 24px 12px 80px;
+  padding: 24px 12px 18px;
 }
 
 .app-inner {
