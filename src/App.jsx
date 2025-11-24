@@ -128,7 +128,7 @@ function App() {
     );
   }
 
-  // ---------- Not logged in: auth / forgot ----------
+  // ---------- Not logged in ----------
   if (!user) {
     return (
       <div className="app-root">
@@ -148,152 +148,157 @@ function App() {
   // ---------- Logged in ----------
   return (
     <div className="app-root">
-  <div className="app-shell">
-    
-   <header className="app-header">
-  <div className="header-left">
-    <img src={dimerrLogo} alt="Dimerr" className="header-logo" />
+      <div className="app-shell">
+        {/* This wrapper makes header, page title and cards share the SAME width */}
+        <div className="app-inner">
+          {/* Header */}
+          <header className="app-header">
+            <div className="app-header-left">
+              <img src={dimerrLogo} alt="Dimerr" className="app-logo" />
 
-    <div className="header-titles">
-      <h1 className="header-title">Dimerr</h1>
-      <p className="header-tagline">Seller tools. simplified.</p>
-    </div>
-  </div>
+              <div className="app-title-block">
+                <h1 className="app-title">Dimerr</h1>
+                <p className="app-subtitle">Seller tools. simplified.</p>
+              </div>
+            </div>
 
-  <div className="header-right">
-    {/* Bell */}
-    <button className="header-icon-btn">
-      <Bell size={18} className="icon-gray" />
-    </button>
+            <div className="app-header-right">
+              {/* Bell icon */}
+              <button
+                type="button"
+                className="icon-circle"
+                aria-label="Notifications"
+              >
+                <Bell size={18} className="icon-gray" />
+              </button>
 
-    {/* Avatar */}
-    <div className="user-menu-wrapper">
-      <button
-        className="header-avatar"
-        onClick={() => setUserMenuOpen(prev => !prev)}
-      >
-        {userInitial}
-      </button>
+              {/* User avatar + dropdown */}
+              <div className="user-menu-wrapper">
+                <button
+                  type="button"
+                  className="user-avatar-circle"
+                  onClick={() => setUserMenuOpen((prev) => !prev)}
+                  aria-label="Account menu"
+                >
+                  {userInitial}
+                </button>
 
-      {userMenuOpen && (
-        <div className="user-menu-dropdown">
-          <div className="user-menu-email">{user.email}</div>
-          <button
-            className="btn-secondary btn-small user-menu-logout"
-            onClick={handleLogout}
-          >
-            Log out
-          </button>
-        </div>
-      )}
-    </div>
-  </div>
-</header>
+                {userMenuOpen && (
+                  <div className="user-menu-dropdown">
+                    <div className="user-menu-email">{user?.email}</div>
+                    <button
+                      type="button"
+                      className="btn-secondary btn-small user-menu-logout"
+                      onClick={handleLogout}
+                    >
+                      Log out
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </header>
 
+          {/* Page header (Dashboard / Customers / etc) */}
+          <div className="page-header">
+            <h2 className="page-title">
+              {tabLabels[tab]}
+              <button
+                type="button"
+                className="info-icon"
+                aria-label="About this page"
+                title={
+                  tab === "dashboard"
+                    ? "Overview of your sales, cost, profit and credit."
+                    : tabLabels[tab]
+                }
+              >
+                <Info size={14} />
+              </button>
+            </h2>
+          </div>
 
+          {/* Main content cards */}
+          <main className="app-main">
+            {tab === "dashboard" && <DashboardPage user={user} />}
+            {tab === "customers" && <CustomersPage user={user} />}
+            {tab === "orders" && <OrdersPage user={user} />}
+            {tab === "credit" && <UtangPage user={user} />}
+            {tab === "payments" && <PaymentsPage user={user} />}
+            {tab === "brands" && <BrandsPage user={user} />}
+            {tab === "products" && <ProductsPage user={user} />}
+          </main>
 
-    {/* everything else in App stays exactly as you have it now */}
-    {/* e.g. Dashboard title row, cards, bottom nav, etc. */}
-
-        {/* Page header (changes with tab) */}
-        <div className="page-header">
-          <h2 className="page-title">
-            {tabLabels[tab]}
+          {/* Bottom nav with icons */}
+          <div className="nav-wrapper">
             <button
+              className="nav-arrow left"
               type="button"
-              className="info-icon"
-              aria-label="About this page"
-              title={
-                tab === "dashboard"
-                  ? "Overview of your sales, cost, profit and credit."
-                  : tabLabels[tab]
-              }
+              onClick={() => scrollNav(-120)}
             >
-              <Info size={14} />
+              ◀
             </button>
-          </h2>
-        </div>
 
-        {/* Main content */}
-        <main className="app-main">
-          {tab === "dashboard" && <DashboardPage user={user} />}
-          {tab === "customers" && <CustomersPage user={user} />}
-          {tab === "orders" && <OrdersPage user={user} />}
-          {tab === "credit" && <UtangPage user={user} />}
-          {tab === "payments" && <PaymentsPage user={user} />}
-          {tab === "brands" && <BrandsPage user={user} />}
-          {tab === "products" && <ProductsPage user={user} />}
-        </main>
+            <nav id="bottomNav" className="bottom-nav-scroll">
+              <NavButton
+                label="Dashboard"
+                tab="dashboard"
+                current={tab}
+                setTab={setTab}
+                Icon={LayoutDashboard}
+              />
+              <NavButton
+                label="Customers"
+                tab="customers"
+                current={tab}
+                setTab={setTab}
+                Icon={Users}
+              />
+              <NavButton
+                label="Orders"
+                tab="orders"
+                current={tab}
+                setTab={setTab}
+                Icon={ShoppingCart}
+              />
+              <NavButton
+                label="Credit"
+                tab="credit"
+                current={tab}
+                setTab={setTab}
+                Icon={CreditCard}
+              />
+              <NavButton
+                label="Payments"
+                tab="payments"
+                current={tab}
+                setTab={setTab}
+                Icon={Wallet}
+              />
+              <NavButton
+                label="Brands"
+                tab="brands"
+                current={tab}
+                setTab={setTab}
+                Icon={Tag}
+              />
+              <NavButton
+                label="Products"
+                tab="products"
+                current={tab}
+                setTab={setTab}
+                Icon={Package}
+              />
+            </nav>
 
-        {/* Bottom nav with icons */}
-        <div className="nav-wrapper">
-          <button
-            className="nav-arrow left"
-            type="button"
-            onClick={() => scrollNav(-120)}
-          >
-            ◀
-          </button>
-
-          <nav id="bottomNav" className="bottom-nav-scroll">
-            <NavButton
-              label="Dashboard"
-              tab="dashboard"
-              current={tab}
-              setTab={setTab}
-              Icon={LayoutDashboard}
-            />
-            <NavButton
-              label="Customers"
-              tab="customers"
-              current={tab}
-              setTab={setTab}
-              Icon={Users}
-            />
-            <NavButton
-              label="Orders"
-              tab="orders"
-              current={tab}
-              setTab={setTab}
-              Icon={ShoppingCart}
-            />
-            <NavButton
-              label="Credit"
-              tab="credit"
-              current={tab}
-              setTab={setTab}
-              Icon={CreditCard}
-            />
-            <NavButton
-              label="Payments"
-              tab="payments"
-              current={tab}
-              setTab={setTab}
-              Icon={Wallet}
-            />
-            <NavButton
-              label="Brands"
-              tab="brands"
-              current={tab}
-              setTab={setTab}
-              Icon={Tag}
-            />
-            <NavButton
-              label="Products"
-              tab="products"
-              current={tab}
-              setTab={setTab}
-              Icon={Package}
-            />
-          </nav>
-
-          <button
-            className="nav-arrow right"
-            type="button"
-            onClick={() => scrollNav(120)}
-          >
-            ▶
-          </button>
+            <button
+              className="nav-arrow right"
+              type="button"
+              onClick={() => scrollNav(120)}
+            >
+              ▶
+            </button>
+          </div>
         </div>
       </div>
     </div>
