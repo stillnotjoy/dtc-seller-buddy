@@ -4878,3 +4878,112 @@ textarea {
 .info-icon:hover {
   color: #e7f2ff;
 }
+
+
+/* Wrapper centers the auth card */
+.auth-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+/* Glass login card */
+.glass-auth {
+  padding: 22px;
+  border-radius: 20px;
+  max-width: 430px;
+  width: 100%;
+  background: radial-gradient(circle at top left,#0f213f 0%,#050b16 55%,#060910 100%);
+  border: 1px solid rgba(255,255,255,0.05);
+  box-shadow: 0 14px 40px rgba(0,0,0,0.45);
+}
+
+/* Logo + title block */
+.auth-header-block {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.auth-logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+}
+
+.auth-title {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.auth-subtitle {
+  margin: 2px 0 0;
+  font-size: 0.82rem;
+  opacity: 0.7;
+}
+
+/* Tabs */
+.auth-tabs {
+  display: flex;
+  background: rgba(255,255,255,0.05);
+  padding: 4px;
+  border-radius: 999px;
+  margin-bottom: 18px;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 8px 0;
+  border-radius: 999px;
+  background: transparent;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.auth-tab--active {
+  background: linear-gradient(90deg,#32b8ff,#54ffe9);
+  color: #001015;
+  font-weight: 600;
+}
+
+/* Fields */
+.auth-field {
+  margin-bottom: 12px;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.07);
+}
+
+/* Password eye */
+.auth-password-field {
+  position: relative;
+}
+
+.auth-eye-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* Forgot password link */
+.auth-forgot {
+  margin-top: 12px;
+  text-decoration: underline;
+  font-size: 14px;
+  background: none;
+  border: none;
+  color: #cfd8f0;
+  cursor: pointer;
+}
