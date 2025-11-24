@@ -152,7 +152,9 @@ function App() {
 
     if (perm === "default") {
       // user closed the prompt without choosing
-      alert("Notification permission not granted. Please try again and click 'Allow'.");
+      alert(
+        "Notification permission not granted. Please try again and click 'Allow'."
+      );
       return;
     }
 
