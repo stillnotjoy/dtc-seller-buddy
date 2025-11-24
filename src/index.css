@@ -4987,3 +4987,18 @@ textarea {
   color: #cfd8f0;
   cursor: pointer;
 }
+/* Reduce bottom blank space in the app */
+.app-shell {
+  padding: 24px 12px 20px !important;
+}
+
+/* Tighten nav spacing */
+.nav-wrapper {
+  margin-top: 12px !important;
+  margin-bottom: 0 !important;
+}
+
+.nav-wrapper-inner {
+  margin: 0 !important;
+  padding: 6px 12px !important;
+}
