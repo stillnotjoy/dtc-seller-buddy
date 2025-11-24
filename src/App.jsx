@@ -107,10 +107,13 @@ function App() {
       return "unsupported";
     }
 
+    console.log("Notification.permission before:", Notification.permission);
+
     if (Notification.permission === "granted") return "granted";
     if (Notification.permission === "denied") return "denied";
 
     const result = await Notification.requestPermission();
+    console.log("Notification.requestPermission() →", result);
     return result; // "granted" | "denied" | "default"
   }
 
@@ -120,14 +123,21 @@ function App() {
       !("Notification" in window) ||
       Notification.permission !== "granted"
     ) {
+      console.log("Cannot show notification – permission:", Notification.permission);
       return;
     }
 
+    // This alert guarantees you SEE that the code path ran
+    alert(
+      "Test notification fired – if you don't see a system popup, check OS / browser notification settings."
+    );
+
     try {
-      new Notification("Dimerr test reminder", {
+      const n = new Notification("Dimerr test reminder", {
         body: "This is a sample reminder from Dimerr.",
         icon: "/dimerr-logo.png",
       });
+      console.log("Notification object created:", n);
     } catch (err) {
       console.error("Error creating notification:", err);
     }
@@ -137,6 +147,7 @@ function App() {
     console.log("Bell clicked – running notification function");
 
     const perm = await ensureNotificationPermission();
+    console.log("Final permission:", perm);
 
     if (perm === "denied") {
       alert(
@@ -151,7 +162,6 @@ function App() {
     }
 
     if (perm === "default") {
-      // user closed the prompt without choosing
       alert(
         "Notification permission not granted. Please try again and click 'Allow'."
       );
@@ -212,7 +222,6 @@ function App() {
   return (
     <div className="app-root">
       <div className="app-shell">
-        {/* This wrapper makes header, page title and cards share the SAME width */}
         <div className="app-inner">
           {/* Header */}
           <header className="app-header">
@@ -263,7 +272,7 @@ function App() {
             </div>
           </header>
 
-          {/* Page header (Dashboard / Customers / etc) */}
+          {/* Page header */}
           <div className="page-header">
             <h2 className="page-title">
               {tabLabels[tab]}
@@ -282,7 +291,7 @@ function App() {
             </h2>
           </div>
 
-          {/* Main content cards */}
+          {/* Main content */}
           <main className="app-main">
             {tab === "dashboard" && <DashboardPage user={user} />}
             {tab === "customers" && <CustomersPage user={user} />}
@@ -293,7 +302,7 @@ function App() {
             {tab === "products" && <ProductsPage user={user} />}
           </main>
 
-          {/* Bottom nav with icons */}
+          {/* Bottom nav */}
           <div className="nav-wrapper">
             <button
               className="nav-arrow left"
