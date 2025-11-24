@@ -119,6 +119,8 @@ function App() {
   async function handleBellClick() {
     const perm = await ensureNotificationPermission();
 
+    console.log("Bell clicked – running notification function");
+
     if (perm === "granted") {
       new Notification("Dimerr notifications enabled", {
         body: "We’ll remind you about important seller activity here.",
