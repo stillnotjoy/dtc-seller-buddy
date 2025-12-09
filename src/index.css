@@ -1,35 +1,6 @@
-/* Inter font */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-:root {
-  --bg-main: #020617;         /* slate-950 */
-  --bg-shell: rgba(15, 23, 42, 0.95); /* slate-900-ish */
-  --bg-card: rgba(15, 23, 42, 0.9);
-  --border-subtle: #1e293b;   /* slate-800 */
-  --text-main: #e5e7eb;       /* slate-200 */
-  --text-muted: #94a3b8;      /* slate-400 */
-  --text-soft: #64748b;       /* slate-500 */
-  --accent: #0ea5e9;          /* sky-500 */
-  --accent-soft: #38bdf8;     /* sky-400 */
-}
-
-html, body {
-  background: #0f1625 !important;
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  font-family: 'Inter', system-ui, sans-serif;
-}
-
-.app-root {
-  background: #0f1625 !important;
-}
-
-.app-shell {
-  background: #0f1625 !important;
-}
-
-
+/* ===========================
+   GLOBAL RESET / BASE
+   =========================== */
 
 *,
 *::before,
@@ -37,166 +8,618 @@ html, body {
   box-sizing: border-box;
 }
 
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
 
-/* ---- App layout ---- */
+/* Full dark background */
+body {
+  background: #020617; /* slate-950 */
+  color: #e5e7eb;
+}
 
+/* ===========================
+   APP LAYOUT (MOBILE FIRST)
+   =========================== */
+
+/* Outer wrapper (full screen, dark) */
 .app-root {
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
+  background: #020617;
 }
 
+/* Phone shell (centred column on desktop, full width on mobile) */
 .app-shell {
-  width: 100%;
-  max-width: 420px;
-  background: var(--bg-shell);
-  border: 1px solid var(--border-subtle);
-  border-radius: 24px;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.8);
+  min-height: 100vh;
+  max-width: 480px;
+  margin: 0 auto;
+  background: #020617;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
-/* Header */
+/* Main scrollable content area */
+.app-main {
+  flex: 1;
+  padding: 8px 16px 80px; /* extra bottom space for nav */
+  background: #020617;
+  color: #e5e7eb;
+  overflow-y: auto;
+}
+
+/* Make all main pages inherit dark background */
+.dashboard-page,
+.sales-page,
+.customers-page,
+.more-page,
+section,
+main {
+  background: transparent;
+}
+
+/* ===========================
+   HEADER (YouTube-style, flat)
+   =========================== */
 
 .app-header {
-  padding: 16px 16px 12px;
-  border-bottom: 1px solid var(--border-subtle);
-}
+  position: sticky;
+  top: 0;
+  z-index: 30;
 
-.app-header-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 4px;
+
+  padding: 10px 16px;
+  background: #020617;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.app-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-logo {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+}
+
+.app-title-block {
+  display: flex;
+  flex-direction: column;
 }
 
 .app-title {
-  font-size: 15px;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #f9fafb;
+}
+
+.app-subtitle {
+  margin: 0;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.app-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: #e5e7eb;
+  cursor: pointer;
+}
+
+.user-avatar-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: #0f172a;
+  color: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* User menu */
+.user-menu-wrapper {
+  position: relative;
+}
+
+.user-menu-dropdown {
+  position: absolute;
+  right: 0;
+  top: 40px;
+  min-width: 180px;
+  background: #020617;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  padding: 8px 10px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+  z-index: 50;
+}
+
+.user-menu-email {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-bottom: 6px;
+}
+
+.user-menu-logout {
+  width: 100%;
+}
+
+/* ===========================
+   PAGE HEADER (tab title)
+   =========================== */
+
+.page-header {
+  padding: 8px 16px 4px;
+  background: #020617;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #f9fafb;
+}
+
+/* ===========================
+   DASHBOARD KPI TILES
+   =========================== */
+
+.dashboard-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* first section */
+.dashboard-section--kpis {
+  margin-top: 4px;
+}
+
+.dashboard-section {
+  margin-bottom: 24px;
+}
+
+/* mobile: stacked tiles; desktop: 2 columns */
+.kpi-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+@media (min-width: 768px) {
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* glassy but mostly solid tiles */
+.kpi-tile {
+  border-radius: 16px;
+  padding: 14px 16px 12px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.65);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  color: #e5e7eb;
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.kpi-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 48px rgba(15, 23, 42, 0.9);
+}
+
+.kpi-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9ca3af;
+}
+
+.kpi-value {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.kpi-value--profit {
+  color: #4ade80;
+}
+
+.kpi-value--warn {
+  color: #facc15;
+}
+
+.kpi-value--danger {
+  color: #f97373;
+}
+
+/* ===========================
+   SALES BY BRAND CARD
+   =========================== */
+
+.section-title {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #e5e7eb;
+}
+
+.salesbrand-card {
+  border-radius: 16px;
+  padding: 12px 16px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.7);
+}
+
+.salesbrand-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-top: 1px solid rgba(30, 64, 175, 0.35);
+}
+
+.salesbrand-row:first-child {
+  border-top: none;
+}
+
+.salesbrand-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.salesbrand-right {
+  text-align: right;
+  font-size: 13px;
+}
+
+.salesbrand-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #9ca3af;
+}
+
+.salesbrand-value {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.salesbrand-value--sales {
+  color: #e5e7eb;
+}
+
+.salesbrand-value--profit {
+  color: #4ade80;
+}
+
+.salesbrand-name {
+  font-weight: 600;
+}
+
+.salesbrand-meta {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* ===========================
+   GENERIC FORMS / BUTTONS
+   =========================== */
+
+.field {
+  width: 100%;
+  border-radius: 999px;
+  border: 1px solid #1f2937;
+  background: #020617;
+  color: #e5e7eb;
+  padding: 10px 12px;
+  font-size: 13px;
+  outline: none;
+}
+
+.field::placeholder {
+  color: #6b7280;
+}
+
+.field:focus {
+  border-color: #38bdf8;
+}
+
+.btn-primary,
+.btn-secondary {
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #38bdf8;
+  color: #020617;
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid #374151;
+  color: #e5e7eb;
+}
+
+.btn-small {
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+/* ===========================
+   BOTTOM NAV (4 TABS)
+   =========================== */
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background: #020617;
+  border-top: 1px solid rgba(148, 163, 184, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 40;
+}
+
+.nav-button {
+  flex: 1;
+  height: 100%;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0;
+  cursor: pointer;
+}
+
+.nav-button-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-button-icon svg {
+  stroke-width: 1.8;
+}
+
+/* Active tab highlight */
+.nav-button--active {
+  color: #38bdf8;
+}
+
+.nav-button--active .nav-button-icon svg {
+  transform: translateY(-2px);
+}
+
+/* ------------------------------------------------------------------
+   GLOBAL LAYOUT – toned-down dark
+------------------------------------------------------------------- */
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  background: #050816;
+  color: #e5e7eb;
+}
+
+.app-root {
+  min-height: 100vh;
+  background: #050816;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #050816;
+}
+
+.app-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #050816;
+}
+
+/* main content area */
+.app-main {
+  flex: 1;
+  padding: 16px 16px 80px;
+  background: #050816;
+}
+
+/* ------------------------------------------------------------------
+   HEADER
+------------------------------------------------------------------- */
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: #050816;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.app-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-logo {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+}
+
+.app-title-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-title {
+  margin: 0;
+  font-size: 16px;
   font-weight: 600;
 }
 
 .app-subtitle {
+  margin: 0;
   font-size: 11px;
-  color: var(--text-muted);
+  color: #9ca3af;
 }
 
-.app-badge {
-  padding: 4px 8px;
+.app-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon-circle {
+  width: 28px;
+  height: 28px;
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.9);
-  border: 1px solid var(--border-subtle);
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-muted);
-}
-
-.app-desc {
-  font-size: 11px;
-  color: var(--text-soft);
-}
-
-/* Main content */
-
-.app-main {
-  flex: 1;
-  padding: 12px 16px 12px;
-  overflow-y: auto;
-}
-
-/* Bottom nav */
-
-.bottom-nav {
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: transparent;
   display: flex;
-  border-top: 1px solid var(--border-subtle);
-  background: rgba(15, 23, 42, 0.98);
-  overflow-x: auto;              /* allow horizontal scroll */
-  -webkit-overflow-scrolling: touch;
-}
-
-/* optional: hide ugly scrollbar on mobile WebKit */
-.bottom-nav::-webkit-scrollbar {
-  display: none;
-}
-.nav-button {
-  display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.18rem;
-  padding: 0.4rem 0.7rem;
-  background: transparent;
-  border: none;
-  color: #94a3b8; /* slate-400 */
-  font-size: 0.72rem;
-  cursor: pointer;
-  transition: color 0.2s ease, transform 0.15s ease;
+  color: #e5e7eb;
+  padding: 0;
 }
 
-.nav-button--active {
-  color: #38bdf8; /* sky blue accent */
+.user-avatar-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: #0f172a;
+  color: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
 }
 
-.nav-button:hover {
-  color: #e2e8f0;
-  transform: translateY(-1px);
+/* ------------------------------------------------------------------
+   PAGE TITLE
+------------------------------------------------------------------- */
+
+.page-header {
+  padding: 10px 16px 4px;
+  background: #050816;
 }
 
-.nav-icon svg {
-  stroke-width: 1.8;
-  opacity: 0.8;
-  transition: opacity 0.2s ease, stroke 0.2s ease;
+.page-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
 }
 
-.nav-button--active .nav-icon svg {
-  opacity: 1;
-  stroke: #38bdf8;
-}
-
-.nav-button:hover .nav-icon svg {
-  opacity: 1;
-  stroke: #e2e8f0;
-}
-
-.nav-label {
-  line-height: 1;
-}
-
-
-
-/* ---- Cards & form elements ---- */
+/* ------------------------------------------------------------------
+   CARDS / TYPOGRAPHY
+------------------------------------------------------------------- */
 
 .card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: 18px;
-  padding: 12px 12px 14px;
-  margin-bottom: 8px;
+  background: #070d1e;
+  border-radius: 16px;
+  padding: 14px 16px 16px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.6);
+  margin-bottom: 18px;
 }
 
 .card-title {
-  font-size: 13px;
+  margin: 0 0 10px;
+  font-size: 16px;
   font-weight: 600;
+}
+
+.card-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   margin-bottom: 8px;
 }
 
-.card-body {
+.text-muted {
   font-size: 13px;
+  color: #9ca3af;
 }
+
+.text-muted-small {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* ------------------------------------------------------------------
+   FORMS / INPUTS / BUTTONS
+------------------------------------------------------------------- */
 
 .field {
   width: 100%;
-  padding: 8px 10px;
-  margin-bottom: 6px;
-  border-radius: 8px;
-  border: 1px solid #1f2933;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
   background: #020617;
-  color: var(--text-main);
+  color: #e5e7eb;
+  padding: 10px 12px;
   font-size: 13px;
+  outline: none;
+  margin-bottom: 8px;
 }
 
 .field::placeholder {
@@ -204,43 +627,124 @@ html, body {
 }
 
 .field:focus {
-  outline: 1px solid var(--accent);
-  outline-offset: 0;
-  border-color: var(--accent);
+  border-color: #38bdf8;
 }
 
-.textarea {
-  resize: none;
-  min-height: 52px;
+/* select fix */
+select.field {
+  appearance: none;
+}
+
+.form-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.form-col {
+  flex: 1;
+}
+
+.label-small {
+  display: block;
+  font-size: 11px;
+  color: #9ca3af;
+  margin-bottom: 4px;
+}
+
+/* buttons */
+
+.btn-primary,
+.btn-secondary {
+  border-radius: 999px;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 .btn-primary {
-  width: 100%;
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: none;
-  background: var(--accent);
-  color: white;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.btn-primary:hover {
-  background: var(--accent-soft);
+  background: #38bdf8;
+  color: #020617;
 }
 
 .btn-primary:disabled {
-  opacity: 0.6;
+  opacity: 0.7;
   cursor: default;
 }
 
-.text-muted {
-  font-size: 12px;
-  color: var(--text-soft);
+.btn-secondary {
+  background: #020617;
+  color: #e5e7eb;
+  border: 1px solid rgba(148, 163, 184, 0.45);
 }
 
-/* Customers list */
+.btn-pill {
+  border-radius: 999px;
+  font-size: 12px;
+  padding: 6px 12px;
+  margin-top: 6px;
+}
+
+.btn-edit {
+  background: #0ea5e9;
+  color: #020617;
+  border: none;
+}
+
+.btn-invoice {
+  background: transparent;
+  border: 1px solid #38bdf8;
+  color: #38bdf8;
+}
+
+/* profit pill display */
+.profit-pill {
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  padding: 7px 10px;
+  font-size: 13px;
+}
+
+
+/* ------------------------------------------------------------------
+   LINE ITEMS (Orders form)
+------------------------------------------------------------------- */
+
+.line-items-block {
+  margin-top: 10px;
+}
+
+.line-item-group {
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  padding: 10px 10px 8px;
+  margin-bottom: 10px;
+  background: #020617;
+}
+
+.line-item-product-btn {
+  text-align: left;
+  background: #020617;
+}
+
+.line-item-remove-row {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.line-items-actions {
+  margin-top: 4px;
+}
+
+/* ------------------------------------------------------------------
+   RECENT ORDERS LIST
+------------------------------------------------------------------- */
 
 .customer-list {
   list-style: none;
@@ -249,2220 +753,165 @@ html, body {
 }
 
 .customer-item {
-  background: rgba(2, 6, 23, 0.9);
-  border: 1px solid var(--border-subtle);
   border-radius: 12px;
-  padding: 8px 10px;
-  margin-bottom: 6px;
-  font-size: 13px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  background: #020617;
 }
 
-.customer-name {
-  font-weight: 500;
-}
-
-.customer-phone {
-  font-size: 12px;
-  color: var(--text-main);
-}
-
-.customer-notes {
-  margin-top: 2px;
-  font-size: 11px;
-  color: var(--text-muted);
-}
-/* ---- Orders page layout helpers ---- */
-.order-item-top {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.75rem;
-  align-items: flex-start;
-}
-
-.order-money {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.15rem;
-}
-
-.order-toggle-btn {
-  border: none;
-  background: transparent;
-  font-size: 0.8rem;
-  cursor: pointer;
-  padding: 0.15rem 0.4rem;
-  border-radius: 999px;
-  transition:
-    background-color 0.2s ease,
-    transform 0.2s ease,
-    opacity 0.2s ease;
-  opacity: 0.85;
-}
-
-.order-toggle-btn:hover {
-  background-color: rgba(0, 0, 0, 0.04);
-  transform: translateY(-1px);
-  opacity: 1;
-}
-
-/* Collapsible items wrapper */
-.order-items-wrapper {
-  overflow: hidden;
-  max-height: 0;
-  opacity: 0;
-  transform: translateY(-4px);
-  transition:
-    max-height 0.25s ease,
-    opacity 0.25s ease,
-    transform 0.25s ease;
-}
-
-/* Expanded state */
-.order-items-wrapper.open {
-  max-height: 400px; /* adjust if you have very long orders */
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Item list styling */
-.order-items-list {
-  margin-top: 0.4rem;
-  font-size: 0.85rem;
-}
-
-.order-item-line {
-  display: flex;
-  gap: 0.4rem;
-  margin-bottom: 0.15rem;
-}
-
-.form-row {
-  display: flex;
-  gap: 10px;
-  margin-top:10px;
-}
-
-.form-col {
-  flex: 1;
-}
-
-
-.label-small {
-  display: block;
-  font-size: 11px;
-  color: var(--text-soft);
-  margin-bottom: 2px;
-}
-
-/* Extra breathing room above the Save button in Orders */
-.order-save-row {
-  margin-top: 12px; /* adjust to 16 if you want more space */
-}
-
-
-/* Profit pill in the form */
-.profit-pill {
-  border-radius: 8px;
-  border: 1px solid #065f46;
-  background: #022c22;
-  color: #6ee7b7;
-  padding: 6px 8px;
-  font-size: 13px;
-}
-
-/* Orders list extra styling */
 .order-item {
-  padding: 10px 10px;
+  padding: 12px 12px 8px;
 }
 
 .order-item-top {
   display: flex;
   justify-content: space-between;
-  gap: 8px;
-}
-
-.order-meta {
-  font-size: 11px;
-  color: var(--text-soft);
-  margin-top: 2px;
-}
-
-.order-money {
-  text-align: right;
-  font-size: 11px;
-  color: var(--text-muted);
-}
-
-.order-profit {
-  margin-top: 2px;
-  color: #6ee7b7;
-  font-weight: 600;
-}
-
-.order-status {
-  margin-top: 2px;
-  font-size: 11px;
-  color: var(--text-soft);
-}
-/* ---- Utang page helpers ---- */
-
-.utang-item {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  align-items: flex-start;
-}
-
-.utang-left {
-  flex: 1;
-}
-
-.utang-right {
-  display: flex;
-  align-items: center;
-}
-
-/* small secondary button */
-.btn-secondary {
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--accent);
-  background: transparent;
-  color: var(--accent-soft);
-  font-size: 11px;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.btn-secondary:hover:not(:disabled) {
-  background: rgba(56, 189, 248, 0.08); /* soft sky */
-}
-
-.btn-secondary:disabled {
-  opacity: 0.6;
-  cursor: default;
-}
-
-/* badges for due date state */
-.utang-badge {
-  display: inline-block;
-  margin-top: 4px;
-  padding: 3px 8px;
-  border-radius: 999px;
-  font-size: 10px;
-  font-weight: 500;
-}
-
-.utang-badge--neutral {
-  background: rgba(15, 23, 42, 0.9);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-muted);
-}
-
-.utang-badge--danger {
-  background: rgba(127, 29, 29, 0.9);
-  border: 1px solid #fecaca;
-  color: #fee2e2;
-}
-
-.utang-badge--warn {
-  background: rgba(120, 53, 15, 0.9);
-  border: 1px solid #fed7aa;
-  color: #ffedd5;
-}
-
-.utang-badge--ok {
-  background: rgba(22, 101, 52, 0.9);
-  border: 1px solid #bbf7d0;
-  color: #dcfce7;
-}
-/* ---- Brands & Campaigns extras ---- */
-
-.brand-extra,
-.campaign-extra {
-  font-size: 11px;
-  color: var(--text-soft);
-  margin-top: 2px;
-}
-
-/* ---- Dashboard stats ---- */
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: 4px;
-}
-
-.stat-card {
-  background: rgba(15, 23, 42, 0.9);
-  border-radius: 12px;
-  border: 1px solid var(--border-subtle);
-  padding: 8px 10px;
-}
-
-.stat-label {
-  font-size: 11px;
-  color: var(--text-soft);
-}
-
-.stat-value {
-  margin-top: 2px;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.stat-accent-profit {
-  color: #6ee7b7;
-}
-
-.stat-accent-utang {
-  color: #facc15;
-}
-/* ---- Dashboard paid orders list ---- */
-
-.stat-card-clickable {
-  cursor: pointer;
-  border-color: var(--accent-soft);
-}
-
-.stat-card-clickable:hover {
-  background: rgba(56, 189, 248, 0.08);
-}
-
-.paid-list {
-  margin-top: 10px;
-  border-top: 1px solid var(--border-subtle);
-  padding-top: 8px;
-}
-
-.paid-list-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-bottom: 4px;
-}
-
-.paid-meta {
-  font-size: 11px;
-  color: var(--text-soft);
-  margin-top: 2px;
-}
-
-/* ---- Bottom nav scroll enhancements ---- */
-
-.bottom-nav-wrapper {
-  position: relative;
-}
-
-.nav-scroll-arrow {
-  position: absolute;
-  right: 4px;
-  top: 0;
-  bottom: 0;
-  width: 24px;
-  background: linear-gradient(to right, transparent, rgba(0,0,0,0.5));
-  color: #9ca3af;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding-right: 4px;
-}
-
-/* Make the Order date column narrower so it doesn't overlap */
-.form-col-date {
-  flex: 0 0 100px;   /* fixed width ~130px */
-  max-width: 100px;
-}
-.field {
-  width: 100%;
-  padding: 6px 10px;     /* was probably a bit larger before */
-  font-size: 14px;
-}
-
-/* Extra breathing room above Save button in Orders */
-.order-save-row {
-  margin-top: 12px;
-}
-
-/* Line items block */
-.line-items-block {
-  margin-top: 10px;
-  padding-top: 8px;
-  border-top: 1px dashed var(--border-subtle);
-}
-
-.line-items-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 4px;
-}
-
-.text-muted-small {
-  font-size: 11px;
-  color: var(--text-muted);
-}
-
-.line-item-group {
-  margin-top: 6px;
-  padding: 6px;
-  border-radius: 8px;
-  background-color: rgba(15, 23, 42, 0.03);
-}
-
-.line-item-group + .line-item-group {
-  margin-top: 8px;
-}
-
-.line-item-qty {
-  max-width: 90px;
-}
-
-.line-items-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.line-item-remove-row {
-  margin-top: 6px;
-  text-align: right;
-}
-
-/* Recent orders layout tweak (in case not added yet) */
-.order-item-top {
-  display: flex;
-  justify-content: space-between;
-  gap: 6px;
-  align-items: flex-start;
+  gap: 10px;
 }
 
 .order-left {
   flex: 1;
-  min-width: 0;
-  word-break: break-word;
 }
 
-/* Bottom nav scroll wrapper */
-.nav-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  background-color: rgba(15, 23, 42, 0.9);
-  border-top: 1px solid #334155;
-  padding: 0;
-}
-
-/* Horizontal scrollable nav */
-.bottom-nav-scroll {
-  display: flex;
-  overflow-x: auto;
-  white-space: nowrap;
-  scrollbar-width: none; /* Firefox */
-  flex: 1;
-}
-
-/* Remove scrollbars (Chrome/Safari) */
-.bottom-nav-scroll::-webkit-scrollbar {
-  display: none;
-}
-
-/* Arrow buttons */
-.nav-arrow {
-  background: rgba(51, 65, 85, 0.4);
-  border: none;
-  color: #cbd5e1;
-  width: 26px;
-  height: 100%;
+.customer-name {
   font-size: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
+  font-weight: 500;
 }
 
-.nav-arrow:hover {
-  background: rgba(51, 65, 85, 0.7);
+.order-meta {
+  font-size: 12px;
+  color: #9ca3af;
 }
 
-/* Left arrow */
-.nav-arrow.left {
-  border-right: 1px solid #334155;
+.order-money {
+  text-align: right;
+  font-size: 12px;
 }
 
-/* Right arrow */
-.nav-arrow.right {
-  border-left: 1px solid #334155;
+.order-profit {
+  font-weight: 600;
 }
 
+.order-status {
+  font-size: 11px;
+  color: #9ca3af;
+}
 
+/* nested items under each order */
 .order-items-list {
   margin-top: 6px;
-  padding-top: 4px;
-  border-top: 1px dashed var(--border-subtle);
+  padding-top: 6px;
+  border-top: 1px dashed rgba(148, 163, 184, 0.4);
 }
 
 .order-item-line {
   display: flex;
-  gap: 4px;
+  justify-content: space-between;
+  gap: 8px;
   font-size: 12px;
-  color: var(--text-muted);
+  margin-bottom: 2px;
 }
 
 .order-item-qty {
-  font-weight: 600;
+  min-width: 28px;
 }
 
 .order-item-name {
   flex: 1;
-  min-width: 0;
-  word-break: break-word;
 }
 
-.product-view-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
+.order-item-money {
+  white-space: nowrap;
 }
 
-.product-main {
-  flex: 1;
-  min-width: 0;
-}
-
-.product-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.product-actions-row {
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.btn-secondary.danger {
-  color: #b91c1c;
-  border-color: #fecaca;
-  background-color: #fef2f2;
-}
-/* === Auth screen layout === */
-
-.auth-wrapper {
-  min-height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px 16px;
-}
-
-/* Make the login card a bit smaller and centred nicely */
-.auth-card {
-  max-width: 380px;
-  margin: 0 auto;
-}
-
-/* Tabs container (Log in / Sign up) */
-.auth-tabs {
-  display: inline-flex;
-  align-items: center;
-  padding: 3px;
+/* collapse button for “Recent orders” only */
+.collapse-toggle {
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.9); /* dark pill */
-  border: 1px solid rgba(148, 163, 184, 0.3);
-  margin-bottom: 12px;
-}
-
-/* Each tab button */
-.auth-tab {
-  border: none;
-  background: transparent;
-  color: #9ca3af;
-  font-size: 12px;
-  padding: 6px 16px;
-  border-radius: 999px;
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-/* Active tab */
-.auth-tab--active {
-  background: linear-gradient(135deg, #0ea5e9, #38bdf8);
-  color: #020617;
-  font-weight: 600;
-}
-
-/* Hover state (desktop) */
-.auth-tab:not(.auth-tab--active):hover {
-  background: rgba(148, 163, 184, 0.15);
-}
-
-/* Messages */
-.text-error {
-  font-size: 12px;
-  color: #f97373;
-  margin: 4px 0 0;
-}
-
-.text-success {
-  font-size: 12px;
-  color: #4ade80;
-  margin: 4px 0 0;
-}
-
-/* Center button & inputs a bit more nicely on the auth card */
-.auth-card .field {
-  margin-bottom: 8px;
-}
-
-.auth-card .btn-primary {
-  margin-top: 12px;
-}
-/* --- Header layout tweaks --- */
-
-.app-header-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
-}
-
-/* Pill that shows email + logout */
-.app-user-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  background: #020617;
+  color: #e5e7eb;
+  font-size: 11px;
   padding: 4px 10px;
-  border-radius: 999px;
-  background: rgba(15, 23, 42, 0.95);        /* dark pill */
-  border: 1px solid rgba(148, 163, 184, 0.45);/* slate border */
-}
-
-/* Email text – smaller + ellipsis if long */
-.app-user-email {
-  font-size: 11px;
-  color: #e5e7eb; /* slate-100-ish */
-  max-width: 160px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Tiny pill-style logout button */
-.btn-chip {
-  border: none;
-  background: rgba(15, 23, 42, 0.9);
-  color: #9ca3af;
-  font-size: 11px;
-  padding: 2px 10px;
-  border-radius: 999px;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
 }
 
-.btn-chip:hover {
-  background: #0ea5e9;   /* sky-ish */
-  color: #020617;        /* almost black */
+.collapse-content.hidden {
+  display: none;
 }
 
-/* Optional: tweak email width on very small screens */
+/* ------------------------------------------------------------------
+   BOTTOM NAV
+------------------------------------------------------------------- */
 
-.brand-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-
-
-.brand-row-left {
-  min-width: 0;
-}
-
-.brand-name {
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.brand-meta {
-  font-size: 0.75rem;
-  color: #9ca3af;
-}
-
-.brand-row-right {
-  display: flex;
-  gap: 16px;
-  align-items: flex-end;
-}
-
-.brand-metric {
-  text-align: right;
-}
-
-.brand-value {
-  display: block;
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-.order-item-top {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.75rem;
-  align-items: flex-start;
-}
-
-.order-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.25rem;
-}
-
-.order-toggle-btn {
-  border: none;
-  background: transparent;
-  font-size: 0.85rem;
-  cursor: pointer;
-  padding: 0.15rem 0.4rem;
-  border-radius: 999px;
-  transition: background-color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
-  opacity: 0.85;
-}
-
-.order-toggle-btn:hover {
-  background-color: rgba(0, 0, 0, 0.04);
-  transform: translateY(-1px);
-  opacity: 1;
-}
-
-/* Animated details container */
-.order-details {
-  overflow: hidden;
-  transition:
-    max-height 0.25s ease,
-    opacity 0.25s ease,
-    transform 0.25s ease;
-  max-height: 0;
-  opacity: 0;
-  transform: translateY(-4px);
-}
-
-/* Expanded state */
-.order-details.expanded {
-  max-height: 400px; /* tweak if needed */
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.order-money-breakdown {
-  display: flex;
-  gap: 1.5rem;
-  font-size: 0.85rem;
-  margin-top: 0.4rem;
-  margin-bottom: 0.2rem;
-}
-.order-item-top {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.75rem;
-  align-items: flex-start;
-}
-
-.order-money {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.15rem;
-}
-
-.order-toggle-btn {
-  border: none;
-  background: transparent;
-  font-size: 0.8rem;
-  cursor: pointer;
-  padding: 0.15rem 0.4rem;
-  border-radius: 999px;
-  transition:
-    background-color 0.2s ease,
-    transform 0.2s ease,
-    opacity 0.2s ease;
-  opacity: 0.85;
-}
-
-.order-toggle-btn:hover {
-  background-color: rgba(0, 0, 0, 0.04);
-  transform: translateY(-1px);
-  opacity: 1;
-}
-
-/* Animated details container for items */
-.order-details {
-  overflow: hidden;
-  transition:
-    max-height 0.25s ease,
-    opacity 0.25s ease,
-    transform 0.25s ease;
-  max-height: 0;
-  opacity: 0;
-  transform: translateY(-4px);
-}
-
-/* Expanded state */
-.order-details.expanded {
-  max-height: 300px; /* adjust if you have very long orders */
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Optional: spacing for item lines */
-.order-items-list {
-  margin-top: 0.4rem;
-  font-size: 0.85rem;
-}
-
-.order-item-line {
-  display: flex;
-  gap: 0.4rem;
-  margin-bottom: 0.15rem;
-}
-.card-header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.card-toggle-btn {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  padding: 0.15rem 0.4rem;
-  border-radius: 999px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition:
-    background-color 0.2s ease,
-    transform 0.2s ease,
-    opacity 0.2s ease;
-  opacity: 0.9;
-}
-
-.card-toggle-btn:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-  transform: translateY(-1px);
-  opacity: 1;
-}
-
-.card-toggle-icon {
-  font-size: 1.1rem;
-  line-height: 1;
-  display: inline-block;
-  transition: transform 0.2s ease;
-}
-
-/* Tiny rotation for fun when open */
-.card-toggle-icon.open {
-  transform: rotate(90deg);
-}
-
-/* Collapsible container for the whole orders list */
-.orders-collapsible {
-  overflow: hidden;
-  max-height: 0;
-  opacity: 0;
-  transform: translateY(-4px);
-  transition:
-    max-height 0.25s ease,
-    opacity 0.25s ease,
-    transform 0.25s ease;
-}
-
-.orders-collapsible.open {
-  max-height: 1000px; /* adjust if you have tons of orders */
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Optional: tidy list spacing */
-.order-item-top {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.75rem;
-  align-items: flex-start;
-}
-
-.order-money {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.15rem;
-}
-
-.order-items-list {
-  margin-top: 0.35rem;
-  font-size: 0.85rem;
-}
-
-.order-item-line {
-  display: flex;
-  gap: 0.4rem;
-  margin-bottom: 0.15rem;
-}
-.card-header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.card-toggle-btn {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  padding: 0.15rem 0.5rem;
-  border-radius: 999px;
-  font-size: 0.85rem;
-}
-.card-header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-/* Toggle button styling */
-.card-toggle-btn {
-  border: none;
-  background-color: #333;   /* dark pill */
-  color: #fff;              /* white text */
-  cursor: pointer;
-  padding: 0.2rem 0.7rem;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.25rem;
-  transition:
-    background-color 0.2s ease,
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    opacity 0.2s ease;
-  opacity: 0.95;
-}
-
-.card-toggle-btn:hover {
-  background-color: #111;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
-  opacity: 1;
-}
-
-/* Little fade+slide animation when the orders list appears */
-@keyframes ordersFadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.orders-list {
-  animation: ordersFadeInUp 0.22s ease-out;
-}
-/* Dark card base */
-.card-dashboard {
-  background: #020617; /* very dark slate */
-  border-radius: 0.75rem;
-  padding: 1.25rem 1.4rem;
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(148, 163, 184, 0.15); /* slate-400/15 */
-}
-
-.card-dashboard .card-title {
-  color: #e5e7eb; /* gray-200 */
-  margin-bottom: 0.75rem;
-}
-
-/* Grid layout */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 0.9rem;
-}
-
-/* Card inside dashboard */
-.dashboard-card {
-  background: radial-gradient(circle at top left, rgba(148, 163, 184, 0.18), transparent 55%);
-  border-radius: 0.9rem;
-  padding: 0.75rem 0.9rem;
-  border: 1px solid rgba(31, 41, 55, 0.9); /* gray-800 */
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  transition:
-    transform 0.16s ease,
-    box-shadow 0.16s ease,
-    border-color 0.16s ease;
-}
-
-.dashboard-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 18px rgba(15, 23, 42, 0.7);
-  border-color: rgba(148, 163, 184, 0.6);
-}
-
-.dashboard-card .label-small {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #9ca3af; /* gray-400 */
-}
-
-.dashboard-card .stat-value {
-  font-size: 1.15rem;
-  font-weight: 600;
-}
-
-/* Accent colours for each stat value */
-.accent-sales .stat-value {
-  color: #22d3ee; /* cyan-400 */
-}
-
-.accent-cost .stat-value {
-  color: #f97316; /* orange-500 */
-}
-
-.accent-profit .stat-value {
-  color: #22c55e; /* green-500 */
-}
-
-.accent-orders .stat-value {
-  color: #a855f7; /* purple-500 */
-}
-
-.accent-utang-count .stat-value {
-  color: #f97316; /* same orange for count */
-}
-
-.accent-utang-amount .stat-value {
-  color: #fb7185; /* rose-400 */
-}
-
-/* Utang section */
-.utang-section {
-  margin-top: 1.1rem;
-  padding-top: 0.75rem;
-  border-top: 1px dashed rgba(148, 163, 184, 0.35);
-}
-
-.utang-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  margin-bottom: 0.6rem;
-}
-
-.utang-title {
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #e5e7eb;
-}
-
-/* Toggle button for utang block */
-.utang-toggle-btn {
-  border: none;
-  background-color: rgba(15, 23, 42, 0.9); /* gray-900 */
-  color: #e5e7eb;
-  cursor: pointer;
-  padding: 0.18rem 0.7rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.2rem;
-  transition:
-    background-color 0.18s ease,
-    transform 0.18s ease,
-    box-shadow 0.18s ease,
-    opacity 0.18s ease;
-  opacity: 0.9;
-}
-
-.utang-toggle-btn:hover {
-  background-color: rgba(15, 23, 42, 1);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.8);
-  opacity: 1;
-}
-
-/* Utang cards layout */
-.utang-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 0.8rem;
-  animation: utangFadeIn 0.22s ease-out;
-}
-
-/* Small entrance animation */
-@keyframes utangFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Brand list styling on dark background */
-.brand-list {
-  margin-top: 0.6rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-}
-
-.brand-row {
-  /* This is the master layout rule – force row, not centered column */
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-
-  text-align: left;      /* stop centering everything */
-}
-.brand-row--muted {
-  background: rgba(15, 23, 42, 0.75);
-  border-radius: 0.75rem;
-  padding: 0.75rem 1rem;
-  border: 1px solid rgba(31, 41, 55, 0.85);
-}
-
-.brand-row-left {
-  display: flex;
-  flex-direction: column;
-}
-
-.brand-name {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #e5e7eb;
-  margin-bottom: 2px;
-}
-
-.brand-meta {
-  font-size: 0.8rem;
-  color: #9ca3af;
-}
-
-.brand-row-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.35rem;
-}
-
-.brand-label {
-  font-size: 0.7rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: #9ca3af;
-}
-
-.brand-label--sales { color: #38bdf8; }
-.brand-label--profit { color: #22c55e; }
-
-.brand-value {
-  font-size: 0.95rem;
-  font-weight: 600;
-  display: block;
-}
-
-.brand-value--sales { color: #e2e8f0; }
-.brand-value--profit { color: #22c55e; }
-
-/* Slightly darker utang cards if you're using the dark dashboard style */
-.utang-item {
-  border-radius: 0.75rem;
-  padding: 0.7rem 0.85rem;
-  background: rgba(15, 23, 42, 0.7); /* gray-900/70 */
-}
-
-/* Money block on the right */
-.utang-money {
-  align-items: flex-end;
-  gap: 0.12rem;
-}
-
-.utang-remaining {
-  font-size: 0.82rem;
-  color: #e5e7eb;
-}
-
-.utang-remaining span {
-  color: #fb7185; /* rose-400 */
-  font-weight: 600;
-}
-
-/* Status */
-.utang-status {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-/* Due date pills */
-.utang-pill {
-  display: inline-flex;
-  margin-top: 0.3rem;
-  padding: 0.12rem 0.5rem;
-  border-radius: 999px;
-  font-size: 0.72rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.utang-pill-upcoming {
-  background-color: rgba(34, 197, 94, 0.12); /* green-500/12 */
-  color: #4ade80; /* green-400 */
-}
-
-.utang-pill-today {
-  background-color: rgba(234, 179, 8, 0.14); /* yellow-400/14 */
-  color: #facc15; /* yellow-400 */
-}
-
-.utang-pill-overdue {
-  background-color: rgba(248, 113, 113, 0.16); /* red-400/16 */
-  color: #f97373; /* red-400 */
-}
-
-/* Actions row */
-.utang-actions-row {
-  margin-top: 0.6rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  justify-content: space-between;
-  align-items: flex-end;
-  border-top: 1px dashed rgba(55, 65, 81, 0.7);
-  padding-top: 0.5rem;
-}
-
-/* Partial payment block */
-.utang-partial-block {
-  flex: 1;
-  min-width: 180px;
-}
-
-.utang-partial-controls {
-  display: flex;
-  gap: 0.4rem;
-  margin-top: 0.25rem;
-}
-
-.utang-partial-input {
-  max-width: 120px;
-  font-size: 0.85rem;
-  padding: 0.25rem 0.4rem;
-}
-
-/* Small, subtle "Apply" pill */
-.utang-partial-btn {
-  border: none;
-  background: rgba(56, 189, 248, 0.12); /* sky-400/12 */
-  color: #38bdf8; /* sky-400 */
-  padding: 0.28rem 0.7rem;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition:
-    background-color 0.18s ease,
-    transform 0.18s ease,
-    box-shadow 0.18s ease,
-    opacity 0.18s ease;
-  opacity: 0.95;
-}
-
-.utang-partial-btn:hover:not(:disabled) {
-  background: rgba(56, 189, 248, 0.22);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.55);
-  opacity: 1;
-}
-
-.utang-partial-btn:disabled {
-  opacity: 0.6;
-  cursor: default;
-}
-
-/* Refined mark-as-paid button */
-.utang-paid-btn {
-  border: 1px solid rgba(34, 197, 94, 0.5); /* green-500 */
-  background: transparent;
-  color: #4ade80; /* green-400 */
-  padding: 0.3rem 0.9rem;
-  border-radius: 999px;
-  font-size: 0.78rem;
-  font-weight: 500;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  white-space: nowrap;
-  transition:
-    background-color 0.18s ease,
-    border-color 0.18s ease,
-    transform 0.18s ease,
-    box-shadow 0.18s ease,
-    opacity 0.18s ease;
-  opacity: 0.95;
-}
-
-.utang-paid-btn:hover:not(:disabled) {
-  background: rgba(22, 163, 74, 0.18); /* green-600/18 */
-  border-color: rgba(74, 222, 128, 0.9);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(22, 163, 74, 0.7);
-  opacity: 1;
-}
-
-.utang-paid-btn:disabled {
-  opacity: 0.6;
-  cursor: default;
-}
-/* Layout: make the utang card breathe a bit */
-.utang-item {
-  border-radius: 0.75rem;
-  padding: 0.8rem 0.95rem;
-  background: rgba(15, 23, 42, 0.75); /* gray-900/75 */
-  display: flex;
-  flex-direction: column;
-  gap: 0.55rem;
-}
-
-/* Top row: left info + right money */
-.utang-top-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.9rem;
-  align-items: flex-start;
-}
-
-.utang-main-info {
-  flex: 1.2;
-}
-
-.utang-money {
-  flex: 0.9;
-  align-items: flex-end;
-  gap: 0.14rem;
-}
-
-/* Items list block */
-.utang-items-list {
-  margin-top: 0.45rem;
-  padding-top: 0.45rem;
-  border-top: 1px dashed rgba(55, 65, 81, 0.7);
-  display: flex;
-  flex-direction: column;
-  gap: 0.18rem;
-  font-size: 0.8rem;
-  color: #e5e7eb;
-}
-
-.utang-items-title {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #9ca3af;
-  margin-bottom: 0.1rem;
-}
-
-.utang-item-line {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.5rem;
-}
-
-.utang-item-label {
-  flex: 1;
-}
-
-.utang-item-amount {
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-/* Actions row (small spacing tweaks) */
-.utang-actions-row {
-  margin-top: 0.5rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  justify-content: space-between;
-  align-items: flex-end;
-  border-top: 1px dashed rgba(55, 65, 81, 0.7);
-  padding-top: 0.45rem;
-}
-/* Row for the view items toggle */
-.utang-items-toggle-row {
-  margin-top: 0.4rem;
-  display: flex;
-  justify-content: flex-end;
-}
-
-/* Small ghost pill button */
-.utang-items-toggle-btn {
-  border: 1px solid rgba(148, 163, 184, 0.45); /* slate-400 */
-  background: transparent;
-  color: #e5e7eb;
-  padding: 0.18rem 0.7rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  transition:
-    background-color 0.18s ease,
-    border-color 0.18s ease,
-    transform 0.18s ease,
-    box-shadow 0.18s ease,
-    opacity 0.18s ease;
-  opacity: 0.9;
-}
-
-.utang-items-toggle-btn:hover {
-  background: rgba(15, 23, 42, 0.85); /* gray-900 */
-  border-color: rgba(148, 163, 184, 0.9);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.75);
-  opacity: 1;
-}
-/* Dark card style consistent with other pages */
-.card-dashboard {
-  background: #020617; /* slate-950 */
-  border: 1px solid #1f2937; /* gray-800 */
-}
-
-/* Grid layout */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 0.75rem;
-  margin-top: 0.75rem;
-}
-
-.dashboard-card {
-  background: #020617;
-  border-radius: 0.75rem;
-  padding: 0.6rem 0.75rem;
-  border: 1px solid rgba(31, 41, 55, 0.9);
-}
-
-/* KPI numbers – colour but not loud */
-.stat-value {
-  margin-top: 0.15rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.stat-value--sales {
-  color: #fbbf24; /* amber-400 */
-}
-
-.stat-value--cost {
-  color: #9ca3af; /* gray-400 */
-}
-
-.stat-value--profit {
-  color: #22c55e; /* green-500 */
-}
-
-.stat-value--count {
-  color: #38bdf8; /* sky-400 */
-}
-
-.stat-value--utang {
-  color: #f97316; /* orange-500 */
-}
-
-.stat-value--utang-amount {
-  color: #fb7185; /* rose-400 */
-}
-
-/* Brand list muted to match rest of UI */
-.brand-row--muted {
-  background: rgba(15, 23, 42, 0.7);
-  border-radius: 0.75rem;
-  padding: 0.55rem 0.7rem;
-  border: 1px solid rgba(31, 41, 55, 0.9);
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.brand-value--profit {
-  color: #22c55e;
-}
-
-/* Subtle bar chart under each brand */
-.brand-bar {
-  margin-top: 0.2rem;
-  width: 100%;
-  height: 4px;
-  border-radius: 999px;
-  background: rgba(30, 64, 175, 0.35); /* indigo track */
-  overflow: hidden;
-}
-
-.brand-bar-fill {
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(
-    90deg,
-    #38bdf8,
-    #22c55e
-  ); /* soft blue → green */
-  transform-origin: left center;
-}
-.card-dashboard {
-  background: #020617;
-  border: 1px solid #1f2937;
-}
-
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 0.75rem;
-  margin-top: 0.75rem;
-}
-
-.dashboard-card {
-  background: #020617;
-  border-radius: 0.75rem;
-  padding: 0.6rem 0.75rem;
-  border: 1px solid rgba(31, 41, 55, 0.9);
-}
-
-.stat-value {
-  margin-top: 0.15rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.stat-value--sales { color: #fbbf24; }
-.stat-value--cost { color: #9ca3af; }
-.stat-value--profit { color: #22c55e; }
-.stat-value--count { color: #38bdf8; }
-.stat-value--utang { color: #f97316; }
-.stat-value--utang-amount { color: #fb7185; }
-
-.brand-row--muted {
-  background: rgba(15, 23, 42, 0.7);
-  border-radius: 0.75rem;
-  padding: 0.55rem 0.7rem;
-  border: 1px solid rgba(31, 41, 55, 0.9);
-  display: flex;
-  justify-content: space-between;
-}
-
-.brand-value--profit {
-  color: #22c55e;
-}
-.brand-row--muted {
-  background: rgba(15, 23, 42, 0.7);
-  border-radius: 0.75rem;
-  padding: 0.6rem 0.8rem;
-  border: 1px solid rgba(31, 41, 55, 0.9);
-  margin-bottom: 0.5rem;
-}
-
-.brand-row-main {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 0.75rem;
-}
-
-.brand-row-left {
-  text-align: left;
-}
-
-.brand-name {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #e5e7eb; /* gray-200 */
-}
-
-.brand-meta {
-  font-size: 0.78rem;
-  color: #9ca3af; /* gray-400 */
-  margin-top: 0.15rem;
-}
-
-.brand-row-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.25rem;
-}
-
-.brand-metric {
-  text-align: right;
-}
-
-.brand-label {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #9ca3af;
-}
-
-.brand-label--sales {
-  color: #38bdf8cc; /* soft sky */
-}
-
-.brand-label--profit {
-  color: #22c55ecc; /* soft green */
-}
-
-.brand-value {
-  display: block;
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.brand-value--sales {
-  color: #e5e7eb; /* keep readable, slight highlight from label */
-}
-
-.brand-value--profit {
-  color: #22c55e; /* green profit */
-}
-.brand-row--muted {
-  background: rgba(15, 23, 42, 0.75);
-  border-radius: 0.75rem;
-  padding: 0.75rem 1rem;
-  border: 1px solid rgba(31, 41, 55, 0.85);
-  margin-bottom: 0.6rem;
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-}
-
-/* Left side: brand name + orders */
-.brand-row-left {
-  display: flex;
-  flex-direction: column;
-  text-align: left;
-}
-
-.brand-name {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #e5e7eb; /* gray-200 */
-  margin-bottom: 2px;
-}
-
-.brand-meta {
-  font-size: 0.8rem;
-  color: #9ca3af; /* gray-400 */
-}
-
-/* Right side: numbers */
-.brand-row-right {
-  display: flex;
-  flex-direction: column;
-  text-align: right;
-  gap: 0.35rem;
-}
-
-/* Labels (small coloured text) */
-.brand-label {
-  font-size: 0.7rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: #9ca3af;
-}
-
-.brand-label--sales {
-  color: #38bdf8; /* sky blue for sales label */
-}
-
-.brand-label--profit {
-  color: #22c55e; /* green profit label */
-}
-
-/* Values */
-.brand-value {
-  font-size: 0.95rem;
-  font-weight: 600;
-  display: block;
-}
-
-.brand-value--sales {
-  color: #e2e8f0; /* light readable */
-}
-
-.brand-value--profit {
-  color: #22c55e;
-}
-.card-dashboard {
-  background: #020617;
-  border: 1px solid #1f2937;
-}
-
-/* KPI grid */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 0.75rem;
-  margin-top: 0.75rem;
-}
-
-.dashboard-card {
-  background: #020617;
-  border-radius: 0.75rem;
-  padding: 0.6rem 0.75rem;
-  border: 1px solid rgba(31, 41, 55, 0.9);
-}
-
-.stat-value {
-  margin-top: 0.15rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.stat-value--sales { color: #fbbf24; }
-.stat-value--cost { color: #9ca3af; }
-.stat-value--profit { color: #22c55e; }
-.stat-value--count { color: #38bdf8; }
-.stat-value--utang { color: #f97316; }
-.stat-value--utang-amount { color: #fb7185; }
-
-/* Sales by brand list */
-.brand-list {
-  list-style: none;
-  margin: 0.75rem 0 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-}
-
-.brand-row--muted {
-  background: rgba(15, 23, 42, 0.75);
-  border-radius: 0.75rem;
-  padding: 0.75rem 1rem;
-  border: 1px solid rgba(31, 41, 55, 0.85);
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-}
-
-/* Left: brand info */
-.brand-row-left {
-  display: flex;
-  flex-direction: column;
-  text-align: left;
-}
-
-.brand-name {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #e5e7eb;
-  margin-bottom: 2px;
-}
-
-.brand-meta {
-  font-size: 0.8rem;
-  color: #9ca3af;
-}
-
-/* Right: numbers */
-.brand-row-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.35rem;
-}
-
-.brand-metric {
-  text-align: right;
-}
-
-.brand-label {
-  font-size: 0.7rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: #9ca3af;
-}
-
-.brand-label--sales {
-  color: #38bdf8;  /* blue-ish label for sales */
-}
-
-.brand-label--profit {
-  color: #22c55e;  /* green label for profit */
-}
-
-.brand-value {
-  font-size: 0.95rem;
-  font-weight: 600;
-  display: block;
-}
-
-.brand-value--sales {
-  color: #e2e8f0;
-}
-
-.brand-value--profit {
-  color: #22c55e;
-}
-.brand-row--muted {
-  background: rgba(15, 23, 42, 0.75);
-  border-radius: 0.75rem;
-  padding: 0.75rem 1rem;
-  border: 1px solid rgba(31, 41, 55, 0.85);
-  margin-bottom: 0.6rem;
-}
-
-.brand-label {
-  font-size: 0.7rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: #9ca3af;
-}
-
-.brand-label--sales {
-  color: #38bdf8; /* soft blue */
-}
-
-.brand-label--profit {
-  color: #22c55e; /* green */
-}
-
-.brand-value {
-  font-size: 0.95rem;
-  font-weight: 600;
-  display: block;
-}
-
-.brand-value--sales {
-  color: #e2e8f0;
-}
-
-.brand-value--profit {
-  color: #22c55e;
-}
-
-.brand-name {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #e5e7eb;
-}
-
-.brand-meta {
-  font-size: 0.8rem;
-  color: #9ca3af;
-}
-/* === Dashboard base (unchanged, but here for completeness) === */
-.card-dashboard {
-  background: #020617;
-  border: 1px solid #1f2937;
-}
-
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 0.75rem;
-  margin-top: 0.75rem;
-}
-
-.dashboard-card {
-  background: #020617;
-  border-radius: 0.75rem;
-  padding: 0.6rem 0.75rem;
-  border: 1px solid rgba(31, 41, 55, 0.9);
-}
-
-.stat-value {
-  margin-top: 0.15rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-.stat-value--sales { color: #fbbf24; }
-.stat-value--cost { color: #9ca3af; }
-.stat-value--profit { color: #22c55e; }
-.stat-value--count { color: #38bdf8; }
-.stat-value--utang { color: #f97316; }
-.stat-value--utang-amount { color: #fb7185; }
-
-/* === Sales by brand – NEW classes, no conflict === */
-.salesbrand-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  margin-top: 0.75rem;
-}
-
-.salesbrand-row {
-  background: rgba(15, 23, 42, 0.75);
-  border-radius: 0.75rem;
-  padding: 0.75rem 1rem;
-  border: 1px solid rgba(31, 41, 55, 0.85);
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-}
-
-/* LEFT: numbers */
-.salesbrand-left {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  text-align: left;
-}
-
-.salesbrand-metric {
-  line-height: 1.2;
-}
-
-.salesbrand-label {
-  font-size: 0.7rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: #9ca3af;
-}
-
-.salesbrand-label--sales {
-  color: #38bdf8;   /* blue for Sales label */
-}
-
-.salesbrand-label--profit {
-  color: #22c55e;   /* green for Profit label */
-}
-
-.salesbrand-value {
-  display: block;
-  font-size: 0.95rem;
-  font-weight: 600;
-}
-
-.salesbrand-value--sales {
-  color: #e2e8f0;
-}
-
-.salesbrand-value--profit {
-  color: #22c55e;
-}
-
-/* RIGHT: brand info */
-.salesbrand-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  text-align: right;
-}
-
-.salesbrand-name {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #e5e7eb;
-}
-
-.salesbrand-meta {
-  font-size: 0.8rem;
-  color: #9ca3af;
-  margin-top: 0.15rem;
-}
-/* Tighter overall spacing */
-.salesbrand-row {
-  background: rgba(15, 23, 42, 0.75);
-  border-radius: 0.75rem;
-  padding: 0.85rem 1rem;
-  border: 1px solid rgba(31, 41, 55, 0.85);
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.75rem; /* tighter than before */
-}
-
-/* LEFT numbers */
-.salesbrand-left {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  text-align: left;
-}
-
-/* Label colours improved */
-.salesbrand-label--sales {
-  color: #38bdf8; /* bright blue */
-}
-.salesbrand-label--profit {
-  color: #22c55e; /* bright green */
-}
-
-/* Values slightly larger */
-.salesbrand-value {
-  font-size: 1.05rem;
-  font-weight: 600;
-}
-
-/* RIGHT (brand name + orders) */
-.salesbrand-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.15rem; /* closer together */
-}
-
-.salesbrand-name {
-  font-size: 1.05rem;
-  font-weight: 700; /* slightly stronger */
-  color: #e5e7eb;
-}
-
-.salesbrand-meta {
-  font-size: 0.85rem;
-  color: #9ca3af;
-  margin-top: 0;
-}
-
-/* Nicer row spacing */
-.salesbrand-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.7rem; /* slightly increased */
-  margin-top: 0.85rem;
-}
-
-/* -------------------- PRODUCT SEARCH MODAL -------------------- */
-
-.modal-overlay {
+.bottom-nav {
   position: fixed;
-  inset: 0;                          /* full screen */
-  background: rgba(0, 0, 0, 0.55);   /* dark dimmer */
-  backdrop-filter: blur(4px);
-  z-index: 999;                      /* above cards and nav */
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background: #020617;
+  border-top: 1px solid rgba(148, 163, 184, 0.25);
   display: flex;
-  justify-content: center;
-  align-items: flex-end;             /* bottom sheet feel */
+  align-items: center;
+  justify-content: space-around;
+  z-index: 40;
 }
 
-.modal-sheet {
-  width: 100%;
-  max-width: 480px;                  /* matches phone frame */
-  max-height: 75vh;
-  background: #020617;               /* dark navy, no white */
-  border-radius: 20px 20px 0 0;
-  padding: 16px 16px 18px;
-  box-shadow: 0 -18px 40px rgba(0, 0, 0, 0.65);
-  animation: modal-slide-up 0.22s ease-out;
-}
-
-@keyframes modal-slide-up {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0%);
-    opacity: 1;
-  }
-}
-
-.modal-search-input {
-  margin-bottom: 10px;
-}
-
-.modal-list {
-  max-height: 260px;
-  overflow-y: auto;
-  margin: 0 -4px;
-  padding-right: 4px;
-}
-
-.modal-list-item {
-  width: 100%;
-  padding: 10px 8px;
-  text-align: left;
-  border-radius: 8px;
-  border: 1px solid transparent;
+.nav-button {
+  flex: 1;
+  height: 100%;
+  border: none;
   background: transparent;
-  color: #f8fafc;
-  font-size: 13px;
-  margin-bottom: 6px;
-  cursor: pointer;
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease,
-    transform 0.08s ease;
-}
-
-.modal-list-item:hover {
-  background: rgba(56, 189, 248, 0.08);   /* soft cyan highlight */
-  border-color: rgba(56, 189, 248, 0.5);
-  transform: translateY(-1px);
-}
-
-.modal-close {
-  margin-top: 10px;
-  width: 100%;
-}
-
-/* Product button styling (so it looks like a field) */
-.line-item-product-btn {
-  text-align: left;
-}
-/* Glassy toggle button */
-.collapse-toggle {
-  display: inline-flex;
+  color: #9ca3af;
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  cursor: pointer;
-  transition: all 0.25s ease;
-  backdrop-filter: blur(6px);
+  gap: 4px;
+  padding: 0;
 }
 
-.collapse-toggle:hover {
-  background: rgba(255, 255, 255, 0.12);
-}
-
-/* Animated + / - icon */
-.collapse-icon {
-  font-size: 20px;
-  color: #fff;
-  transition: transform 0.25s ease;
-}
-
-.collapse-icon.open {
-  transform: none; /* + rotates to × */
-}
-
-/* Animate panel */
-.collapse-content {
-  overflow: hidden;
-  transition: max-height 0.35s ease, opacity 0.25s ease;
-  opacity: 1;
-}
-
-.collapse-content.hidden {
-  opacity: 0;
-  max-height: 0;
-}
-/* Glassy collapse toggle */
-.collapse-toggle {
-  display: inline-flex;
+.nav-button-icon {
+  display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  cursor: pointer;
-  transition: all 0.25s ease;
-  backdrop-filter: blur(6px);
 }
 
-.collapse-toggle:hover {
-  background: rgba(255, 255, 255, 0.1);
+.nav-button-icon svg {
+  stroke-width: 1.8;
 }
 
-.collapse-icon {
-  font-size: 20px;
-  color: #ffffff;
-  transition: transform 0.2s ease;
+.nav-button--active {
+  color: #38bdf8;
 }
 
-.collapse-icon.open {
-  transform: rotate(45deg); /* + → × */
+.nav-button--active .nav-button-icon svg {
+  transform: translateY(-2px);
 }
 
-.collapse-content {
-  overflow: hidden;
-  transition: max-height 0.35s ease, opacity 0.25s ease;
-  max-height: 2000px;
-  opacity: 1;
-}
+/* ------------------------------------------------------------------
+   PRODUCT SEARCH SHEET
+------------------------------------------------------------------- */
 
-.collapse-content.hidden {
-  max-height: 0;
-  opacity: 0;
-}
-
-/* Product search modal */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(4px);
-  z-index: 999;
+  background: rgba(15, 23, 42, 0.7);
   display: flex;
   justify-content: center;
   align-items: flex-end;
+  z-index: 900;
 }
 
 .modal-sheet {
   width: 100%;
   max-width: 480px;
-  max-height: 75vh;
   background: #020617;
-  border-radius: 20px 20px 0 0;
-  padding: 16px 16px 18px;
-  box-shadow: 0 -18px 40px rgba(0, 0, 0, 0.65);
-  animation: modal-slide-up 0.22s ease-out;
-}
-
-@keyframes modal-slide-up {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0%);
-    opacity: 1;
-  }
+  border-radius: 18px 18px 0 0;
+  padding: 12px 16px 16px;
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.8);
 }
 
 .modal-search-input {
@@ -2470,2535 +919,918 @@ html, body {
 }
 
 .modal-list {
-  max-height: 260px;
+  max-height: 320px;
   overflow-y: auto;
-  margin: 0 -4px;
-  padding-right: 4px;
+  margin-bottom: 10px;
 }
 
 .modal-list-item {
   width: 100%;
-  padding: 10px 8px;
   text-align: left;
-  border-radius: 8px;
-  border: 1px solid transparent;
-  background: transparent;
-  color: #f8fafc;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  padding: 8px 10px;
+  background: #020617;
+  color: #e5e7eb;
   font-size: 13px;
-  margin-bottom: 6px;
   cursor: pointer;
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease,
-    transform 0.08s ease;
+  margin-bottom: 6px;
 }
 
 .modal-list-item:hover {
-  background: rgba(56, 189, 248, 0.08);
-  border-color: rgba(56, 189, 248, 0.5);
-  transform: translateY(-1px);
+  border-color: #38bdf8;
 }
 
 .modal-close {
-  margin-top: 10px;
   width: 100%;
 }
 
-/* Product field that opens modal */
-.line-item-product-btn {
-  text-align: left;
-}
-
-/* Fix overlapping fields on small screens */
-.form-row {
-  display: flex;
-  gap: 10px;
-}
-
-.form-row .form-col {
-  flex: 1;
-}
-
-/* On very small screens (under ~380px), stack the fields vertically */
-
-/* Universal input shrink + padding fix */
-.field {
-  padding: 8px 10px;       /* slightly smaller, cleaner */
-  font-size: 15px;
-}
-
-/* Reduce label size slightly */
-.label-small {
-  font-size: 13px;
-}
-
-/* Make the date input naturally smaller */
-input[type="date"].field {
-  max-width: 160px;
-}
-
-/* ---------- Small-screen adjustments ---------- */
-
-
-  .label-small {
-    font-size: 12px;
-  }
-
-  /* Shrink date input further on tiny devices */
-  input[type="date"].field {
-    max-width: 130px;
-  }
-
-  /* Reduce gap between columns */
-  .form-row {
-    gap: 6px;
-  }
-
-  /* Adjust select dropdown height slightly */
-  select.field {
-    padding: 6px 8px;
-  }
-
-
-
-
-  .field {
-    font-size: 13px;
-  }
-
-/* Subtle row separators (light translucent lines) */
-.form-row {
-  position: relative;
-  padding-bottom: 10px;
-  margin-bottom: 12px;
-}
-
-/* Line appears underneath each row */
-.form-row:not(:last-child)::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  height: 1px;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.08); /* subtle white line */
-}
-
-/* Extra subtle line for dark cards */
-.card .form-row:not(:last-child)::after {
-  background: rgba(255, 255, 255, 0.06);
-}
-.form-row {
-  padding-top: 4px;
-}
-.form-row::after {
-  animation: fadeInLine 0.3s ease forwards;
-}
-
-@keyframes fadeInLine {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-/* CREDIT CARD LAYOUT TWEAKS  --------------------------------------- */
-
-.credit-card {
-  padding-bottom: 16px;
-}
-
-.credit-left {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.credit-money {
-  text-align: right;
-  font-size: 13px;
-}
-
-/* Actions row: partial + full payment */
-.credit-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 10px;
-  margin-top: 10px;
-  flex-wrap: wrap;
-  padding-top: 8px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.credit-partial {
-  flex: 1 1 0;
-}
-
-.credit-partial-row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  margin-top: 4px;
-}
-
-.credit-partial-input {
-  max-width: 90px;
-}
-
-.credit-channel-input {
-  flex: 1 1 auto;
-}
-
-/* Smaller, pill-like buttons */
-.btn-small {
-  padding: 6px 12px;
-  font-size: 13px;
-  border-radius: 999px;
-}
-
-/* Full payment: smaller + right-aligned */
-.full-pay-btn {
-  align-self: flex-end;
-  padding-inline: 16px;
-  font-size: 13px;
-  white-space: nowrap;
-}
-
-/* VIEW / HIDE ITEMS ------------------------------------------------ */
-
-.view-items-btn {
-  margin-top: 4px;
-  padding: 0;
-  border: none;
-  background: none;
-  color: #7fb4ff;
-  font-size: 12px;
-  cursor: pointer;
-  align-self: flex-start;
-}
-
-.view-items-btn:hover {
-  text-decoration: underline;
-}
-
-/* Items list styling */
-.credit-items-list {
-  margin-top: 6px;
-  padding: 6px 8px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.03);
-  font-size: 13px;
-}
-
-.credit-item-line {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 2px;
-}
-
-.credit-item-qty {
-  opacity: 0.7;
-  min-width: 20px;
-}
-
-.credit-item-name {
-  flex: 1;
-}
-
-/* Slight tweak on very small screens */
-
-
-  .credit-partial-input {
-    max-width: 100%;
-  }
-
-  .full-pay-btn {
-    width: 100%;
-    text-align: center;
-  }
-
-/* CREDIT CARD LAYOUT ------------------------------------------ */
-
-.credit-card {
-  padding-bottom: 16px;
-}
-
-.credit-left {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.credit-money {
-  text-align: right;
-  font-size: 13px;
-}
-
-/* Actions row */
-.credit-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 10px;
-  padding-top: 8px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.credit-partial {
-  flex: 1 1 0;
-}
-
-.credit-partial-row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  margin-top: 4px;
-}
-
-.credit-partial-input {
-  max-width: 90px;
-}
-
-.credit-channel-input {
-  flex: 1 1 auto;
-}
-
-/* Small pills for both actions */
-.btn-small {
-  padding: 6px 12px;
-  font-size: 13px;
-  border-radius: 999px;
-}
-
-/* Make Add payment + Full payment same width so text change doesn't jump */
-.credit-add-btn,
-.full-pay-btn {
-  min-width: 110px;
-  text-align: center;
-}
-
-.full-pay-btn {
-    /* --- SIZING & SPACING --- */
-    /* Set a max-width to prevent it from stretching across the entire container */
-    max-width: 300px; 
-    /* Add internal padding for a better visual size, making it a comfortable click target */
-    padding: 10px 20px; 
-    /* Add a margin if you need space above/below or to center it */
-    margin: 10px auto; 
-    
-    /* --- ALIGNMENT --- */
-    /* If the button is a block element (default for div/p), this will center it */
-    display: block; 
-    /* If it's inline-block, you'd center its container, but 'margin: auto' works well here */
-    
-    /* --- TEXT & APPEARANCE --- */
-    /* Center the text inside the button */
-    text-align: center; 
-    /* Make the text readable, but not too big */
-    font-size: 16px; 
-    /* Ensure borders and shadows don't increase the size unexpectedly */
-    box-sizing: border-box; 
-    /* Make it look like a button */
-    background-color: #4CAF50; /* A nice green for payment */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s; /* Smooth hover effect */
-}
-
-.full-pay-btn:hover {
-    background-color: #45a049;
-}
-/* VIEW / HIDE ITEMS ------------------------------------------- */
-
-.view-items-btn {
-  margin-top: 4px;
-  padding: 0;
-  border: none;
-  background: none;
-  color: #7fb4ff;
-  font-size: 12px;
-  cursor: pointer;
-  align-self: flex-start;
-}
-
-.view-items-btn:hover {
-  text-decoration: underline;
-}
-
-.credit-items-list {
-  margin-top: 6px;
-  padding: 6px 8px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.03);
-  font-size: 13px;
-}
-
-.credit-item-line {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 2px;
-}
-
-.credit-item-qty {
-  opacity: 0.7;
-  min-width: 20px;
-}
-
-.credit-item-name {
-  flex: 1;
-}
-
-/* Mobile tweaks */
-
-
-  .credit-partial-input {
-    max-width: 100%;
-  }
-
-  .credit-actions {
-    align-items: stretch;
-  }
-
-  .full-pay-btn {
-    align-self: stretch;
-  }
-
-.btn-danger {
-  background: #ff4b5c;
-  color: #fff;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-size: 12px;
-}
-.btn-danger.btn-small {
-  padding: 4px 10px;
-  font-size: 11px;
-}
-
-
-
-
-/* ==================== */
-/* RECENT ORDERS TOGGLE */
-/* ==================== */
-
-.collapse-toggle {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-}
-
-.collapse-icon {
-  display: inline-block;
-  width: 22px;
-  height: 22px;
-  border-radius: 999px;
-  border: 1px solid var(--border-subtle, #384b6a);
-  font-size: 16px;
-  line-height: 20px;
-  text-align: center;
-  color: var(--accent, #4db4ff);
-  transition: transform 0.18s ease-out;
-}
-
-/* Use "+" in JSX; when open we rotate it 45deg to look like an "×" */
-.collapse-icon.open {
-  transform: rotate(45deg);
-}
-
-
-
-/* ================= */
-/* DASHBOARD HEADER  */
-/* ================= */
-
-.dashboard-header {
-  padding: 18px 22px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.dashboard-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: #f1f5f9;      /* near-white */
-  letter-spacing: -0.3px;
-}
-
-.dashboard-subtitle {
-  font-size: 12px;
-  color: #94a3b8;      /* slate-400 */
-  margin-top: 2px;
-  letter-spacing: 0.2px;
-}
-
-.dashboard-tagline {
-  font-size: 12px;
-  color: #64748b;      /* slate-500 */
-  margin-top: 6px;
-}
-/* ===== Global typography reset ===== */
-
-html, body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    sans-serif;
-  font-size: 13px;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-  color: var(--text-main, #e5ecff);
-}
-
-/* Make all form controls inherit that font so nothing falls back to serif */
-button,
-input,
-select,
-textarea {
-  font: inherit;
-}
-
-/* Mobile fixes */
-@media(max-width: 480px) {
-  .app-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-  
-  .app-header-right {
-    align-items: flex-start;
-  }
-}
-
-
-
-/* RESPONSIVE FIXES */
-@media (max-width: 480px) {
-  .app-header {
-    padding: 16px 16px 4px;
-  }
-
-  .app-header-right {
-    align-items: flex-start;
-  }
-
-  .app-current-tab {
-    margin-top: 2px;
-  }
-}
-/* HEADER — FIXED LAYOUT */
-.app-header-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  width: 100%;
-}
-
-/* Right side stays aligned */
-.app-header-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
-}
-
-/* Keep badge aligned with email */
-.app-current-tab {
-  margin-right: 4px;
-}
-
-.btn-success {
-  background: #27ae60; /* deep green */
-  color: #ffffff;
-  border-radius: 10px;
-  padding: 12px;
-  font-weight: 600;
-  font-size: 15px;
-  border: none;
-  transition: 0.2s ease;
-}
-
-.btn-success:hover {
-  background: #1f8a4d;
-}
-/* Full payment button – blue, matches app accent */
-.full-payment-btn {
-  background: #0894ff;      /* primary cyan/blue */
-  color: #ffffff;
-  border-radius: 10px;
-  padding: 12px;
-  font-weight: 600;
-  font-size: 15px;
-  border: none;
-  width: 100%;              /* full width like before */
-  text-align: center;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.1s ease;
-}
-
-.full-payment-btn:hover {
-  background: #0078d1;
-  transform: translateY(-1px);
-}
-
-.full-payment-btn:active {
-  transform: translateY(0);
-}
-.full-pay-btn {
-  background: #0894ff;
-  color: #ffffff;
-  border-radius: 999px;
-  padding: 12px 16px;
-  font-weight: 600;
-  font-size: 14px;
-  border: none;
-  min-width: 180px;
-  text-align: center;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.1s ease;
-}
-
-.full-pay-btn:hover {
-  background: #0078d1;
-  transform: translateY(-1px);
-}
-
-.full-pay-btn:active {
-  transform: translateY(0);
-}
-
-
-/* Auth card inputs – dark background */
-.auth-card .auth-input {
-  background: #020617;
-  border: 1px solid #1f2937;
-  color: var(--text-main);
-}
-
-/* Space between fields */
-.auth-field {
-  margin-bottom: 10px;
-}
-
-/* Password wrapper so the eye can sit INSIDE the input */
-.auth-password-field {
-  position: relative;
-}
-
-/* Make room for the eye on the right */
-.auth-password-field .auth-input {
-  padding-right: 40px;
-}
-
-/* Eye button */
-.auth-eye-btn {
-  position: absolute;
-  top: 45%;
-  right: 12px;
-  transform: translateY(-50%);
-  width: 28px;
-  height: 28px;
-  border-radius: 999px;
-  border: none;
-  background: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: #9ca3af;
-  padding: 0;
-}
-
-.auth-eye-btn:hover {
-  color: #e5e7eb;
-}
-
-.auth-eye-btn svg {
-  width: 16px;
-  height: 16px;
-}
-
-
-/* ===================== */
-/* INVOICE OVERLAY + PAGE */
-/* ===================== */
+/* ------------------------------------------------------------------
+   INVOICE OVERLAY (screen)
+------------------------------------------------------------------- */
 
 .invoice-overlay {
   position: fixed;
   inset: 0;
-  z-index: 9999;
-  background: rgba(15, 23, 42, 0.75); /* dark backdrop */
+  background: rgba(15, 23, 42, 0.8);
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 24px;
+  z-index: 950;
 }
 
-/* The invoice card (also the print root) */
 .invoice-page {
-  background: #ffffff;
-  color: #111827;
   width: 100%;
-  max-width: 720px;
-  border-radius: 24px;
-  box-shadow: 0 26px 80px rgba(15, 23, 42, 0.55);
-  padding: 28px 32px 80px;
-  max-height: 100%;
-  overflow: auto;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #0b1120;
+  color: #e5e7eb;
+  border-radius: 18px;
+  padding: 18px 20px 20px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.95);
 }
 
-/* Header */
+/* invoice typography */
 .invoice-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 24px;
-  margin-bottom: 20px;
+  gap: 16px;
+  margin-bottom: 10px;
 }
 
 .invoice-title {
-  font-size: 22px;
-  font-weight: 700;
-  margin-bottom: 4px;
+  font-size: 20px;
+  margin: 0 0 4px;
 }
 
-.invoice-subtitle {
-  font-size: 11px;
-  color: #6b7280;
-}
-
+.invoice-subtitle,
 .invoice-tagline {
-  margin-top: 8px;
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #9ca3af;
+  font-size: 12px;
+  color: #cbd5f5;
 }
 
 .invoice-meta {
-  font-size: 11px;
+  font-size: 12px;
   text-align: right;
-  line-height: 1.4;
 }
 
 .invoice-meta-label {
   color: #9ca3af;
 }
 
-/* Sections */
 .invoice-section {
-  margin-top: 18px;
+  margin-top: 10px;
 }
 
 .invoice-label {
-  font-size: 10px;
-  letter-spacing: 0.12em;
+  font-size: 11px;
   text-transform: uppercase;
+  letter-spacing: 0.08em;
   color: #9ca3af;
-  margin-bottom: 6px;
-}
-
-.invoice-block {
-  border-radius: 10px;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  padding: 10px 12px;
+  margin-bottom: 4px;
 }
 
 .invoice-customer-name {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 600;
 }
 
-/* Item table */
 .invoice-table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
+  font-size: 12px;
   margin-top: 4px;
 }
 
 .invoice-table th,
 .invoice-table td {
-  padding: 6px 8px;
-  font-size: 12px;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 4px 0;
 }
 
-/* product / qty / price / total alignment */
-.invoice-table th.col-product,
-.invoice-table td:nth-child(1) {
-  text-align: left;
-  width: 52%;
-}
-
-.invoice-table th.col-qty,
-.invoice-table td:nth-child(2) {
-  text-align: center;
-  width: 10%;
-}
-
-.invoice-table th.col-price,
-.invoice-table td:nth-child(3),
-.invoice-table th.col-total,
-.invoice-table td:nth-child(4) {
-  text-align: right;
-  width: 19%;
-}
-
-.invoice-empty {
-  text-align: center;
-  padding: 12px 8px;
+.invoice-table thead th {
+  font-size: 11px;
+  font-weight: 600;
   color: #9ca3af;
-}
-
-/* Totals */
-.invoice-totals {
-  margin-top: 18px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.4);
 }
 
 .invoice-totals-inner {
-  border-radius: 10px;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  padding: 10px 12px;
-  font-size: 12px;
+  margin-top: 8px;
+  border-top: 1px solid rgba(148, 163, 184, 0.4);
+  padding-top: 8px;
 }
 
 .invoice-total-row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 4px;
+  font-size: 13px;
+  margin-bottom: 3px;
 }
 
-.invoice-total-row--strong {
+.invoice-total-row--strong span:last-child {
   font-weight: 600;
 }
 
-/* Notes */
 .invoice-notes {
-  font-size: 11px;
-  color: #6b7280;
+  font-size: 12px;
   margin-top: 4px;
 }
 
-/* Actions (screen only) */
 .invoice-actions {
+  margin-top: 12px;
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-  margin-top: 16px;
 }
 
-/* ========= */
-/* MOBILE UI */
-/* ========= */
-
-
-@media (max-width: 640px) {
-  .invoice-overlay {
-    align-items: flex-start;
-    padding: 8px;
-  }
-
-  .invoice-page {
-    max-width: none;
-    width: 100%;
-    height: auto;
-    max-height: 100%;
-    border-radius: 0;
-    box-shadow: none;
-    padding: 16px 14px 72px;
-  }
-
-  .invoice-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .invoice-meta {
-    text-align: left;
-  }
-
-  .invoice-table th,
-  .invoice-table td {
-    font-size: 11px;
-    padding: 4px 4px;
-  }
-
-  .invoice-totals-inner {
-    font-size: 11px;
-  }
-
-  .invoice-actions {
-    position: sticky;
-    bottom: 0;
-    padding-top: 12px;
-    background: #ffffff;
-  }
-}
-
-/* ============== */
-/* PRINT OVERRIDE */
-/* ============== */
+/* Use a nice A4 layout */
 @page {
-  margin: 0 !important;
+  size: A4;
+  margin: 12mm 15mm;
 }
 
-@media print {
-  body {
-    margin: 0;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
+/* Let the browser choose A4/Letter, just add reasonable margins */
+@page {
+  margin: 12mm 15mm;
+}
+
+
+/* ======================= */
+/* INVOICE TABLE – SCREEN  */
+/* ======================= */
+
+.invoice-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; /* keeps columns perfectly aligned */
+  margin-top: 12px;
+  font-size: 0.9rem;
+}
+
+.invoice-table thead th,
+.invoice-table tbody td {
+  padding: 6px 10px;
+}
+
+/* Header style */
+.invoice-table thead th {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.72rem;
+}
+
+/* Column alignment using nth-child so it ALWAYS wins */
+.invoice-table thead th:nth-child(1),
+.invoice-table tbody td:nth-child(1) {
+  width: 52%;
+  text-align: left;
+}
+
+.invoice-table thead th:nth-child(2),
+.invoice-table tbody td:nth-child(2) {
+  width: 12%;
+  text-align: center;
+}
+
+.invoice-table thead th:nth-child(3),
+.invoice-table tbody td:nth-child(3),
+.invoice-table thead th:nth-child(4),
+.invoice-table tbody td:nth-child(4) {
+  width: 18%;
+  text-align: right;
+}
+
+.invoice-table tbody tr td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  vertical-align: middle;
+}
+
+.invoice-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.invoice-table tbody td:nth-child(1) {
+  word-break: break-word;
+}
+
+/* Empty state row */
+.invoice-empty {
+  padding: 12px 10px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+  /* Totals area */
+  .invoice-totals-inner {
+    margin-top: 8mm !important;
+    border-top: 1px solid #000000 !important;
+    padding-top: 4mm !important;
   }
 
-  /* hide everything AND collapse its height */
+  .invoice-total-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2px;
+  }
+
+  .invoice-total-row--strong span:last-child {
+    font-weight: 600 !important;
+  }
+/* === PRINT: only the invoice (#invoice-print-root) === */
+@media print {
+  /* Basic page setup */
+  @page {
+    /* A4 is fine even when browser says Letter – it just scales */
+    size: A4;
+    margin: 20mm;
+  }
+
+  body {
+    margin: 0 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide EVERYTHING by default */
   body * {
     visibility: hidden !important;
-    overflow: hidden !important;
-    height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
   }
 
-  /* only show the invoice card */
+  /* …except the invoice container and its children */
   #invoice-print-root,
   #invoice-print-root * {
     visibility: visible !important;
-    overflow: visible !important;
-    height: auto !important;
-    margin: initial !important;
-    padding: initial !important;
   }
 
-  /* make the invoice card fill the page cleanly */
+  /* Make the invoice fill the printable area */
   #invoice-print-root {
-    position: absolute;
-    inset: 0;
-    margin: 0 auto;
+    position: absolute !important;
+    left: 20mm !important;
+    top: 20mm !important;
+    right: 0 !important;
+    margin: 0 !important;
+    padding: 0 0 !important;
+    width: 100% !important;
+
     background: #ffffff !important;
+    color: #000000 !important;
     box-shadow: none !important;
     border-radius: 0 !important;
-    width: 100%;
-    max-width: 900px;           /* good width for A4 */
-    padding: 24px 32px 40px !important;
-
-    /* keep your 1-page layout */
-    max-height: 100vh !important;
-    overflow: hidden !important;
+    font-size: 11pt !important;
   }
 
-  .invoice-overlay {
-    position: static;
-    padding: 0;
-    background: #ffffff !important;
-  }
-
-  .invoice-actions.no-print {
+  /* Never print buttons / controls */
+  .invoice-actions,
+  .no-print,
+  button {
     display: none !important;
   }
 }
 
-/* ======================================= */
-/* FIX SPACING INSIDE PRINTED INVOICE ONLY */
-/* ======================================= */
 
-@media print {
-  #invoice-print-root {
-    padding-top: 40px !important;
-    padding-bottom: 50px !important;
-  }
+/* ========== Sales sub-menu tabs (Orders / Credit / Payments / Brands / Products) ========== */
 
-  #invoice-print-root h1,
-  #invoice-print-root h2,
-  #invoice-print-root h3,
-  #invoice-print-root h4 {
-    margin-top: 0 !important;
-    margin-bottom: 12px !important;
-  }
-
-  #invoice-print-root .invoice-section {
-    margin-top: 20px !important;
-    margin-bottom: 20px !important;
-  }
-
-  #invoice-print-root table {
-    margin-top: 12px !important;
-    margin-bottom: 16px !important;
-  }
-
-  #invoice-print-root table th,
-  #invoice-print-root table td {
-    padding: 8px 10px !important;
-  }
-
-  #invoice-print-root p {
-    margin: 6px 0 !important;
-    line-height: 1.35 !important;
-  }
-
-  #invoice-print-root .totals,
-  #invoice-print-root .notes,
-  #invoice-print-root .footer-text {
-    margin-top: 20px !important;
-  }
-}
-/* Make sure no dark background peeks through on print */
-@media print {
-  html,
-  body,
-  #root,
-  .app-root,
-  .app-shell {
-    background: #ffffff !important;
-  }
-
-  /* Let the invoice cover the whole printable height */
-  #invoice-print-root {
-    min-height: 100vh !important;
-  }
-}
-.auth-card {
-  max-width: 360px;
-  width: 100%;
-  margin: 0 auto;
-}
-
-.auth-card-inner {
-  padding: 20px;
-}
-/*for the side by side edit and update*/
-.order-actions-row {
-  margin-top: 16px;
+.sales-tabs {
   display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  flex-wrap: wrap; /* so on tiny screens they can wrap nicely */
+  flex-wrap: wrap;           /* wrap to next line instead of horizontal scroll */
+  gap: 0.5rem;
+  padding: 0.75rem 0 1rem;
+  max-width: 100%;
 }
 
-/*new edit for side by side*/
-.order-save-row {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  margin-top: 12px;
+.sales-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+
+  font-size: 0.9rem;
+  font-weight: 500;
+
+  border: 1px solid #2b3444;
+  background: #161d27;        /* soft charcoal, not pure black */
+  color: #e3ebff;             /* light, but not washed out */
+
+  cursor: pointer;
+  white-space: nowrap;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.1s ease;
 }
 
-/* Make the buttons in the order footer sit nicely side by side */
-.order-save-row {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 12px;
-}
-
-/* Stop the primary button from being 100% width here */
-.order-save-row .btn-primary,
-.order-save-row .btn-secondary {
-  width: auto;
-  min-width: 130px;          /* tweak this if you want them wider/narrower */
+.sales-tab-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  white-space: nowrap;
+  line-height: 1;
+  stroke-width: 1.7;          /* lucide line a bit lighter */
 }
 
-/* Slightly smaller cancel button if you like */
-.order-save-row .btn-secondary {
-  min-width: 110px;
-}
-.order-save-row {
-  display: flex;
-  justify-content: center;   /* <— was flex-end */
-  gap: 12px;
-  margin-top: 16px;
+.sales-tab-label {
+  line-height: 1.2;
 }
 
-.order-save-row .btn-primary,
-.order-save-row .btn-secondary {
-  width: auto;
-  min-width: 130px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  white-space: nowrap;
+/* Hover (when not active) */
+.sales-tab:hover:not(.sales-tab--active) {
+  background: #1e2633;
+  border-color: #3b465b;
 }
 
-.order-save-row .btn-secondary {
-  min-width: 110px;
+/* Active tab = lighter blue pill */
+.sales-tab--active {
+  background: #2f80ff;
+  border-color: #63a4ff;
+  color: #ffffff;
+}
+
+/* Focus outline for keyboard users */
+.sales-tab:focus-visible {
+  outline: 2px solid #63a4ff;
+  outline-offset: 2px;
+}
+
+/* Small screens – slightly tighter pills */
+@media (max-width: 480px) {
+  .sales-tabs {
+    gap: 0.4rem;
+  }
+
+  .sales-tab {
+    padding: 0.25rem 0.7rem;
+    font-size: 0.85rem;
+  }
+}
+
+.btn-edit {
+  margin-right: 0.5rem; /* Add space between Edit and Invoice */
 }
 
 
-.line-items-divider {
-  border: 0;
-  border-top: 1px solid #1f2937; /* subtle line */
-  margin: 16px 0 12px;           /* space above/below */
-}
 
-/* Make Update Order a pill-shaped primary button */
-.btn-primary {
-  border-radius: 999px;              /* <-- pill shape */
-  padding: 10px 24px;
+/* ---------- CREDIT / UTANG CARD TWEAKS ---------- */
+
+/* Status line – bold, colour based on due state */
+.credit-status-text {
   font-weight: 600;
+  font-size: 0.9rem;
+  margin-top: 0.3rem;
+  margin-bottom: 0.4rem;
 }
 
-/* Keep the existing blue color */
-.btn-primary {
-  background: #0ea5e9;               /* your current bright blue */
-  color: white;
-  border: none;
+.credit-status-text--overdue {
+  color: #fb7185; /* visible red */
 }
 
-.btn-primary:hover {
-  background: #0284c7;               /* slightly darker blue on hover */
+.credit-status-text--upcoming {
+  color: #4ade80; /* green for future due date */
 }
 
-/* Make Cancel Edit perfectly rounded as well for consistency */
-.btn-secondary {
-  border-radius: 999px;              /* pill shape */
-  padding: 10px 22px;
+.credit-status-text--today {
+  color: #facc15; /* yellow for "DUE TODAY" */
 }
 
-.order-extra {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid #1f2937;
+/* "View items" pill */
+.pill-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  background: rgba(15, 23, 42, 0.9);
+  color: #e5e7eb;
+  cursor: pointer;
+  margin-bottom: 0.6rem;
 }
 
-.order-extra-block + .order-extra-block {
-  margin-top: 10px;
+.pill-tag--ghost:hover {
+  border-color: rgba(248, 250, 252, 0.8);
+  background: rgba(15, 23, 42, 0.98);
 }
 
-.payments-list {
-  margin-top: 6px;
+/* Label above the payment inputs */
+.credit-payment-label {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  margin-bottom: 0.25rem;
 }
 
-.payment-line {
+/* Wrapper for amount + channel + buttons */
+.credit-payment-block {
   display: flex;
   flex-direction: column;
-  padding: 4px 0;
-  border-bottom: 1px dashed #1f2937;
+  gap: 0.5rem;
 }
 
-.payment-line:last-child {
-  border-bottom: none;
+/* Slightly smaller fields only inside credit card */
+.credit-field {
+  font-size: 0.9rem;
+  padding-block: 0.45rem;
 }
 
-.payment-main {
+/* Row for Add / Full buttons */
+.credit-actions-row {
   display: flex;
-  justify-content: space-between;
-  font-size: 14px;
+  gap: 0.5rem;
+  margin-top: 0.1rem;
 }
 
-.payment-date {
-  color: #9ca3af;
-}
-
-.payment-notes {
-  font-size: 12px;
-  color: #9ca3af;
-}
-
-.order-status--paid {
-  background: #16a34a22;
-  color: #22c55e;
-}
-/* Generic small button style (for Edit, Delete, Invoice, Hide details) */
+/* Smaller pill buttons (you may already have .btn-small – this is safe) */
 .btn-small {
-  font-size: 13px;
-  padding: 4px 12px;
-  min-width: 0;
-  border-radius: 999px; /* still pill, just smaller */
+  padding: 0.35rem 0.95rem;
+  font-size: 0.8rem;
 }
 
-/* In list tiles, keep them compact */
-.customer-item .btn-small {
-  font-size: 13px;
-  padding: 4px 12px;
+/* Make sure these two buttons sit side-by-side nicely */
+.credit-actions-row .btn-pill {
+  flex: 0 0 auto;
 }
 
-/* --- Credit / Utang layout fixes --- */
+.credit-items-section {
+  margin-top: 1rem;
+  padding-top: 0.2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
 
-/* Row that holds amount, channel, Add payment */
-.credit-partial-row {
+
+.credit-payment-tile {
+  background: rgba(180, 200, 255, 0.06); /* soft blue-gray */
+  padding: 1rem 1rem 1.2rem;
+  border-radius: 12px;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.credit-payment-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #bcd4ff;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.credit-payment-block .credit-field {
+  margin-bottom: 0.5rem;
+}
+
+.credit-actions-row {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 6px;
+  justify-content: flex-start;
+  gap: 0.5rem;
 }
 
-/* Small amount box */
-.credit-partial-input {
-  max-width: 100px;
+/* Items list under each credit order */
+.credit-items-list {
+  margin-top: 0.4rem;
+  font-size: 0.8rem;          /* smaller overall */
+  line-height: 1.3;
 }
 
-/* Channel input stretches */
-.credit-channel-input {
-  flex: 1;
-}
-
-/* Add payment button – compact and not overflowing */
-.credit-add-btn {
-  white-space: nowrap;
-  padding: 6px 12px;
-  font-size: 13px;
-}
-
-/* Full payment button – centred, nice pill */
-.full-pay-btn {
-  margin-top: 14px;
-  align-self: center;
-  padding: 10px 24px;
-  border-radius: 999px;
-}
-
-/* Parent area for partial + full payment */
-.credit-actions {
-  margin-top: 12px;
-  border-top: 1px solid rgba(148, 163, 184, 0.3);
-  padding-top: 10px;
-}
-/* --- Credit / Utang layout fixes --- */
-
-/* Row that holds amount, channel, Add payment */
-.credit-partial-row {
+.credit-item-line {
   display: flex;
+  gap: 0.4rem;
+  align-items: baseline;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.credit-item-qty {
+  font-weight: 500;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.credit-item-name {
+  font-weight: 400;
+  font-size: 0.8rem;
+}
+
+
+/* Pill button for view/hide details (used in Credit & Payments tabs) */
+.view-items-btn {
+  margin-top: 0.5rem;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 6px;
-}
-
-/* Amount input */
-.credit-partial-input {
-  max-width: 110px;
-}
-
-/* Channel input stretches */
-.credit-channel-input {
-  flex: 1;
-}
-
-/* Add payment – slightly wider pill */
-.credit-add-btn {
-  white-space: nowrap;
-  padding: 8px 18px;      /* ⬅️ wider */
-  font-size: 13px;
-  min-width: 110px;       /* ⬅️ guarantees a nice pill width */
-}
-
-/* Parent area for partial + full payment */
-.credit-actions {
-  margin-top: 12px;
-  border-top: 1px solid rgba(148, 163, 184, 0.3);
-  padding-top: 10px;
-}
-
-/* Full payment – big centred pill */
-.full-pay-btn {
-  margin-top: 14px;
-  align-self: center;
-  padding: 10px 32px;     /* ⬅️ a bit wider */
-  min-width: 190px;       /* ⬅️ nice full-width look */
+  padding: 0.25rem 0.85rem;
   border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(19, 32, 65, 0.9);
+  color: #e4ecff;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease,
+    transform 0.08s ease;
 }
 
-/* Payments list styling on Payments page */
+.view-items-btn:hover {
+  background: rgba(35, 60, 110, 1);
+  border-color: rgba(120, 190, 255, 0.7);
+}
+
+.view-items-btn:active {
+  transform: translateY(1px);
+}
+
+/* Sub-card / tile for expanded details (mirrors the partial-payment box) */
+.credit-details-box {
+  margin-top: 0.85rem;
+  padding: 0.95rem 1rem;
+  border-radius: 16px;
+  background: radial-gradient(
+      circle at top left,
+      rgba(69, 99, 175, 0.18),
+      transparent 55%
+    ),
+    rgba(7, 17, 40, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.6);
+}
+
+/* Sections inside the details box */
+.credit-details-section {
+  padding-top: 0.25rem;
+  padding-bottom: 0.55rem;
+}
+
+.credit-details-section + .credit-details-section {
+  border-top: 1px dashed rgba(255, 255, 255, 0.08);
+  margin-top: 0.4rem;
+  padding-top: 0.7rem;
+}
+
+/* Items list – same as Credit tab smaller style */
+.credit-items-list {
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  line-height: 1.3;
+}
+
+.credit-item-line {
+  display: flex;
+  gap: 0.4rem;
+  align-items: baseline;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.credit-item-qty {
+  font-weight: 500;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.credit-item-name {
+  font-weight: 400;
+  font-size: 0.8rem;
+}
+
+/* Payments list styling */
 .payments-list {
+  margin-top: 0.25rem;
   list-style: none;
-  padding-left: 0;
-  margin: 6px 0 0;
+  padding: 0;
+  font-size: 0.8rem;
 }
 
 .payments-list-item {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
-  font-size: 13px;
-  color: var(--text-main);
+  gap: 0.3rem;
+  align-items: baseline;
+  color: rgba(255, 255, 255, 0.85);
+  padding: 0.2rem 0;
 }
 
 .payment-amount {
   font-weight: 600;
 }
 
-.payment-channel,
+.payment-channel {
+  opacity: 0.9;
+}
+
 .payment-date {
-  color: #9ca3af; /* soft grey */
+  opacity: 0.7;
 }
 
 .payment-separator {
-  color: #4b5563; /* slightly darker dot */
+  opacity: 0.5;
+}
+.order-totals-row {
+  margin-top: 1.2rem !important;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255,255,255,0.08);
 }
 
-.app-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.order-totals-row {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.app-brand-logo {
-  width: 32px;
-  height: 32px;
-  object-fit: contain;
-  border-radius: 6px; /* optional – for softer look */
-}
-
-
-/* ---------- App header (Dimerr) ---------- */
-
-.app-header {
-  /* make it a slim bar, not a huge hero card */
-  margin-bottom: 16px;
-  padding: 14px 20px;
-  border-radius: 24px;
-  background: #020617;
-  border: 1px solid #111827;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-/* left side: logo + name + tagline */
-.app-header-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.app-logo {
-  width: 28px;
-  height: 28px;
-  border-radius: 10px;
-  object-fit: cover;
-  flex-shrink: 0;
-}
-
-.app-title-block {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.app-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #f9fafb;
-  line-height: 1.2;
-}
-
-.app-subtitle {
-  font-size: 12px;
-  color: #9ca3af;
-  line-height: 1.3;
-}
-
-/* right side: bell + avatar side-by-side */
-.app-header-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-/* circular icon buttons */
-.icon-circle,
-.user-avatar-circle {
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #1f2937;
-  background: transparent;
-  color: #9ca3af;
-  cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
-}
-
-.icon-circle:hover,
-.user-avatar-circle:hover {
-  background: #0b1120;
-  border-color: #374151;
-  color: #e5e7eb;
-}
-
-/* make the bell grayscale, matching nav icons */
-.icon-circle .icon-gray {
-  stroke: #9ca3af;
-}
-
-/* avatar letter */
-.user-avatar-circle {
-  font-size: 14px;
+.order-money .money-srp {
+  color: #f6d46b;        /* soft yellow-gold for SRP */
   font-weight: 600;
 }
 
-/* dropdown under avatar */
-.user-menu-wrapper {
-  position: relative;
-}
-
-.user-menu-dropdown {
-  position: absolute;
-  right: 0;
-  top: 38px;
-  min-width: 180px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: #020617;
-  border: 1px solid #111827;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
-  z-index: 20;
-}
-
-.user-menu-email {
-  font-size: 12px;
-  color: #e5e7eb;
-  margin-bottom: 8px;
-  word-break: break-all;
-}
-
-.user-menu-logout {
-  width: 100%;
-}
-/* ---------- HEADER RESET ---------- */
-.app-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 18px 22px;
-  background: #0b1628;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-  border-radius: 0;     /* remove rounded card look */
-  margin-bottom: 10px;  /* small spacing above page title */
-}
-
-/* Left section */
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.header-logo {
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-}
-
-.header-titles {
-  display: flex;
-  flex-direction: column;
-}
-
-.header-title {
-  font-size: 1.1rem;
+.order-money .money-cost {
+  color: #ff7b7b;        /* soft red for cost */
   font-weight: 600;
-  margin: 0;
 }
 
-.header-tagline {
-  font-size: 0.78rem;
-  opacity: 0.7;
-  margin: 0;
-}
-
-/* Right section */
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.header-icon-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.icon-gray {
-  color: #c7c7c7;
-}
-
-/* Avatar */
-.header-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.15);
-  color: #fff;
+.order-money .money-profit {
+  color: #6bee8c;        /* mint green for profit */
   font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Dropdown */
-.user-menu-wrapper {
-  position: relative;
-}
-
-.user-menu-dropdown {
-  position: absolute;
-  top: 44px;
-  right: 0;
-  background: #101d33;
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 8px;
-  padding: 12px;
-  min-width: 180px;
-  z-index: 50;
-}
-
-.user-menu-email {
-  font-size: 0.8rem;
-  margin-bottom: 8px;
-  opacity: 0.85;
-}
-
-/* Page header row (Dashboard, Customers, etc.) */
-.page-header {
-  padding: 12px 24px 0;    /* same side padding as your cards */
-}
-
-/* The text + info icon */
+}/* Main page title (Dashboard, Sales, Customers, etc.) */
 .page-title {
-  font-size: 1rem;
+  font-size: 2rem;              /* bigger */
+  font-weight: 700;             /* bold and premium */
+  letter-spacing: -0.5px;       /* elegant tightening */
+  color: #ffffff;
+  margin-bottom: 1.5rem;        /* proper spacing */
+  font-family: "Inter", "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+/* Section headers (like Sales by brand, Recent orders) */
+.section-title,
+.card-title {
+  font-size: 1.3rem;
   font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;                /* small space between text and icon */
-  margin: 0;
-}
-/* The little (i) icon beside Dashboard */
-.info-icon {
-  border: none;
-  background: transparent;
-  padding: 0;
-  margin: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: help;          /* shows “help” cursor on hover */
-  color: #9ca3af;        /* soft grey */
+  margin-bottom: 1rem;
+  color: #e9ecf1;
+  font-family: "Inter", "Segoe UI", Helvetica, Arial, sans-serif;
 }
 
-.info-icon svg {
-  width: 14px;
-  height: 14px;
+.sales-brand-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-/* Optional: slight brighten on hover */
-.info-icon:hover {
-  color: #e5e7eb;
-}
-
-
-/* ========== HEADER ========== */
-
-.app-header {
-  /* same card look as the rest */
-  background: #050c16;
-  border-radius: 20px 20px 0 0;
-  border: 1px solid #151c2b;
+.sales-brand-row:last-child {
   border-bottom: none;
-
-  /* NEW: compact horizontal layout */
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-
-  padding: 12px 20px;
-  gap: 12px;
 }
 
-/* left side: logo + name + tagline */
-.app-header-left {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-}
-
-.app-logo {
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-  object-fit: contain;
-  flex-shrink: 0;
-}
-
-.app-title-block {
+.sales-brand-left {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px; /* spacing between SALES and PROFIT */
 }
 
-.app-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #ffffff;
-  line-height: 1.2;
-}
-
-.app-subtitle {
-  font-size: 11px;
-  color: #9ca8c6;
-  line-height: 1.2;
-}
-
-/* right side: bell + avatar in a row */
-.app-header-right {
+.sales-brand-right {
+  text-align: right;
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  gap: 4px;
 }
 
-/* ICON CIRCLES (bell + avatar) */
-.icon-circle,
-.user-avatar-circle {
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
-  border: 1px solid #3a465c;
-  background: transparent;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-}
-
-.icon-circle:hover,
-.user-avatar-circle:hover {
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.icon-gray {
-  color: #c0c8de; /* lucide icon color */
-}
-
-/* Avatar letter */
-.user-avatar-circle {
-  font-size: 13px;
+.sales-brand-sales {
   font-weight: 600;
   color: #ffffff;
 }
 
-/* User menu dropdown */
-.user-menu-wrapper {
-  position: relative;
+.sales-brand-profit {
+  font-weight: 600;
+  color: #6bee8c;   /* same green as rest of app */
 }
 
-.user-menu-dropdown {
-  position: absolute;
-  right: 0;
-  top: 40px;
-  min-width: 180px;
-  padding: 10px 12px;
-  background: #050b15;
-  border-radius: 12px;
-  border: 1px solid #1b2437;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
-  z-index: 20;
+/* --- SALES BY BRAND CARD --- */
+.salesbrand-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 1rem 1.2rem;
+  margin-top: 0.8rem;
 }
 
-.user-menu-email {
-  font-size: 12px;
-  color: #d8e0ff;
-  margin-bottom: 8px;
-  word-break: break-all;
+/* Each row */
+.salesbrand-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.user-menu-logout {
-  width: 100%;
-  justify-content: center;
+.salesbrand-row:last-child {
+  border-bottom: none;
 }
 
-/* ========== PAGE TITLE ROW ========== */
-
-.page-header {
-  /* attach nicely to bottom of header card */
-  background: #050c16;
-  border-radius: 0 0 20px 20px;
-  border: 1px solid #151c2b;
-  border-top: none;
-
-  padding: 10px 20px 16px;
-}
-
-.page-title {
-  display: inline-flex;
-  align-items: center;
+/* Sales + Profit container */
+.salesbrand-left {
+  display: flex;
+  flex-direction: column;
   gap: 6px;
-  font-size: 18px;
+}
+
+/* Right side (brand name + orders) */
+.salesbrand-right {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Brand name */
+.salesbrand-name {
+  font-size: 1.05rem;
   font-weight: 600;
   color: #ffffff;
+  letter-spacing: -0.2px;
 }
 
-/* the little ⓘ button */
-.info-icon {
-  border: none;
-  background: none;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: help;
-  color: #8591b3;
+/* Orders text */
+.salesbrand-meta {
+  font-size: 0.85rem;
+  color: #a6b0c1;
 }
 
-.info-icon svg {
-  display: block;
+/* Label + value rows */
+.salesbrand-metric {
+  display: flex;
+  gap: 0.4rem;
+  font-size: 0.95rem;
 }
 
-/* ========== MOBILE TWEAKS ========== */
+.salesbrand-label {
+  font-weight: 500;
+  opacity: 0.8;
+}
 
-@media (max-width: 640px) {
-  .app-header {
-    padding: 10px 14px;
-  }
+.salesbrand-label--sales {
+  color: #e8e8e8;
+}
 
-  .app-title {
-    font-size: 16px;
-  }
+.salesbrand-label--profit {
+  color: #e8e8e8;
+}
 
-  .app-subtitle {
-    font-size: 10px;
-  }
+.salesbrand-value {
+  font-weight: 600;
+}
 
-  .icon-circle,
-  .user-avatar-circle {
-    width: 30px;
-    height: 30px;
-  }
+.salesbrand-value--sales {
+  color: #f3d178;
+}
 
+.salesbrand-value--profit {
+  color: #78e08f;
+}
+
+/* Page title spacing */
+.page-header {
+  padding: 0 1.5rem;
+  margin-top: 0.75rem;      /* was probably larger */
+  margin-bottom: 0.5rem;    /* tighten gap above tiles */
+}
+
+/* General section spacing */
+.dashboard-section {
+  margin-top: 0.75rem;
+}
+
+/* Extra-tight on smaller screens */
+@media (max-width: 600px) {
   .page-header {
-    padding: 8px 14px 12px;
+    margin-top: 0.5rem;
+    margin-bottom: 0.3rem;
   }
 
-  .page-title {
-    font-size: 17px;
+  .dashboard-section {
+    margin-top: 0.5rem;
   }
-.app-header {
-  border-bottom: none !important;
 }
 
-}
-
-/* ---- Shell width (same as before, just here for context) ---- */
-.app-shell {
-  max-width: 480px;
+/* Top metrics grid (Total Sales, Total Cost, etc.) */
+.dashboard-metrics-grid {
+  display: grid;
+  gap: 1rem;
+  /* 2 columns by default so desktop + mobile both see 2x2 layout */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 720px;
   margin: 0 auto;
 }
 
-/* ---- HEADER (single glass bar at top) ---- */
-.app-header {
-  margin: 16px 0 10px;
-  padding: 10px 14px;
-  border-radius: 18px;
-  background: rgba(6, 12, 36, 0.96);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(16px);
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+/* Tiny phones: fall back to 1 column so it doesn't feel cramped */
+@media (max-width: 380px) {
+  .dashboard-metrics-grid {
+    grid-template-columns: 2fr;
+  }
 }
-
-.app-header-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.app-logo {
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-}
-
-.app-title-block {
-  display: flex;
-  flex-direction: column;
-}
-
-.app-title {
-  font-size: 1.05rem;
-  font-weight: 600;
-  margin: 0;
-}
-
-.app-subtitle {
-  font-size: 0.75rem;
-  color: #9ba4c0;
-  margin: 1px 0 0;
-}
-
-/* right side: bell + avatar in a row */
-.app-header-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.icon-circle,
-.user-avatar-circle {
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(8, 13, 38, 0.92);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.icon-circle:hover,
-.user-avatar-circle:hover {
-  border-color: rgba(255, 255, 255, 0.35);
-}
-
-.icon-gray {
-  stroke: #c4ccdd;
-}
-
-.user-avatar-circle {
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-/* user dropdown */
-.user-menu-wrapper {
-  position: relative;
-}
-
-.user-menu-dropdown {
-  position: absolute;
-  right: 0;
-  top: 40px;
-  min-width: 180px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: rgba(7, 12, 35, 0.97);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(16px);
-  z-index: 20;
-}
-
-.user-menu-email {
-  font-size: 0.78rem;
-  margin-bottom: 6px;
-  word-break: break-all;
-}
-
-/* ---- PAGE TITLE – attached visually to first card ---- */
-.page-header-simple {
-  padding: 0 6px 8px;
-  margin-top: 2px;
-}
-
-.page-title-simple {
-  font-size: 1.05rem;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  position: relative;
-}
-
-/* little gradient underline under the word */
-.page-title-simple::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -4px;
-  width: 46px;
-  height: 2px;
-  border-radius: 999px;
-  background: linear-gradient(
-    90deg,
-    #3fd2ff,
-    #4f72ff
-  );
-}
-
-/* info icon – no white box, hover = lighter */
-.info-icon-simple {
-  border: none;
-  background: transparent;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: help;
-}
-
-.info-icon-simple svg {
-  width: 14px;
-  height: 14px;
-  stroke: #8f9abc;
-}
-
-.info-icon-simple:hover svg {
-  stroke: #ffffff;
-}
-
-/* main content, sits right under Dashboard line */
-.app-main {
-  margin-top: 6px;
-}
-
-/* make sure your existing .card already has the glass look;
-   keep whatever you had, or this as a base */
-
-.card {
-  background: rgba(7, 12, 35, 0.96);
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(16px);
-}
-
-
-/* ======================= */
-/* DIMERR HEADER + PAGE BAR */
-/* ======================= */
-
-/* Shell keeps everything centered and aligned */
-.app-shell {
-  display: flex;
-  justify-content: center;
-  padding: 24px 12px 80px;
-}
-
-.app-content {
-  width: 100%;
-  max-width: 520px;
-}
-
-/* Glass header card */
-.app-header {
-  background: radial-gradient(circle at top left, #0f213f 0%, #050b16 55%, #060910 100%);
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55);
-  padding: 12px 18px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin: 12px 0 10px; /* space above + below header */
-}
-
-/* Left side: logo + text */
-.app-header-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
-
-.app-logo {
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-  flex-shrink: 0;
-}
-
-.app-title-block {
-  display: flex;
-  flex-direction: column;
-}
-
-.app-title {
-  font-size: 18px;
-  font-weight: 600;
-  margin: 0;
-}
-
-.app-subtitle {
-  margin: 0;
-  font-size: 11px;
-  color: #8fa0c5;
-}
-
-/* Right side: bell + avatar in a row */
-.app-header-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-/* circular icon + avatar */
-.icon-circle,
-.user-avatar-circle {
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.24);
-  background: rgba(6, 10, 20, 0.75);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #c4d0e9;
-  cursor: pointer;
-}
-
-.icon-circle:hover,
-.user-avatar-circle:hover {
-  border-color: rgba(138, 194, 255, 0.8);
-  color: #e5f0ff;
-}
-
-.icon-gray {
-  color: #c4d0e9;
-}
-
-/* avatar letter */
-.user-avatar-circle {
-  font-size: 13px;
-  font-weight: 600;
-}
-
-/* user dropdown */
-.user-menu-wrapper {
-  position: relative;
-}
-
-.user-menu-dropdown {
-  position: absolute;
-  right: 0;
-  top: 40px;
-  padding: 10px 12px;
-  background: rgba(5, 10, 22, 0.96);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
-  min-width: 190px;
-  z-index: 9999; /* make sure it sits above cards */
-}
-
-.user-menu-email {
-  font-size: 12px;
-  margin-bottom: 8px;
-  color: #d3dcf5;
-}
-
-.user-menu-logout {
-  width: 100%;
-}
-
-/* ===== PAGE TITLE (Dashboard etc) ===== */
-
 .page-header {
-  padding: 0 18px;         /* same horizontal feel as cards */
-  margin: 4px 0 8px;       /* small gap under header */
+  padding: 0 1.5rem;
+  margin-top: 0.75rem;
+  margin-bottom: 0.4rem;
 }
 
-.page-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 18px;
-  font-weight: 600;
-  position: relative;
-}
-
-/* soft underline under page name */
-.page-title::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -3px;
-  width: 44px;
-  height: 2px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #33b5ff, #7df2ff);
-}
-
-/* info icon – subtle, no white box */
-.info-icon {
-  border: none;
-  background: transparent;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #8fa0c5;
-  cursor: help;
-}
-
-.info-icon:hover {
-  color: #cfe4ff;
-}
-
-/* main content – cards line up with page header */
-.app-main {
-  padding: 0 18px 24px;
-}
-
-.app-main > .card:first-of-type {
-  margin-top: 10px;
-}
-
-/* Small screen adjustments */
-@media (max-width: 480px) {
-  .app-shell {
-    padding: 18px 10px 72px;
-  }
-
-  .app-header {
-    padding: 10px 14px;
-    margin: 10px 0 6px;
-  }
-
-  .app-title {
-    font-size: 16px;
-  }
-
+@media (max-width: 600px) {
   .page-header {
-    padding: 0 14px;
-  }
-
-  .app-main {
-    padding: 0 14px 20px;
+    margin-top: 0.5rem;
+    margin-bottom: 0.25rem;
   }
 }
 
-/* ================================================= */
-/*  LAYOUT: center column so header + cards align    */
-/* ================================================= */
-
-.app-shell {
-  display: flex;
-  justify-content: center;
-  padding: 24px 12px 18px;
+/* Dashboard KPI section – tighten top spacing a bit */
+.dashboard-section--kpis {
+  margin-top: 0.5rem;
 }
 
-.app-inner {
-  width: 100%;
-  max-width: 520px; /* tweak to make the whole app wider/narrower */
+/* KPI grid: 2 columns by default (desktop + normal mobile) */
+.dashboard-metrics-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 720px;
+  margin: 0 auto;
 }
 
-/* ================================================= */
-/*  DIMERR HEADER                                    */
-/* ================================================= */
-
-.app-header {
-  position: relative;
-  z-index: 40; /* keeps dropdown above cards */
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-
-  width: 100%;
-  box-sizing: border-box;
-
-  padding: 12px 18px;
-  margin: 4px 0 12px;
-
-  border-radius: 18px;
-  background: radial-gradient(circle at top left, #0f213f 0%, #050b16 55%, #060910 100%);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+/* Ultra small phones: fall back to 1 column */
+@media (max-width: 380px) {
+  .dashboard-metrics-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
-.app-header-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
+/* KPI tile styling (you probably already have something like this) */
+.kpi-tile {
+  background: #0b1b30;
+  border-radius: 16px;
+  padding: 1rem 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.03);
 }
 
-.app-logo {
-  width: 30px;
-  height: 30px;
-  border-radius: 9px;
-  flex-shrink: 0;
+.kpi-label {
+  display: block;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7d8ca6;
+  margin-bottom: 0.35rem;
 }
 
-.app-title-block {
-  display: flex;
-  flex-direction: column;
-}
-
-.app-title {
-  margin: 0;
-  font-size: 1rem;
+.kpi-value {
+  font-size: 1.25rem;
   font-weight: 600;
+  color: #f8fafc;
 }
 
-.app-subtitle {
-  margin: 2px 0 0;
-  font-size: 0.78rem;
-  opacity: 0.7;
+.kpi-value--profit {
+  color: #4ade80;
 }
 
-/* Right side: bell + avatar in a row */
-.app-header-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.kpi-value--warn {
+  color: #fbbf24;
 }
 
-/* Circular icon + avatar */
-.icon-circle,
-.user-avatar-circle {
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(6, 10, 20, 0.85);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #c4d0e9;
-  padding: 0;
-  cursor: pointer;
+.kpi-value--danger {
+  color: #fb7185;
 }
 
-.icon-circle:hover,
-.user-avatar-circle:hover {
-  border-color: rgba(138, 194, 255, 0.8);
-  color: #e5f0ff;
-}
-
-.icon-gray {
-  color: #c4d0e9;
-}
-
-.user-avatar-circle {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #e6f1ff;
-}
-
-/* User dropdown */
-.user-menu-wrapper {
-  position: relative;
-}
-
-.user-menu-dropdown {
-  position: absolute;
-  right: 0;
-  top: 40px;
-
-  min-width: 190px;
-  padding: 10px 12px;
-
-  border-radius: 14px;
-  background: rgba(5, 15, 35, 0.98);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
-
-  z-index: 100; /* definitely above the first card */
-}
-
-.user-menu-email {
-  font-size: 0.78rem;
-  margin-bottom: 8px;
-  color: #d6e2ff;
-  word-break: break-all;
-}
-
-.user-menu-logout {
-  width: 100%;
-}
-
-/* Compact on phones */
-@media (max-width: 640px) {
-  .app-shell {
-    padding: 18px 10px 72px;
-  }
-
-  .app-header {
-    padding: 10px 14px;
-    margin: 2px 0 10px;
-  }
-
-  .app-title {
-    font-size: 0.95rem;
-  }
-}
-
-/* ================================================= */
-/*  PAGE TITLE BAR (Dashboard, Orders, etc)          */
-/* ================================================= */
-
+/* Remove the big gap below the Dashboard heading */
 .page-header {
-  padding: 0 2px;
-  margin: 0 0 8px;
+  margin-bottom: 0.10rem !important;
+  padding-bottom: 0 !important;
+}
+
+/* Also tighten spacing before the KPI tile section */
+.dashboard-section--kpis {
+  margin-top: 0.10rem !important;
 }
 
 .page-title {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 1.05rem;
-  font-weight: 600;
-}
-
-/* soft underline under page name */
-.page-title::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -4px;
-  width: 40px;
-  height: 2px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #33b5ff, #7df2ff);
-}
-
-/* Info (i) icon – subtle, no white box */
-.info-icon {
-  border: none;
-  background: none;
-  padding: 0;
-  margin: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  border-radius: 999px;
-  color: #9fb3c8;
-  cursor: help;
-}
-
-.info-icon:hover {
-  color: #e7f2ff;
-}
-
-/* ================================================= */
-/*  MAIN CONTENT                                      */
-/* ================================================= */
-
-.app-main {
-  padding: 0; /* cards already have inner padding */
-}
-
-.app-main > .card:first-of-type {
-  margin-top: 8px; /* tucks first card nicely under "Dashboard" */
-}
-
-
-/* ========================= */
-/* HARD RESET: PAGE SUBHEADER */
-/* ========================= */
-
-/* 1. Kill any background / bar / shadow that might be hanging around */
-.page-header,
-.page-header::before,
-.page-header::after {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-.page-header::before,
-.page-header::after {
-  content: none !important;
-}
-
-/* 2. Clean, aligned page header */
-.page-header {
-  padding: 0 20px;
-  margin: 10px 0 4px;
-}
-
-/* Make sure cards start close under the title */
-.app-main {
-  padding: 0 20px 24px;
-}
-
-.app-main > .card:first-of-type {
-  margin-top: 10px;
-}
-
-/* 3. Title + underline only under the text */
-.page-title {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 1.05rem;
-  font-weight: 600;
-}
-
-/* Underline under the word only, not behind it */
-.page-title::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -3px;
-  width: 46px;           /* length of the underline */
-  height: 2px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #33b5ff, #7df2ff);
-}
-
-/* Info icon – simple, no white box */
-.info-icon {
-  border: none;
-  background: transparent;
-  padding: 0;
-  margin: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  border-radius: 999px;
-  color: #9fb3c8;
-  cursor: help;
-}
-
-.info-icon:hover {
-  color: #e7f2ff;
-}
-
-
-/* Wrapper centers the auth card */
-.auth-wrapper {
-  display: flex;
-  justify-content: center;
-  padding: 40px 20px;
-}
-
-/* Glass login card */
-.glass-auth {
-  padding: 22px;
-  border-radius: 20px;
-  max-width: 430px;
-  width: 100%;
-  background: radial-gradient(circle at top left,#0f213f 0%,#050b16 55%,#060910 100%);
-  border: 1px solid rgba(255,255,255,0.05);
-  box-shadow: 0 14px 40px rgba(0,0,0,0.45);
-}
-
-/* Logo + title block */
-.auth-header-block {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 20px;
-}
-
-.auth-logo {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-}
-
-.auth-title {
-  margin: 0;
-  font-size: 1.3rem;
-  font-weight: 600;
-}
-
-.auth-subtitle {
-  margin: 2px 0 0;
-  font-size: 0.82rem;
-  opacity: 0.7;
-}
-
-/* Tabs */
-.auth-tabs {
-  display: flex;
-  background: rgba(255,255,255,0.05);
-  padding: 4px;
-  border-radius: 999px;
-  margin-bottom: 18px;
-}
-
-.auth-tab {
-  flex: 1;
-  padding: 8px 0;
-  border-radius: 999px;
-  background: transparent;
-  border: none;
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-
-.auth-tab--active {
-  background: linear-gradient(90deg,#32b8ff,#54ffe9);
-  color: #001015;
-  font-weight: 600;
-}
-
-/* Fields */
-.auth-field {
-  margin-bottom: 12px;
-}
-
-.auth-input {
-  width: 100%;
-  padding: 12px;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.07);
-}
-
-/* Password eye */
-.auth-password-field {
-  position: relative;
-}
-
-.auth-eye-btn {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-}
-
-/* Forgot password link */
-.auth-forgot {
-  margin-top: 12px;
-  text-decoration: underline;
-  font-size: 14px;
-  background: none;
-  border: none;
-  color: #cfd8f0;
-  cursor: pointer;
-}
-/* Reduce bottom blank space in the app */
-.app-shell {
-  padding: 24px 12px 20px !important;
-}
-
-/* Tighten nav spacing */
-.nav-wrapper {
-  margin-top: 12px !important;
-  margin-bottom: 0 !important;
-}
-
-.nav-wrapper-inner {
-  margin: 0 !important;
-  padding: 6px 12px !important;
+  margin-bottom: 0.10rem !important;
+  line-height: 1.1;
 }

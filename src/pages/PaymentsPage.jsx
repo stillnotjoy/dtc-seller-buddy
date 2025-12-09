@@ -51,7 +51,7 @@ export default function PaymentsPage({ user }) {
         brands ( id, name )
       `)
       .eq("seller_id", user.id)
-      .or("paid_amount.gt.0,status.eq.paid") // any order with payments / paid
+      .or("paid_amount.gt.0,status.eq.paid")
       .order("order_date", { ascending: false });
 
     if (ordersError) {
@@ -135,8 +135,6 @@ export default function PaymentsPage({ user }) {
 
   return (
     <div>
-     
-
       <section className="card">
         {loading ? (
           <p className="text-muted">Loading payment history…</p>
@@ -182,18 +180,18 @@ export default function PaymentsPage({ user }) {
                     </div>
                   </div>
 
-                  {/* View / Hide details */}
+                  {/* View / Hide details – same pill style as Credit tab */}
                   <button
                     type="button"
-                    className="btn-link view-items-btn"
+                    className="view-items-btn"
                     onClick={() => toggleDetails(o.id)}
                   >
                     {isExpanded ? "Hide details" : "View details"}
                   </button>
 
-                  {/* Expanded details */}
+                  {/* Expanded details inside a soft sub-card, like the credit payment tile */}
                   {isExpanded && (
-                    <div className="credit-details-wrapper">
+                    <div className="credit-details-box">
                       {/* Items */}
                       <div className="credit-details-section">
                         <div className="label-small">Items in this order</div>
@@ -218,7 +216,7 @@ export default function PaymentsPage({ user }) {
                       </div>
 
                       {/* Payments */}
-                      <div className="credit-details-section">
+                      <div className="credit-details-section credit-details-section--payments">
                         <div className="label-small">
                           Payments for this order
                         </div>

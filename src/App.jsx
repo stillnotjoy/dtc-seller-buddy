@@ -30,23 +30,24 @@ import {
 function App() {
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
+
+  // Main bottom nav tabs: dashboard | sales | customers | more
   const [tab, setTab] = useState("dashboard");
+
+  // Internal tabs inside Sales: orders | credit | payments | brands | products
+  const [salesTab, setSalesTab] = useState("orders");
 
   const [authMode, setAuthMode] = useState("login"); // login | forgot
   const [resetMode, setResetMode] = useState(false); // true when resetting password
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
-  // 🔔 notification state (for future dropdown if you want)
   const [notifications, setNotifications] = useState([]);
 
   const tabLabels = {
     dashboard: "Dashboard",
+    sales: "Sales",
     customers: "Customers",
-    orders: "Orders",
-    credit: "Credit",
-    payments: "Payments",
-    brands: "Brands",
-    products: "Products",
+    more: "More",
   };
 
   // ---------- Supabase auth ----------
@@ -85,12 +86,10 @@ function App() {
     }
   }, []);
 
-  function scrollNav(amount) {
-    const nav = document.getElementById("bottomNav");
-    if (nav) {
-      nav.scrollBy({ left: amount, behavior: "smooth" });
-    }
-  }
+  // Scroll to top when main tab changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [tab]);
 
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -103,8 +102,6 @@ function App() {
   const userInitial = user?.email?.[0]?.toUpperCase() || "U";
 
   // ---------- Notification helpers ----------
-
-  // Ask browser for permission if needed
   async function ensureNotificationPermission() {
     if (typeof window === "undefined" || !("Notification" in window)) {
       console.log("Browser notifications not supported.");
@@ -115,10 +112,9 @@ function App() {
     if (Notification.permission === "denied") return "denied";
 
     const result = await Notification.requestPermission();
-    return result; // "granted" | "denied" | "default"
+    return result;
   }
 
-  // Load pending utang/credit orders as "notifications"
   async function loadNotifications() {
     if (!user) return [];
 
@@ -141,7 +137,6 @@ function App() {
       .eq("seller_id", user.id)
       .in("payment_type", ["utang", "credit"])
       .eq("status", "pending")
-      // only future / today, you can remove this if you want all pending
       .gte("due_date", todayStr)
       .order("due_date", { ascending: true })
       .limit(10);
@@ -157,7 +152,6 @@ function App() {
     return list;
   }
 
-  // Build and show a real system notification for a single order
   function showOrderNotification(order) {
     if (
       typeof window === "undefined" ||
@@ -189,7 +183,6 @@ function App() {
     }
   }
 
-  // Click handler for the bell
   async function handleBellClick() {
     console.log("Bell clicked – running notification function");
 
@@ -209,40 +202,49 @@ function App() {
     }
 
     if (perm === "default") {
-      // user closed the prompt without choosing
       alert(
         "Notification permission wasn’t granted. Please click the bell again and choose 'Allow'."
       );
       return;
     }
 
-    // At this point, permission is "granted"
     const list = await loadNotifications();
 
     if (!list || list.length === 0) {
-      // no pending credit orders
       try {
         new Notification("Dimerr", {
           body: "You have no pending credit orders. 🎉",
           icon: "/dimerr-logo.png",
         });
       } catch {
-        // fallback if system blocks the banner
         alert("You have no pending credit orders. 🎉");
       }
       return;
     }
 
-    // Use the soonest-due order
     const soonest = [...list].sort(
       (a, b) => new Date(a.due_date) - new Date(b.due_date)
     )[0];
 
     showOrderNotification(soonest);
 
-    // Also a little confirmation for you inside the app
     const name = soonest.customers?.name || "customer";
     alert(`Reminder sent for ${name}'s next credit payment.`);
+  }
+
+  // Small helper to always scroll content to top
+  function goToTop() {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }
+
+  function handleMainTabChange(nextTab) {
+    setTab(nextTab);
+    goToTop();
+  }
+
+  function handleSalesTabChange(nextSalesTab) {
+    setSalesTab(nextSalesTab);
+    goToTop();
   }
 
   // ---------- Loading state ----------
@@ -295,158 +297,136 @@ function App() {
   return (
     <div className="app-root">
       <div className="app-shell">
-        {/* This wrapper makes header, page title and cards share the SAME width */}
-        <div className="app-inner">
-          {/* Header */}
-          <header className="app-header">
-            <div className="app-header-left">
-              <img src={dimerrLogo} alt="Dimerr" className="app-logo" />
-
-              <div className="app-title-block">
-                <h1 className="app-title">Dimerr</h1>
-                <p className="app-subtitle">Seller tools. simplified.</p>
-              </div>
+        {/* Header – flat like YouTube, no separated card */}
+        <header className="app-header app-header--flat">
+          <div className="app-header-left">
+            <img src={dimerrLogo} alt="Dimerr" className="app-logo" />
+            <div className="app-title-block">
+              <h1 className="app-title">Dimerr</h1>
+              <p className="app-subtitle">Seller tools. simplified.</p>
             </div>
-
-            <div className="app-header-right">
-              {/* Bell icon */}
-              <button
-                type="button"
-                className="icon-circle"
-                aria-label="Notifications"
-                onClick={handleBellClick}
-              >
-                <Bell size={18} className="icon-gray" />
-              </button>
-
-              {/* User avatar + dropdown */}
-              <div className="user-menu-wrapper">
-                <button
-                  type="button"
-                  className="user-avatar-circle"
-                  onClick={() => setUserMenuOpen((prev) => !prev)}
-                  aria-label="Account menu"
-                >
-                  {userInitial}
-                </button>
-
-                {userMenuOpen && (
-                  <div className="user-menu-dropdown">
-                    <div className="user-menu-email">{user?.email}</div>
-                    <button
-                      type="button"
-                      className="btn-secondary btn-small user-menu-logout"
-                      onClick={handleLogout}
-                    >
-                      Log out
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          </header>
-
-          {/* Page header (Dashboard / Customers / etc) */}
-          <div className="page-header">
-            <h2 className="page-title">
-              {tabLabels[tab]}
-              <button
-                type="button"
-                className="info-icon"
-                aria-label="About this page"
-                title={
-                  tab === "dashboard"
-                    ? "Overview of your sales, cost, profit and credit."
-                    : tabLabels[tab]
-                }
-              >
-                <Info size={14} />
-              </button>
-            </h2>
           </div>
 
-          {/* Main content cards */}
-          <main className="app-main">
-            {tab === "dashboard" && <DashboardPage user={user} />}
-            {tab === "customers" && <CustomersPage user={user} />}
-            {tab === "orders" && <OrdersPage user={user} />}
-            {tab === "credit" && <UtangPage user={user} />}
-            {tab === "payments" && <PaymentsPage user={user} />}
-            {tab === "brands" && <BrandsPage user={user} />}
-            {tab === "products" && <ProductsPage user={user} />}
-          </main>
-
-          {/* Bottom nav with icons */}
-          <div className="nav-wrapper">
+          <div className="app-header-right">
             <button
-              className="nav-arrow left"
               type="button"
-              onClick={() => scrollNav(-120)}
+              className="icon-circle"
+              aria-label="Notifications"
+              onClick={handleBellClick}
             >
-              ◀
+              <Bell size={18} className="icon-gray" />
             </button>
 
-            <nav id="bottomNav" className="bottom-nav-scroll">
-              <NavButton
-                label="Dashboard"
-                tab="dashboard"
-                current={tab}
-                setTab={setTab}
-                Icon={LayoutDashboard}
-              />
-              <NavButton
-                label="Customers"
-                tab="customers"
-                current={tab}
-                setTab={setTab}
-                Icon={Users}
-              />
-              <NavButton
-                label="Orders"
-                tab="orders"
-                current={tab}
-                setTab={setTab}
-                Icon={ShoppingCart}
-              />
-              <NavButton
-                label="Credit"
-                tab="credit"
-                current={tab}
-                setTab={setTab}
-                Icon={CreditCard}
-              />
-              <NavButton
-                label="Payments"
-                tab="payments"
-                current={tab}
-                setTab={setTab}
-                Icon={Wallet}
-              />
-              <NavButton
-                label="Brands"
-                tab="brands"
-                current={tab}
-                setTab={setTab}
-                Icon={Tag}
-              />
-              <NavButton
-                label="Products"
-                tab="products"
-                current={tab}
-                setTab={setTab}
-                Icon={Package}
-              />
-            </nav>
+            <div className="user-menu-wrapper">
+              <button
+                type="button"
+                className="user-avatar-circle"
+                onClick={() => setUserMenuOpen((prev) => !prev)}
+                aria-label="Account menu"
+              >
+                {userInitial}
+              </button>
 
-            <button
-              className="nav-arrow right"
-              type="button"
-              onClick={() => scrollNav(120)}
-            >
-              ▶
-            </button>
+              {userMenuOpen && (
+                <div className="user-menu-dropdown">
+                  <div className="user-menu-email">{user?.email}</div>
+                  <button
+                    type="button"
+                    className="btn-secondary btn-small user-menu-logout"
+                    onClick={handleLogout}
+                  >
+                    Log out
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
+        </header>
+
+        {/* Page header (simple, lives in content area) */}
+        <div className="page-header">
+          <h2 className="page-title">{tabLabels[tab] || ""}</h2>
         </div>
+
+        {/* Main content */}
+        <main className="app-main">
+          {tab === "dashboard" && <DashboardPage user={user} />}
+
+          {tab === "customers" && <CustomersPage user={user} />}
+
+          {tab === "sales" && (
+            <div className="sales-page">
+              <SalesTabs
+                salesTab={salesTab}
+                setSalesTab={handleSalesTabChange}
+              />
+              <div className="sales-page-inner">
+                {salesTab === "orders" && <OrdersPage user={user} />}
+                {salesTab === "credit" && <UtangPage user={user} />}
+                {salesTab === "payments" && <PaymentsPage user={user} />}
+                {salesTab === "brands" && <BrandsPage user={user} />}
+                {salesTab === "products" && <ProductsPage user={user} />}
+              </div>
+            </div>
+          )}
+
+          {tab === "more" && (
+            <div className="card card-dashboard">
+              <h2 className="card-title">More</h2>
+              <p className="text-muted">
+                Settings and extra tools will live here soon.
+              </p>
+            </div>
+          )}
+        </main>
+
+        {/* Fixed bottom nav with 4 tabs */}
+       <nav className="bottom-nav">
+  <button
+    type="button"
+    className={`nav-button ${tab === "dashboard" ? "nav-button--active" : ""}`}
+    onClick={() => setTab("dashboard")}
+  >
+    <span className="nav-button-icon">
+      <LayoutDashboard size={22} />
+    </span>
+    <span className="nav-button-label">Dashboard</span>
+  </button>
+
+  <button
+    type="button"
+    className={`nav-button ${tab === "sales" ? "nav-button--active" : ""}`}
+    onClick={() => setTab("sales")}
+  >
+    <span className="nav-button-icon">
+      <ShoppingCart size={22} />
+    </span>
+    <span className="nav-button-label">Sales</span>
+  </button>
+
+  <button
+    type="button"
+    className={`nav-button ${tab === "customers" ? "nav-button--active" : ""}`}
+    onClick={() => setTab("customers")}
+  >
+    <span className="nav-button-icon">
+      <Users size={22} />
+    </span>
+    <span className="nav-button-label">Customers</span>
+  </button>
+
+  <button
+    type="button"
+    className={`nav-button ${tab === "more" ? "nav-button--active" : ""}`}
+    onClick={() => setTab("more")}
+  >
+    <span className="nav-button-icon">
+      <Info size={22} />
+    </span>
+    <span className="nav-button-label">More</span>
+  </button>
+</nav>
+
       </div>
     </div>
   );
@@ -461,11 +441,47 @@ function NavButton({ label, tab, current, setTab, Icon }) {
       onClick={() => setTab(tab)}
     >
       <span className="nav-button-icon">
-        <Icon size={16} />
+        <Icon size={22} />
       </span>
-      <span>{label}</span>
+      <span className="nav-button-label">{label}</span>
     </button>
   );
 }
 
+/**
+ * Internal Sales tabs: Orders / Credit / Payments / Brands / Products
+ */
+function SalesTabs({ salesTab, setSalesTab }) {
+  const tabs = [
+    { id: "orders", label: "Orders", Icon: ShoppingCart },
+    { id: "credit", label: "Credit", Icon: Wallet },
+    { id: "payments", label: "Payments", Icon: CreditCard },
+    { id: "brands", label: "Brands", Icon: Tag },
+    { id: "products", label: "Products", Icon: Package },
+  ];
+
+  return (
+    <div className="sales-tabs">
+      {tabs.map((t) => {
+        const active = salesTab === t.id;
+        const Icon = t.Icon;
+        return (
+          <button
+            key={t.id}
+            type="button"
+            className={`sales-tab ${active ? "sales-tab--active" : ""}`}
+            onClick={() => setSalesTab(t.id)}
+          >
+            <Icon size={14} className="sales-tab-icon" />
+            <span className="sales-tab-label">{t.label}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+
 export default App;
+
+

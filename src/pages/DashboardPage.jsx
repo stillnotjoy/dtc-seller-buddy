@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '../supabaseClient';
+import { useEffect, useState } from "react";
+import { supabase } from "../supabaseClient";
 
 export default function DashboardPage({ user }) {
   const [stats, setStats] = useState({
@@ -17,6 +17,7 @@ export default function DashboardPage({ user }) {
   useEffect(() => {
     if (!user) return;
     loadStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   async function loadStats() {
@@ -24,7 +25,7 @@ export default function DashboardPage({ user }) {
     setLoading(true);
 
     const { data, error } = await supabase
-      .from('orders')
+      .from("orders")
       .select(
         `
         id,
@@ -33,15 +34,15 @@ export default function DashboardPage({ user }) {
         profit,
         payment_type,
         status,
-        amount_paid,
+        paid_amount,
         brands ( id, name )
       `
       )
-      .eq('seller_id', user.id);
+      .eq("seller_id", user.id);
 
     if (error) {
       console.error(error);
-      alert('Error loading dashboard: ' + error.message);
+      alert("Error loading dashboard: " + error.message);
       setLoading(false);
       return;
     }
@@ -57,7 +58,7 @@ export default function DashboardPage({ user }) {
 
     const brandMap = {};
 
-    orders.forEach(o => {
+    orders.forEach((o) => {
       const srp = Number(o.total_srp) || 0;
       const cost = Number(o.total_cost) || 0;
       const profit = Number(o.profit) || srp - cost;
@@ -66,17 +67,17 @@ export default function DashboardPage({ user }) {
       totalCost += cost;
       totalProfit += profit;
 
-      if (o.status === 'paid') paidOrders += 1;
+      if (o.status === "paid") paidOrders += 1;
 
-      if (o.payment_type === 'utang' && o.status === 'pending') {
+      if ((o.payment_type === "utang" || o.payment_type === "credit") && o.status === "pending") {
         pendingUtang += 1;
-        const amountPaid = Number(o.amount_paid) || 0;
+        const amountPaid = Number(o.paid_amount) || 0;
         const remaining = Math.max(srp - amountPaid, 0);
         pendingAmount += remaining;
       }
 
-      const brandId = o.brands?.id || 'no-brand';
-      const brandName = o.brands?.name || 'Unassigned brand';
+      const brandId = o.brands?.id || "no-brand";
+      const brandName = o.brands?.name || "Unassigned brand";
 
       if (!brandMap[brandId]) {
         brandMap[brandId] = {
@@ -113,81 +114,77 @@ export default function DashboardPage({ user }) {
     return <p className="text-muted">Loading account…</p>;
   }
 
+  const {
+    totalSrp,
+    totalCost,
+    totalProfit,
+    paidOrders,
+    pendingUtang,
+    pendingAmount,
+  } = stats;
+
   return (
-    <div>
-      {/* Overview */}
-      <section className="card card-dashboard">
-        <h2 className="card-title">Overview</h2>
-
-        {loading ? (
-          <p className="text-muted">Loading stats…</p>
-        ) : (
-          <div className="dashboard-grid">
-            <div className="dashboard-card">
-              <div className="label-small">Total Sales (SRP)</div>
-              <div className="stat-value stat-value--sales">
-                ₱ {stats.totalSrp}
-              </div>
-            </div>
-
-            <div className="dashboard-card">
-              <div className="label-small">Total Cost</div>
-              <div className="stat-value stat-value--cost">
-                ₱ {stats.totalCost}
-              </div>
-            </div>
-
-            <div className="dashboard-card">
-              <div className="label-small">Total Profit</div>
-              <div className="stat-value stat-value--profit">
-                ₱ {stats.totalProfit}
-              </div>
-            </div>
-
-            <div className="dashboard-card">
-              <div className="label-small">Paid Orders</div>
-              <div className="stat-value stat-value--count">
-                {stats.paidOrders}
-              </div>
-            </div>
-
-            <div className="dashboard-card">
-              <div className="label-small">Pending Credit Orders</div>
-              <div className="stat-value stat-value--utang">
-                {stats.pendingUtang}
-              </div>
-            </div>
-
-            <div className="dashboard-card">
-              <div className="label-small">Pending Credit Amount</div>
-              <div className="stat-value stat-value--utang-amount">
-                ₱ {stats.pendingAmount}
-              </div>
-            </div>
+    <div className="dashboard-page">
+      {/* === KPI TILES === */}
+      <section className="dashboard-section dashboard-section--kpis">
+        <div className="dashboard-metrics-grid">
+          <div className="kpi-tile">
+            <span className="kpi-label">Total Sales (SRP)</span>
+            <span className="kpi-value">₱ {totalSrp.toLocaleString()}</span>
           </div>
-        )}
+
+          <div className="kpi-tile">
+            <span className="kpi-label">Total Cost</span>
+            <span className="kpi-value">₱ {totalCost.toLocaleString()}</span>
+          </div>
+
+          <div className="kpi-tile">
+            <span className="kpi-label">Total Profit</span>
+            <span className="kpi-value kpi-value--profit">
+              ₱ {totalProfit.toLocaleString()}
+            </span>
+          </div>
+
+          <div className="kpi-tile">
+            <span className="kpi-label">Paid Orders</span>
+            <span className="kpi-value">{paidOrders}</span>
+          </div>
+
+          <div className="kpi-tile">
+            <span className="kpi-label">Pending Credit Orders</span>
+            <span className="kpi-value kpi-value--warn">
+              {pendingUtang}
+            </span>
+          </div>
+
+          <div className="kpi-tile">
+            <span className="kpi-label">Pending Credit Amount</span>
+            <span className="kpi-value kpi-value--danger">
+              ₱ {pendingAmount.toLocaleString()}
+            </span>
+          </div>
+        </div>
       </section>
 
-      {/* Sales by brand */}
-      <section className="card card-dashboard">
-        <h2 className="card-title">Sales by brand</h2>
+      {/* === SALES BY BRAND === */}
+      <section className="dashboard-section">
+        <h3 className="section-title">Sales by brand</h3>
 
         {loading ? (
           <p className="text-muted">Loading brand stats…</p>
         ) : brandStats.length === 0 ? (
           <p className="text-muted">No orders yet.</p>
         ) : (
-          <div className="salesbrand-list">
-            {brandStats.map(b => (
+          <div className="salesbrand-card">
+            {brandStats.map((b) => (
               <div key={b.id} className="salesbrand-row">
-                {/* LEFT: numbers */}
                 <div className="salesbrand-left">
                   <div className="salesbrand-metric">
                     <span className="salesbrand-label salesbrand-label--sales">
                       Sales
                     </span>
                     <span className="salesbrand-value salesbrand-value--sales">
-                      ₱ {b.totalSrp}
+                      ₱ {b.totalSrp.toLocaleString()}
                     </span>
                   </div>
                   <div className="salesbrand-metric">
@@ -195,16 +192,15 @@ export default function DashboardPage({ user }) {
                       Profit
                     </span>
                     <span className="salesbrand-value salesbrand-value--profit">
-                      ₱ {b.totalProfit}
+                      ₱ {b.totalProfit.toLocaleString()}
                     </span>
                   </div>
                 </div>
 
-                {/* RIGHT: brand name + orders */}
                 <div className="salesbrand-right">
                   <div className="salesbrand-name">{b.name}</div>
                   <div className="salesbrand-meta">
-                    {b.orderCount} order{b.orderCount !== 1 ? 's' : ''}
+                    {b.orderCount} order{b.orderCount !== 1 ? "s" : ""}
                   </div>
                 </div>
               </div>

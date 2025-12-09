@@ -470,13 +470,13 @@ export default function ProductsPage({ user }) {
                         Edit
                       </button>
                       <button
-                        type="button"
-                        className="btn-danger btn-small"
-                        onClick={() => handleDeleteProduct(p.id)}
-                        style={{ marginLeft: "0.5rem" }}
-                      >
-                        Delete
-                      </button>
+  type="button"
+  className="btn-pill btn-delete"
+  onClick={() => handleDelete(item.id)}
+>
+  Delete
+</button>
+
                     </div>
                   </div>
                 </li>

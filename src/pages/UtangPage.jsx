@@ -252,8 +252,6 @@ export default function UtangPage({ user }) {
 
   return (
     <div>
-      
-
       <section className="card">
         {loading ? (
           <p className="text-muted">Loading credit orders…</p>
@@ -285,41 +283,25 @@ export default function UtangPage({ user }) {
                       </div>
 
                       {days != null && (
-                        <div className="utang-pill">
-                          {days > 0
-                            ? `DUE IN ${days} DAY(S)`
+                        <p
+                          className={
+                            'credit-status-text ' +
+                            (days < 0
+                              ? 'credit-status-text--overdue'
+                              : days === 0
+                              ? 'credit-status-text--today'
+                              : 'credit-status-text--upcoming')
+                          }
+                        >
+                          {days < 0
+                            ? `OVERDUE BY ${Math.abs(days)} DAY(S)`
                             : days === 0
                             ? 'DUE TODAY'
-                            : `OVERDUE BY ${Math.abs(days)} DAY(S)`}
-                        </div>
+                            : `DUE IN ${days} DAY(S)`}
+                        </p>
                       )}
 
-                      {itemsForOrder.length > 0 && (
-                        <>
-                          <button
-                            type="button"
-                            className="btn-link view-items-btn"
-                            onClick={() => toggleItems(o.id)}
-                          >
-                            {isExpanded ? 'Hide items' : 'View items'}
-                          </button>
-
-                          {isExpanded && (
-                            <div className="credit-items-list">
-                              {itemsForOrder.map(item => (
-                                <div key={item.id} className="credit-item-line">
-                                  <span className="credit-item-qty">
-                                    {item.quantity}×
-                                  </span>
-                                  <span className="credit-item-name">
-                                    {formatProductLabel(item.products)}
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </>
-                      )}
+                     
                     </div>
 
                     <div className="order-money credit-money">
@@ -330,46 +312,76 @@ export default function UtangPage({ user }) {
                     </div>
                   </div>
 
-                  <div className="credit-actions">
-                    <div className="credit-partial">
-                      <label className="label-small">Add partial payment</label>
-                      <div className="credit-partial-row">
-                        <input
-                          className="field credit-partial-input"
-                          placeholder="e.g. 200"
-                          value={partialInputs[o.id] || ''}
-                          onChange={e =>
-                            handleChangePartial(o.id, e.target.value)
-                          }
-                        />
-                        <input
-                          className="field credit-channel-input"
-                          placeholder="Channel (GCash, BPI, Cash…)"
-                          value={channelInputs[o.id] || ''}
-                          onChange={e =>
-                            handleChangeChannel(o.id, e.target.value)
-                          }
-                        />
-                        <button
-                          type="button"
-                          className="btn-secondary btn-small credit-add-btn"
-                          onClick={() => handleAddPayment(o)}
-                          disabled={savingId === o.id}
-                        >
-                          {savingId === o.id ? 'Saving…' : 'Add payment'}
-                        </button>
-                      </div>
-                    </div>
+                 {/* PAYMENT TILE */}
+<div className="credit-payment-tile">
+  <label className="label-small credit-payment-label">
+    Add partial payment
+  </label>
 
-                    <button
-                      type="button"
-                      className="btn-primary btn-small full-pay-btn"
-                      onClick={() => handleFullPayment(o)}
-                      disabled={savingId === o.id}
-                    >
-                      {savingId === o.id ? 'Saving…' : 'Full payment'}
-                    </button>
-                  </div>
+  <div className="credit-payment-block">
+    <input
+      className="field credit-field"
+      placeholder="e.g. 200"
+      value={partialInputs[o.id] || ''}
+      onChange={e => handleChangePartial(o.id, e.target.value)}
+    />
+
+    <input
+      className="field credit-field"
+      placeholder="Channel (GCash, BPI, Cash…)"
+      value={channelInputs[o.id] || ''}
+      onChange={e => handleChangeChannel(o.id, e.target.value)}
+    />
+
+    <div className="credit-actions-row">
+      <button
+        type="button"
+        className="btn-secondary btn-small btn-pill"
+        onClick={() => handleAddPayment(o)}
+        disabled={savingId === o.id}
+      >
+        {savingId === o.id ? 'Saving…' : 'Add payment'}
+      </button>
+
+      <button
+        type="button"
+        className="btn-primary btn-small btn-pill"
+        onClick={() => handleFullPayment(o)}
+        disabled={savingId === o.id}
+      >
+        {savingId === o.id ? 'Saving…' : 'Full payment'}
+      </button>
+    </div>
+  </div>
+</div>
+
+
+{/* VIEW ITEMS BELOW PAYMENT AREA */}
+{itemsForOrder.length > 0 && (
+  <div className="credit-items-section">
+    <button
+      type="button"
+      className="pill-tag pill-tag--ghost view-items-pill"
+      onClick={() => toggleItems(o.id)}
+    >
+      {isExpanded ? 'Hide items' : 'View items'}
+    </button>
+
+    {isExpanded && (
+      <div className="credit-items-list">
+        {itemsForOrder.map(item => (
+          <div key={item.id} className="credit-item-line">
+            <span className="credit-item-qty">{item.quantity}×</span>
+            <span className="credit-item-name">
+              {formatProductLabel(item.products)}
+            </span>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+)}
+
                 </li>
               );
             })}

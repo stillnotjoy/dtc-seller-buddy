@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "../supabaseClient";
 
-// ----------------- Invoice overlay -----------------
+/* =========================================================
+   INVOICE OVERLAY
+   ========================================================= */
+
 function InvoiceView({
   order,
   items,
@@ -17,7 +20,6 @@ function InvoiceView({
   const paymentLabel = order.payment_type === "utang" ? "Credit" : "Cash";
   const dueDate = order.due_date || null;
 
-  // Enrich items with product labels
   const enrichedItems = items.map((it) => {
     const product = getProductById(it.product_id);
     return {
@@ -52,8 +54,10 @@ function InvoiceView({
         {/* HEADER */}
         <header className="invoice-header">
           <div>
-            <h1 className="invoice-title">DTC Seller Buddy</h1>
-            <div className="invoice-subtitle">For PC, Avon, Natasha &amp; more</div>
+            <h2 className="invoice-title">Dimerr - Seller tools. simplified</h2>
+            <div className="invoice-subtitle">
+              For PC, Avon, Natasha &amp; more
+            </div>
             <div className="invoice-tagline">Sales invoice</div>
           </div>
 
@@ -75,7 +79,8 @@ function InvoiceView({
             </div>
             {dueDate && (
               <div>
-                <span className="invoice-meta-label">Due date:</span> {dueDate}
+                <span className="invoice-meta-label">Due date:</span>{" "}
+                {dueDate}
               </div>
             )}
           </div>
@@ -103,34 +108,36 @@ function InvoiceView({
                 <th className="col-total">Total</th>
               </tr>
             </thead>
-            <tbody>
-              {enrichedItems.length === 0 ? (
-                <tr>
-                  <td colSpan={4} className="invoice-empty">
-                    No items recorded for this order.
-                  </td>
-                </tr>
-              ) : (
-                enrichedItems.map((it) => {
-                  const lineTotal =
-                    it.line_total_srp != null
-                      ? it.line_total_srp
-                      : (Number(it.srp_each) || 0) *
-                        (Number(it.quantity) || 0);
+           <tbody>
+  {enrichedItems.length === 0 ? (
+    <tr>
+      <td colSpan={4} className="invoice-empty">
+        No items recorded for this order.
+      </td>
+    </tr>
+  ) : (
+    enrichedItems.map((it) => {
+      const lineTotal =
+        it.line_total_srp != null
+          ? it.line_total_srp
+          : (Number(it.srp_each) || 0) * (Number(it.quantity) || 0);
 
-                  return (
-                    <tr key={it.id}>
-                      <td>{it.product_label}</td>
-                      <td>{it.quantity}</td>
-                      <td>
-                        {it.srp_each != null ? `₱${it.srp_each}` : "—"}
-                      </td>
-                      <td>{lineTotal != null ? `₱${lineTotal}` : "—"}</td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
+      return (
+        <tr key={it.id}>
+          <td className="col-product">{it.product_label}</td>
+          <td className="col-qty">{it.quantity}</td>
+          <td className="col-price">
+            {it.srp_each != null ? `₱${it.srp_each}` : "—"}
+          </td>
+          <td className="col-total">
+            {lineTotal != null ? `₱${lineTotal}` : "—"}
+          </td>
+        </tr>
+      );
+    })
+  )}
+</tbody>
+
           </table>
         </section>
 
@@ -179,10 +186,17 @@ function InvoiceView({
   );
 }
 
-// ----------------- Helper sub-component: show products under each order -----------------
-function OrderItemsList({ order, orderItems, getProductById, formatProductLabel }) {
-  const itemsForOrder = orderItems.filter((oi) => oi.order_id === order.id);
+/* =========================================================
+   ORDER ITEMS LIST (within Recent orders)
+   ========================================================= */
 
+function OrderItemsList({
+  order,
+  orderItems,
+  getProductById,
+  formatProductLabel,
+}) {
+  const itemsForOrder = orderItems.filter((oi) => oi.order_id === order.id);
   if (itemsForOrder.length === 0) return null;
 
   return (
@@ -207,7 +221,10 @@ function OrderItemsList({ order, orderItems, getProductById, formatProductLabel 
   );
 }
 
-// ----------------- Main page -----------------
+/* =========================================================
+   MAIN PAGE
+   ========================================================= */
+
 export default function OrdersPage({ user }) {
   const [customers, setCustomers] = useState([]);
   const [brands, setBrands] = useState([]);
@@ -228,7 +245,7 @@ export default function OrdersPage({ user }) {
   const [dueDate, setDueDate] = useState("");
   const [saving, setSaving] = useState(false);
 
-  // Line items for this order (add + edit share this)
+  // Line items for this order
   const [lineItems, setLineItems] = useState([
     { id: 1, productId: "", quantity: "", srp: "", cost: "" },
   ]);
@@ -237,7 +254,7 @@ export default function OrdersPage({ user }) {
   // editing
   const [editingOrder, setEditingOrder] = useState(null);
 
-  // Recent orders collapse
+  // collapse for "Recent orders"
   const [showRecent, setShowRecent] = useState(true);
 
   // Product search bottom sheet
@@ -249,7 +266,8 @@ export default function OrdersPage({ user }) {
   // Invoice overlay state
   const [invoiceOrderId, setInvoiceOrderId] = useState(null);
 
-  // ----------------- Effects -----------------
+  /* ----------------- Effects ----------------- */
+
   useEffect(() => {
     if (!user) return;
     loadLookups();
@@ -274,7 +292,8 @@ export default function OrdersPage({ user }) {
     }
   }, [modalOpen]);
 
-  // ----------------- Helpers -----------------
+  /* ----------------- Helpers ----------------- */
+
   function formatProductLabel(p) {
     const bits = [p.name];
     const extras = [];
@@ -320,7 +339,8 @@ export default function OrdersPage({ user }) {
     return isNaN(m) ? null : m;
   }
 
-  // ----------------- Data loading -----------------
+  /* ----------------- Data loading ----------------- */
+
   async function loadLookups() {
     if (!user) return;
     setLoadingLookups(true);
@@ -379,7 +399,7 @@ export default function OrdersPage({ user }) {
       .eq("brand_id", brandIdValue)
       .order("created_at", { ascending: false });
 
-    if (error) {
+  if (error) {
       console.error(error);
       alert("Error loading campaigns: " + error.message);
     } else {
@@ -410,7 +430,7 @@ export default function OrdersPage({ user }) {
       `
       )
       .eq("seller_id", user.id)
-      .eq("status", "pending") // hide paid orders
+      .eq("status", "pending")
       .order("order_date", { ascending: false })
       .limit(20);
 
@@ -447,7 +467,8 @@ export default function OrdersPage({ user }) {
     setLoadingOrders(false);
   }
 
-  // ----------------- Line items handlers -----------------
+  /* ----------------- Line items handlers ----------------- */
+
   function handleAddLineItem() {
     setLineItems((items) => [
       ...items,
@@ -472,7 +493,7 @@ export default function OrdersPage({ user }) {
           margin < 100
         ) {
           const costEach =
-            Math.round((srpNum * (100 - margin)) / 100 * 100) / 100;
+            Math.round(((srpNum * (100 - margin)) / 100) * 100) / 100;
           updated[index] = {
             ...updated[index],
             cost: costEach.toString(),
@@ -504,7 +525,8 @@ export default function OrdersPage({ user }) {
     setModalOpen(false);
   }
 
-  // ----------------- Add / Update order -----------------
+  /* ----------------- Add / Update order ----------------- */
+
   async function handleSubmitOrder(e) {
     e.preventDefault();
 
@@ -527,14 +549,13 @@ export default function OrdersPage({ user }) {
     }
 
     const { total_srp, total_cost, profit } = computeTotals(lineItems);
-
     const isCredit = paymentType === "utang" || paymentType === "credit";
 
     setSaving(true);
 
     try {
       if (editingOrder) {
-        // ---- UPDATE existing order ----
+        // UPDATE existing order
         const { error: orderError } = await supabase
           .from("orders")
           .update({
@@ -606,7 +627,7 @@ export default function OrdersPage({ user }) {
           }
         }
       } else {
-        // ---- INSERT new order ----
+        // INSERT new order
         const { data: newOrder, error } = await supabase
           .from("orders")
           .insert({
@@ -617,7 +638,6 @@ export default function OrdersPage({ user }) {
             order_date: orderDate,
             total_srp,
             total_cost,
-        
             payment_type: paymentType,
             due_date: isCredit ? dueDate || null : null,
             status: isCredit ? "pending" : "paid",
@@ -670,7 +690,6 @@ export default function OrdersPage({ user }) {
       setSaving(false);
     }
 
-    // reset form
     cancelEditAndResetForm();
     await loadOrders();
   }
@@ -740,396 +759,410 @@ export default function OrdersPage({ user }) {
     }
   }
 
+  /* =========================================================
+     RENDER
+     ========================================================= */
+
   return (
-    <div>
-      {/* Add / Edit order card */}
-      <section className="card">
-        <h2 className="card-title">
-          {editingOrder ? "Edit order" : "Add order"}
-        </h2>
+    <div className="orders-page">
+      {/* MAIN CONTENT – HIDDEN IN PRINT */}
+      <div className="orders-main no-print">
+        {/* Add / Edit order card */}
+        <section className="card">
+          <div className="card-header-row">
+            <h2 className="card-title">
+              {editingOrder ? "Edit order" : "Add order"}
+            </h2>
+          </div>
 
-        {loadingLookups ? (
-          <p className="text-muted">Loading customers &amp; brands…</p>
-        ) : customers.length === 0 || brands.length === 0 ? (
-          <p className="text-muted">
-            You need at least one customer and one brand before adding orders.
-            Add them in the Customers and Brands tabs.
-          </p>
-        ) : (
-          <form onSubmit={handleSubmitOrder}>
-            {/* Customer */}
-            <select
-              className="field"
-              value={customerId}
-              onChange={(e) => setCustomerId(e.target.value)}
-            >
-              <option value="">Select customer</option>
-              {customers.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-
-            {/* Brand */}
-            <select
-              className="field"
-              value={brandId}
-              onChange={(e) => setBrandId(e.target.value)}
-            >
-              <option value="">Select brand</option>
-              {brands.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.name}
-                </option>
-              ))}
-            </select>
-
-            {/* Campaign */}
-            <select
-              className="field"
-              value={campaignId}
-              onChange={(e) => setCampaignId(e.target.value)}
-              disabled={!brandId || campaigns.length === 0}
-            >
-              <option value="">
-                {brandId
-                  ? campaigns.length === 0
-                    ? "No campaigns for this brand"
-                    : "Select campaign (optional)"
-                  : "Select brand first"}
-              </option>
-              {campaigns.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-
-            {/* Dates & payment */}
-            <div className="form-row">
-              <div className="form-col">
-                <label className="label-small">Order date</label>
-                <input
-                  type="date"
-                  className="field"
-                  value={orderDate}
-                  onChange={(e) => setOrderDate(e.target.value)}
-                />
-              </div>
-              <div className="form-col">
-                <label className="label-small">Payment type</label>
+          <div className="card-body">
+            {loadingLookups ? (
+              <p className="text-muted">Loading customers &amp; brands…</p>
+            ) : customers.length === 0 || brands.length === 0 ? (
+              <p className="text-muted">
+                You need at least one customer and one brand before adding
+                orders. Add them in the Customers and Brands tabs.
+              </p>
+            ) : (
+              <form onSubmit={handleSubmitOrder}>
+                {/* Customer */}
                 <select
                   className="field"
-                  value={paymentType}
-                  onChange={(e) => setPaymentType(e.target.value)}
+                  value={customerId}
+                  onChange={(e) => setCustomerId(e.target.value)}
                 >
-                  <option value="cash">Cash</option>
-                  <option value="utang">Credit</option>
+                  <option value="">Select customer</option>
+                  {customers.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
                 </select>
-              </div>
-            </div>
 
-            {paymentType === "utang" && (
-              <div className="form-row">
-                <div className="form-col">
-                  <label className="label-small">Due date (credit)</label>
-                  <input
-                    type="date"
-                    className="field"
-                    value={dueDate}
-                    onChange={(e) => setDueDate(e.target.value)}
-                  />
+                {/* Brand */}
+                <select
+                  className="field"
+                  value={brandId}
+                  onChange={(e) => setBrandId(e.target.value)}
+                >
+                  <option value="">Select brand</option>
+                  {brands.map((b) => (
+                    <option key={b.id} value={b.id}>
+                      {b.name}
+                    </option>
+                  ))}
+                </select>
+
+                {/* Campaign */}
+                <select
+                  className="field"
+                  value={campaignId}
+                  onChange={(e) => setCampaignId(e.target.value)}
+                  disabled={!brandId || campaigns.length === 0}
+                >
+                  <option value="">
+                    {brandId
+                      ? campaigns.length === 0
+                        ? "No campaigns for this brand"
+                        : "Select campaign (optional)"
+                      : "Select brand first"}
+                  </option>
+                  {campaigns.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+
+                {/* Dates & payment */}
+                <div className="form-row">
+                  <div className="form-col">
+                    <label className="label-small">Order date</label>
+                    <input
+                      type="date"
+                      className="field"
+                      value={orderDate}
+                      onChange={(e) => setOrderDate(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-col">
+                    <label className="label-small">Payment type</label>
+                    <select
+                      className="field"
+                      value={paymentType}
+                      onChange={(e) => setPaymentType(e.target.value)}
+                    >
+                      <option value="cash">Cash</option>
+                      <option value="utang">Credit</option>
+                    </select>
+                  </div>
                 </div>
-              </div>
-            )}
 
-            {/* Line items */}
-            <div className="line-items-block">
-              <div className="line-items-header">
-                <span className="label-small">Products in this order</span>
-                {products.length === 0 && (
-                  <span className="text-muted-small">
-                    Add products in the Products tab to pick them here.
-                  </span>
+                {paymentType === "utang" && (
+                  <div className="form-row">
+                    <div className="form-col">
+                      <label className="label-small">Due date (credit)</label>
+                      <input
+                        type="date"
+                        className="field"
+                        value={dueDate}
+                        onChange={(e) => setDueDate(e.target.value)}
+                      />
+                    </div>
+                  </div>
                 )}
-              </div>
 
-              {lineItems.map((item, index) => {
-                const selectedProduct = getProductById(item.productId);
-                const label = selectedProduct
-                  ? formatProductLabel(selectedProduct)
-                  : "Tap to select product";
-
-                const srpNum = Number(item.srp) || 0;
-                const costNum = Number(item.cost) || 0;
-                const profitPerItem =
-                  srpNum && costNum ? srpNum - costNum : null;
-
-                return (
-                  <div key={item.id} className="line-item-group">
-                    <div className="form-row">
-                      <div className="form-col">
-                        <button
-                          type="button"
-                          className="field line-item-product-btn"
-                          onClick={() => openProductSearch(index)}
-                        >
-                          {label}
-                        </button>
-                      </div>
-                      <div className="form-col line-item-qty">
-                        <input
-                          className="field"
-                          placeholder="Qty"
-                          value={item.quantity}
-                          onChange={(e) =>
-                            handleChangeLineItem(
-                              index,
-                              "quantity",
-                              e.target.value
-                            )
-                          }
-                        />
-                      </div>
-                    </div>
-
-                    <div className="form-row">
-                      <div className="form-col">
-                        <input
-                          className="field"
-                          placeholder="SRP each"
-                          value={item.srp}
-                          onChange={(e) =>
-                            handleChangeLineItem(index, "srp", e.target.value)
-                          }
-                        />
-                      </div>
-                      <div className="form-col">
-                        <input
-                          className="field"
-                          placeholder="Cost each"
-                          value={item.cost}
-                          onChange={(e) =>
-                            handleChangeLineItem(index, "cost", e.target.value)
-                          }
-                        />
-                      </div>
-                    </div>
-
-                    {brandMargin != null && srpNum > 0 && (
-                      <p className="text-muted-small">
-                        Using {brandMargin}% margin – cost &amp; profit auto.
-                        {profitPerItem != null &&
-                          ` Profit per item: ₱${profitPerItem} auto.`}
-                      </p>
-                    )}
-
-                    {lineItems.length > 1 && (
-                      <div className="line-item-remove-row">
-                        <button
-                          type="button"
-                          className="btn-secondary"
-                          onClick={() => handleRemoveLineItem(index)}
-                        >
-                          Remove item
-                        </button>
-                      </div>
+                {/* Line items */}
+                <div className="line-items-block">
+                  <div className="line-items-header">
+                    <span className="label-small">Products in this order</span>
+                    {products.length === 0 && (
+                      <span className="text-muted-small">
+                        Add products in the Products tab to pick them here.
+                      </span>
                     )}
                   </div>
-                );
-              })}
 
-              <div className="line-items-actions">
-                <button
-                  type="button"
-                  className="btn-secondary"
-                  onClick={handleAddLineItem}
-                >
-                  + Add another product
-                </button>
-              </div>
-            </div>
+                  {lineItems.map((item, index) => {
+                    const selectedProduct = getProductById(item.productId);
+                    const label = selectedProduct
+                      ? formatProductLabel(selectedProduct)
+                      : "Tap to select product";
 
-            {/* Totals & profit display */}
-            <div className="form-row">
-              <div className="form-col">
-                <label className="label-small">Total SRP (auto)</label>
-                <div className="profit-pill">
-                  {totals.total_srp ? `₱ ${totals.total_srp}` : "—"}
-                </div>
-              </div>
-              <div className="form-col">
-                <label className="label-small">Total cost (auto)</label>
-                <div className="profit-pill">
-                  {totals.total_cost ? `₱ ${totals.total_cost}` : "—"}
-                </div>
-              </div>
-              <div className="form-col">
-                <label className="label-small">Profit (auto)</label>
-                <div className="profit-pill">
-                  {totals.profit ? `₱ ${totals.profit}` : "—"}
-                </div>
-              </div>
-            </div>
+                    const srpNum = Number(item.srp) || 0;
+                    const costNum = Number(item.cost) || 0;
+                    const profitPerItem =
+                      srpNum && costNum ? srpNum - costNum : null;
 
-            <div className="order-save-row order-save-row--edit">
-              {editingOrder && (
-                <button
-                  type="button"
-                  className="btn-secondary pill-button"
-                  onClick={cancelEditAndResetForm}
-                >
-                  Cancel Edit
-                </button>
-              )}
-              <button
-                type="submit"
-                disabled={saving}
-                className="btn-primary pill-button"
-              >
-                {saving
-                  ? editingOrder
-                    ? "Updating…"
-                    : "Saving…"
-                  : editingOrder
-                  ? "Update order"
-                  : "Save order"}
-              </button>
-            </div>
-          </form>
-        )}
-      </section>
+                    return (
+                      <div key={item.id} className="line-item-group">
+                        <div className="form-row">
+                          <div className="form-col">
+                            <button
+                              type="button"
+                              className="field line-item-product-btn"
+                              onClick={() => openProductSearch(index)}
+                            >
+                              {label}
+                            </button>
+                          </div>
+                          <div className="form-col line-item-qty">
+                            <input
+                              className="field"
+                              placeholder="Qty"
+                              value={item.quantity}
+                              onChange={(e) =>
+                                handleChangeLineItem(
+                                  index,
+                                  "quantity",
+                                  e.target.value
+                                )
+                              }
+                            />
+                          </div>
+                        </div>
 
-      {/* Recent orders card with hide/show */}
-      <section className="card">
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "10px",
-          }}
-        >
-          <h2 className="card-title">Recent orders</h2>
-          <button
-            type="button"
-            className="collapse-toggle"
-            onClick={() => setShowRecent((prev) => !prev)}
-          >
-            <span className={`collapse-icon ${showRecent ? "open" : ""}`}>
-              +
-            </span>
-          </button>
-        </div>
+                        <div className="form-row">
+                          <div className="form-col">
+                            <input
+                              className="field"
+                              placeholder="SRP each"
+                              value={item.srp}
+                              onChange={(e) =>
+                                handleChangeLineItem(
+                                  index,
+                                  "srp",
+                                  e.target.value
+                                )
+                              }
+                            />
+                          </div>
+                          <div className="form-col">
+                            <input
+                              className="field"
+                              placeholder="Cost each"
+                              value={item.cost}
+                              onChange={(e) =>
+                                handleChangeLineItem(
+                                  index,
+                                  "cost",
+                                  e.target.value
+                                )
+                              }
+                            />
+                          </div>
+                        </div>
 
-        <div className={`collapse-content ${showRecent ? "" : "hidden"}`}>
-          {loadingOrders ? (
-            <p className="text-muted">Loading orders…</p>
-          ) : orders.length === 0 ? (
-            <p className="text-muted">No orders yet.</p>
-          ) : (
-            <ul className="customer-list">
-              {orders.map((o) => (
-                <li key={o.id} className="customer-item order-item">
-                  <div className="order-item-top">
-                    <div className="order-left">
-                      <div className="customer-name">
-                        {o.customers?.name || "Unknown customer"}
+                        {brandMargin != null && srpNum > 0 && (
+                          <p className="text-muted-small">
+                            Using {brandMargin}% margin – cost &amp; profit auto.
+                            {profitPerItem != null &&
+                              ` Profit per item: ₱${profitPerItem} auto.`}
+                          </p>
+                        )}
+
+                        {lineItems.length > 1 && (
+                          <div className="line-item-remove-row">
+                            <button
+                              type="button"
+                              className="btn-secondary"
+                              onClick={() => handleRemoveLineItem(index)}
+                            >
+                              Remove item
+                            </button>
+                          </div>
+                        )}
                       </div>
-                      <div className="order-meta">
-                        {o.brands?.name || "No brand"}
-                        {o.campaigns?.name ? ` • ${o.campaigns.name}` : ""}
-                      </div>
-                      <div className="order-meta">
-                        {o.order_date} •{" "}
-                        {o.payment_type === "utang" ? "Credit" : "Cash"}
-                        {o.payment_type === "utang" && o.due_date
-                          ? ` • Due: ${o.due_date}`
-                          : ""}
-                      </div>
-                    </div>
-                    <div className="order-money">
-                      <div>SRP: ₱{o.total_srp}</div>
-                      <div>Cost: ₱{o.total_cost}</div>
-                      <div className="order-profit">Profit: ₱{o.profit}</div>
-                      <div className="order-status">{o.status}</div>
+                    );
+                  })}
 
-                      <button
-                        type="button"
-                        className="btn-secondary btn-small"
-                        onClick={() => startEditingOrder(o)}
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        type="button"
-                        className="btn-secondary btn-small"
-                        style={{ marginTop: "0.25rem" }}
-                        onClick={() => setInvoiceOrderId(o.id)}
-                      >
-                        Invoice
-                      </button>
-                    </div>
+                  <div className="line-items-actions">
+                    <button
+                      type="button"
+                      className="btn-secondary"
+                      onClick={handleAddLineItem}
+                    >
+                      + Add another product
+                    </button>
                   </div>
+                </div>
 
-                  <OrderItemsList
-                    order={o}
-                    orderItems={orderItems}
-                    getProductById={getProductById}
-                    formatProductLabel={formatProductLabel}
-                  />
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </section>
+                {/* Totals & profit display */}
+<div className="order-totals-row">
+  <div className="form-row">
+    <div className="form-col">
+      <label className="label-small">Total SRP (auto)</label>
+      <div className="profit-pill">
+        {totals.total_srp ? `₱ ${totals.total_srp}` : "—"}
+      </div>
+    </div>
+    <div className="form-col">
+      <label className="label-small">Total cost (auto)</label>
+      <div className="profit-pill">
+        {totals.total_cost ? `₱ ${totals.total_cost}` : "—"}
+      </div>
+    </div>
+    <div className="form-col">
+      <label className="label-small">Profit (auto)</label>
+      <div className="profit-pill">
+        {totals.profit ? `₱ ${totals.profit}` : "—"}
+      </div>
+    </div>
+  </div>
+</div>
 
-      {/* Product search bottom sheet */}
-      {modalOpen && (
-        <div className="modal-overlay">
-          <div className="modal-sheet">
-            <input
-              ref={searchInputRef}
-              className="field modal-search-input"
-              placeholder="Search product…"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-            />
-
-            <div className="modal-list">
-              {products
-                .filter((p) =>
-                  formatProductLabel(p)
-                    .toLowerCase()
-                    .includes(searchText.toLowerCase())
-                )
-                .map((p) => (
+                <div className="order-save-row order-save-row--edit">
+                  {editingOrder && (
+                    <button
+                      type="button"
+                      className="btn-secondary pill-button"
+                      onClick={cancelEditAndResetForm}
+                    >
+                      Cancel edit
+                    </button>
+                  )}
                   <button
-                    key={p.id}
-                    type="button"
-                    className="modal-list-item"
-                    onClick={() => selectProductForCurrentLine(p)}
+                    type="submit"
+                    disabled={saving}
+                    className="btn-primary pill-button"
                   >
-                    {formatProductLabel(p)}
+                    {saving
+                      ? editingOrder
+                        ? "Updating…"
+                        : "Saving…"
+                      : editingOrder
+                      ? "Update order"
+                      : "Save order"}
                   </button>
-                ))}
-            </div>
+                </div>
+              </form>
+            )}
+          </div>
+        </section>
 
+        {/* Recent orders card with hide/show */}
+        <section className="card">
+          <div className="card-header-row">
+            <h2 className="card-title">Recent orders</h2>
             <button
               type="button"
-              className="btn-secondary modal-close"
-              onClick={() => setModalOpen(false)}
+              className="collapse-toggle"
+              onClick={() => setShowRecent((prev) => !prev)}
             >
-              Close
+              <span className={`collapse-icon ${showRecent ? "open" : ""}`}>
+                {showRecent ? "–" : "+"}
+              </span>
             </button>
           </div>
-        </div>
-      )}
 
-      {/* Invoice overlay */}
+          <div className={`collapse-content ${showRecent ? "" : "hidden"}`}>
+            {loadingOrders ? (
+              <p className="text-muted">Loading orders…</p>
+            ) : orders.length === 0 ? (
+              <p className="text-muted">No orders yet.</p>
+            ) : (
+              <ul className="customer-list">
+                {orders.map((o) => (
+                  <li key={o.id} className="customer-item order-item">
+                    <div className="order-item-top">
+                      <div className="order-left">
+                        <div className="customer-name">
+                          {o.customers?.name || "Unknown customer"}
+                        </div>
+                        <div className="order-meta">
+                          {o.brands?.name || "No brand"}
+                          {o.campaigns?.name ? ` • ${o.campaigns.name}` : ""}
+                        </div>
+                        <div className="order-meta">
+                          {o.order_date} •{" "}
+                          {o.payment_type === "utang" ? "Credit" : "Cash"}
+                          {o.payment_type === "utang" && o.due_date
+                            ? ` • Due: ${o.due_date}`
+                            : ""}
+                        </div>
+                      </div>
+
+                      <div className="order-money">
+  <div className="money-srp">SRP: ₱{o.total_srp}</div>
+  <div className="money-cost">Cost: ₱{o.total_cost}</div>
+  <div className="money-profit">Profit: ₱{o.profit}</div>
+  <div className="order-status">{o.status}</div>
+
+                        <button
+                          type="button"
+                          className="btn-pill btn-edit"
+                          onClick={() => startEditingOrder(o)}
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          type="button"
+                          className="btn-pill btn-invoice"
+                          onClick={() => setInvoiceOrderId(o.id)}
+                        >
+                          Invoice
+                        </button>
+                      </div>
+                    </div>
+
+                    <OrderItemsList
+                      order={o}
+                      orderItems={orderItems}
+                      getProductById={getProductById}
+                      formatProductLabel={formatProductLabel}
+                    />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </section>
+
+        {/* Product search bottom sheet */}
+        {modalOpen && (
+          <div className="modal-overlay">
+            <div className="modal-sheet">
+              <input
+                ref={searchInputRef}
+                className="field modal-search-input"
+                placeholder="Search product…"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+              />
+
+              <div className="modal-list">
+                {products
+                  .filter((p) =>
+                    formatProductLabel(p)
+                      .toLowerCase()
+                      .includes(searchText.toLowerCase())
+                  )
+                  .map((p) => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      className="modal-list-item"
+                      onClick={() => selectProductForCurrentLine(p)}
+                    >
+                      {formatProductLabel(p)}
+                    </button>
+                  ))}
+              </div>
+
+              <button
+                type="button"
+                className="btn-secondary modal-close"
+                onClick={() => setModalOpen(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Invoice overlay – outside .no-print so ONLY invoice prints */}
       {invoiceOrder && (
         <InvoiceView
           order={invoiceOrder}
