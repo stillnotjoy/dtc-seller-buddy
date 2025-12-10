@@ -1834,3 +1834,224 @@ select.field {
   margin-bottom: 0.10rem !important;
   line-height: 1.1;
 }
+
+/* ========================= */
+/* AUTH LAYOUT (LOGIN/FORGOT) */
+/* ========================= */
+
+.app-root--auth {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;      /* vertically centre */
+  justify-content: center;  /* horizontally centre */
+  padding: 24px 12px;
+  background-color: #020617; /* same dark bg as app */
+}
+
+/* Kill any big background image / hero on auth screens */
+.app-root--auth,
+.app-root--auth .app-shell,
+.app-root--auth::before,
+.app-root--auth .app-shell::before {
+  background-image: none !important;
+}
+
+/* Constrain the auth shell width */
+.app-shell--auth {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+/* Make sure the card itself is centred nicely */
+.auth-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.auth-card.glass-auth {
+  width: 100%;
+  max-width: 440px;
+}
+
+/* Optional: tweak logo size on auth */
+.auth-logo {
+  width: 40px;
+  height: 40px;
+}
+/* ---------- Auth tabs ---------- */
+
+.auth-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: #050b18;           /* subtle dark pill behind tabs */
+  margin: 16px 0 20px;
+}
+
+.auth-tab {
+  border: none;
+  background: transparent;
+  padding: 6px 18px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #b9c4e6;                /* muted text */
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease,
+    box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+.auth-tab:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #e5ecff;
+}
+
+.auth-tab--active {
+  background: #0b63ff;           /* same blue as the app buttons */
+  color: #ffffff;
+  box-shadow: 0 0 0 1px rgba(11, 99, 255, 0.7),
+    0 10px 25px rgba(0, 0, 0, 0.35);
+  transform: translateY(-1px);
+}
+
+/* ---------- Auth password field & eye button ---------- */
+
+.auth-password-field {
+  position: relative;
+}
+
+/* add space for the eye */
+.auth-password-field .auth-input {
+  padding-right: 44px;
+}
+
+.auth-eye-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8a96b8;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.15s ease, color 0.15s ease,
+    transform 0.1s ease;
+}
+
+.auth-eye-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.auth-eye-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #e5ecff;
+  transform: translateY(-50%) translateY(-1px);
+}
+
+.auth-eye-btn:active {
+  transform: translateY(-50%) translateY(0);
+}
+
+/* Layout of whole auth view */
+.auth-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+}
+
+/* Outer card */
+.auth-card {
+  max-width: 440px;
+  width: 100%;
+  padding: 24px 28px 28px;
+}
+
+/* Header (logo + name + subtitle) */
+.auth-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.auth-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+}
+
+/* reuse app-title styles but adjust size a bit if needed */
+.auth-title-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-title {
+  font-size: 1.4rem;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.auth-subtitle {
+  font-size: 0.85rem;
+  margin: 2px 0 0;
+  opacity: 0.85;
+}
+
+/* Inner tile wrapping the form */
+.auth-card-body {
+  margin-top: 8px;
+  padding: 18px 18px 20px;
+  border-radius: 20px;
+  background: #050b18;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+}
+
+/* Form spacing */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+/* Submit button full width */
+.auth-submit {
+  width: 100%;
+  margin-top: 6px;
+}
+
+/* Forgot password – link style text */
+.auth-forgot {
+  margin-top: 10px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.85rem;
+  color: #ffffff;
+  opacity: 0.9;
+  text-decoration: underline;
+  cursor: pointer;
+  text-align: left;
+}
+
+.auth-forgot:hover {
+  opacity: 1;
+}
+
+/* (keep your existing .auth-tabs, .auth-tab, .auth-tab--active,
+   .auth-password-field, .auth-eye-btn, .auth-input, etc.) */

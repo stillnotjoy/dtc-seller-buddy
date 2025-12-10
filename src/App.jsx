@@ -250,8 +250,8 @@ function App() {
   // ---------- Loading state ----------
   if (authLoading) {
     return (
-      <div className="app-root">
-        <div className="app-shell">
+      <div className="app-root app-root--auth">
+        <div className="app-shell app-shell--auth">
           <div className="loading-screen">Checking session…</div>
         </div>
       </div>
@@ -261,8 +261,8 @@ function App() {
   // ---------- Reset password flow ----------
   if (resetMode) {
     return (
-      <div className="app-root">
-        <div className="app-shell">
+      <div className="app-root app-root--auth">
+        <div className="app-shell app-shell--auth">
           <ResetPasswordPage
             onBackToLogin={async () => {
               setResetMode(false);
@@ -279,8 +279,8 @@ function App() {
   // ---------- Not logged in ----------
   if (!user) {
     return (
-      <div className="app-root">
-        <div className="app-shell">
+      <div className="app-root app-root--auth">
+        <div className="app-shell app-shell--auth">
           {authMode === "login" && (
             <AuthPage onForgotPassword={() => setAuthMode("forgot")} />
           )}
@@ -381,52 +381,59 @@ function App() {
         </main>
 
         {/* Fixed bottom nav with 4 tabs */}
-       <nav className="bottom-nav">
-  <button
-    type="button"
-    className={`nav-button ${tab === "dashboard" ? "nav-button--active" : ""}`}
-    onClick={() => setTab("dashboard")}
-  >
-    <span className="nav-button-icon">
-      <LayoutDashboard size={22} />
-    </span>
-    <span className="nav-button-label">Dashboard</span>
-  </button>
+        <nav className="bottom-nav">
+          <button
+            type="button"
+            className={`nav-button ${
+              tab === "dashboard" ? "nav-button--active" : ""
+            }`}
+            onClick={() => setTab("dashboard")}
+          >
+            <span className="nav-button-icon">
+              <LayoutDashboard size={22} />
+            </span>
+            <span className="nav-button-label">Dashboard</span>
+          </button>
 
-  <button
-    type="button"
-    className={`nav-button ${tab === "sales" ? "nav-button--active" : ""}`}
-    onClick={() => setTab("sales")}
-  >
-    <span className="nav-button-icon">
-      <ShoppingCart size={22} />
-    </span>
-    <span className="nav-button-label">Sales</span>
-  </button>
+          <button
+            type="button"
+            className={`nav-button ${
+              tab === "sales" ? "nav-button--active" : ""
+            }`}
+            onClick={() => setTab("sales")}
+          >
+            <span className="nav-button-icon">
+              <ShoppingCart size={22} />
+            </span>
+            <span className="nav-button-label">Sales</span>
+          </button>
 
-  <button
-    type="button"
-    className={`nav-button ${tab === "customers" ? "nav-button--active" : ""}`}
-    onClick={() => setTab("customers")}
-  >
-    <span className="nav-button-icon">
-      <Users size={22} />
-    </span>
-    <span className="nav-button-label">Customers</span>
-  </button>
+          <button
+            type="button"
+            className={`nav-button ${
+              tab === "customers" ? "nav-button--active" : ""
+            }`}
+            onClick={() => setTab("customers")}
+          >
+            <span className="nav-button-icon">
+              <Users size={22} />
+            </span>
+            <span className="nav-button-label">Customers</span>
+          </button>
 
-  <button
-    type="button"
-    className={`nav-button ${tab === "more" ? "nav-button--active" : ""}`}
-    onClick={() => setTab("more")}
-  >
-    <span className="nav-button-icon">
-      <Info size={22} />
-    </span>
-    <span className="nav-button-label">More</span>
-  </button>
-</nav>
-
+          <button
+            type="button"
+            className={`nav-button ${
+              tab === "more" ? "nav-button--active" : ""
+            }`}
+            onClick={() => setTab("more")}
+          >
+            <span className="nav-button-icon">
+              <Info size={22} />
+            </span>
+            <span className="nav-button-label">More</span>
+          </button>
+        </nav>
       </div>
     </div>
   );
@@ -481,7 +488,4 @@ function SalesTabs({ salesTab, setSalesTab }) {
   );
 }
 
-
 export default App;
-
-
