@@ -1,10 +1,6 @@
 {
-  "name": "Dimerr",
   "short_name": "Dimerr",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#001f4d",
-  "theme_color": "#001f4d",
+  "name": "Dimerr – Seller tools. simplified.",
   "icons": [
     {
       "src": "/icon-192.png",
@@ -15,12 +11,10 @@
       "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
-    },
-    {
-      "src": "/apple-touch-icon.png",
-      "sizes": "180x180",
-      "type": "image/png"
     }
-  ]
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#001e4d",
+  "background_color": "#001e4d"
 }
-
